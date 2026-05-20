@@ -1,0 +1,3 @@
+C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/csopesy_os_mp.dir
+C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/edit_cache.dir
+C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/rebuild_cache.dir
