@@ -31,4 +31,6 @@ public:
     static bool isAttachable(const std::string& name);
     static std::string formatProcessSmi(const std::string& name);
     static std::string generateLsReport();
+    static void registerProcess(const std::string& name, int id, const std::string& timestamp,
+                                int core, int currentInstruction, int totalInstructions);
 };

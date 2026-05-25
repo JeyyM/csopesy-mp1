@@ -31,7 +31,6 @@ void printNotInitialized() {
 void runMockProcessScreen(const std::string& processName) {
     ConsoleManager::clearScreen();
     std::cout << MockProcessData::formatProcessSmi(processName);
-    ConsoleManager::printProcessScreenHint(processName);
 
     while (true) {
         ConsoleManager::printPrompt();
@@ -69,7 +68,6 @@ void runDynamicProcessScreen(ProcessManager& processManager) {
     const std::string processName = active->name;
     ConsoleManager::clearScreen();
     std::cout << active->formatProcessSmi();
-    ConsoleManager::printProcessScreenHint(processName);
 
     while (true) {
         ConsoleManager::printPrompt();
@@ -105,7 +103,6 @@ void runDynamicProcessScreen(ProcessManager& processManager) {
 bool handleScreenCommand(const std::string& command, ProcessManager& processManager) {
     if (command == "screen -ls") {
         ConsoleManager::printMockProcessReport();
-        ConsoleManager::printLsAttachHint();
         return true;
     }
 
@@ -123,6 +120,12 @@ bool handleScreenCommand(const std::string& command, ProcessManager& processMana
         if (!processManager.createProcess(processName, error)) {
             ConsoleManager::printLine(error);
             return true;
+        }
+
+        if (const Process* p = processManager.getActiveProcess()) {
+            MockProcessData::registerProcess(p->name, p->id, p->creationTimestamp,
+                                             p->assignedCore, p->currentInstructionLine,
+                                             p->totalLinesOfCode);
         }
 
         runDynamicProcessScreen(processManager);
@@ -264,6 +267,12 @@ int main() {
             if (handleScreenCommand(command, processManager)) {
                 continue;
             }
+        }
+
+        if (command == "clear") {
+            ConsoleManager::clearScreen();
+            ConsoleManager::printHeader();
+            continue;
         }
 
         ConsoleManager::printLine("Unknown command. Please try again.");

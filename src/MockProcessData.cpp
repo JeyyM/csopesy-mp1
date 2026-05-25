@@ -215,3 +215,19 @@ std::string MockProcessData::generateLsReport() {
     report << "---------------------------------------------\n";
     return report.str();
 }
+
+void MockProcessData::registerProcess(const std::string& name, int id,
+                                      const std::string& timestamp, int core,
+                                      int currentInstruction, int totalInstructions) {
+    ensureInitialized();
+    MockProcessEntry entry;
+    entry.name = name;
+    entry.id = id;
+    entry.timestamp = timestamp;
+    entry.core = core;
+    entry.currentInstruction = currentInstruction;
+    entry.totalInstructions = totalInstructions;
+    entry.finished = false;
+    entry.logs.push_back({timestamp, core, "Hello world from " + name + "!"});
+    addProcess(std::move(entry));
+}
