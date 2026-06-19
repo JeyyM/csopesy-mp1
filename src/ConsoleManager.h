@@ -2,6 +2,7 @@
 
 #include <string>
 
+// just a class that handles printing to the console
 class ConsoleManager {
 public:
     static void clearScreen();

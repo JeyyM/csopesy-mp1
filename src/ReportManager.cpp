@@ -1,7 +1,7 @@
 #include "ReportManager.h"
 
 #include <fstream>
-
+// Straightforward file-writing helper
 bool ReportManager::saveReport(const std::string& path, const std::string& content,
                                std::string& errorMessage) {
     std::ofstream file(path, std::ios::trunc);

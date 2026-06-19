@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <iostream>
 
+// everything here is just draw and text on screen
 void ConsoleManager::clearScreen() {
 #if defined(_WIN32)
     std::system("cls");
