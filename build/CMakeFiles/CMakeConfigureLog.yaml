@@ -3449,3 +3449,43 @@ events:
       Running the CXX compiler's linker: "Configured with: ../configure --prefix=/R/winlibs_staging_msvcrt64/inst_gcc-15.2.0/share/gcc --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32 --enable-offload-targets=nvptx-none --with-pkgversion='MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1' --with-tune=generic --enable-checking=release --enable-threads=posix --disable-sjlj-exceptions --disable-libunwind-exceptions --disable-serial-configure --disable-bootstrap --enable-host-shared --enable-plugin --disable-default-ssp --disable-rpath --disable-libstdcxx-debug --disable-version-specific-runtime-libs --disable-symvers --enable-languages=c,c++,fortran,lto,objc,obj-c++ --disable-gold --disable-nls --disable-stage1-checking --disable-win32-registry --disable-multilib --enable-ld --enable-libquadmath --enable-libada --enable-libssp --enable-libstdcxx --enable-lto --enable-fully-dynamic-string --enable-libgomp --enable-graphite --enable-mingw-wildcard --enable-libstdcxx-time --enable-libstdcxx-pch --with-mpc=/c/Prog/winlibs_staging_msvcrt/custombuilt64 --with-mpfr=/c/Prog/winlibs_staging_msvcrt/custombuilt64 --with-gmp=/c/Prog/winlibs_staging_msvcrt/custombuilt64 --with-isl=/c/Prog/winlibs_staging_msvcrt/custombuilt64 --disable-libstdcxx-backtrace --enable-install-libiberty --enable-__cxa_atexit --without-included-gettext --with-diagnostics-color=auto --enable-clocale=generic --enable-libgdiagnostics --with-libiconv --with-system-zlib --with-build-sysroot=/R/winlibs_staging_msvcrt64/gcc-15.2.0/build_mingw/mingw-w64 CFLAGS='-I/c/Prog/winlibs_staging_msvcrt/custombuilt64/include/libdl-win32   -march=nocona -msahf -mtune=generic -O2 -Wno-error=format' CXXFLAGS='-Wno-int-conversion  -march=nocona -msahf -mtune=generic -O2' LDFLAGS='-pthread -Wl,--no-insert-timestamp -Wl,--dynamicbase -Wl,--high-entropy-va -Wl,--nxcompat -Wl,--tsaware' LD=/c/Prog/winlibs_staging_msvcrt/custombuilt64/share/binutils/bin/ld.exe" "--version"
       
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/winlibs/mingw64/share/cmake-4.1/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "C:/winlibs/mingw64/share/cmake-4.1/Modules/CheckCXXSourceCompiles.cmake:103 (cmake_check_source_compiles)"
+      - "C:/winlibs/mingw64/share/cmake-4.1/Modules/FindThreads.cmake:99 (check_cxx_source_compiles)"
+      - "C:/winlibs/mingw64/share/cmake-4.1/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "CMakeLists.txt:19 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-iuwx01"
+      binary: "C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-iuwx01"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-iuwx01'
+        
+        Run Build Command(s): C:/winlibs/mingw64/bin/cmake.exe -E env VERBOSE=1 C:/winlibs/mingw64/bin/mingw32-make.exe -f Makefile cmTC_e1209/fast
+        C:/winlibs/mingw64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_e1209.dir\\build.make CMakeFiles/cmTC_e1209.dir/build
+        mingw32-make[1]: Entering directory 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-iuwx01'
+        Building CXX object CMakeFiles/cmTC_e1209.dir/src.cxx.obj
+        C:\\winlibs\\mingw64\\bin\\c++.exe -DCMAKE_HAVE_LIBC_PTHREAD  -std=gnu++17 -o CMakeFiles\\cmTC_e1209.dir\\src.cxx.obj -c "C:\\Users\\asus\\Desktop\\CSOPESY OS MP\\build\\CMakeFiles\\CMakeScratch\\TryCompile-iuwx01\\src.cxx"
+        Linking CXX executable cmTC_e1209.exe
+        C:\\winlibs\\mingw64\\bin\\cmake.exe -E cmake_link_script CMakeFiles\\cmTC_e1209.dir\\link.txt --verbose=1
+        C:\\winlibs\\mingw64\\bin\\cmake.exe -E rm -f CMakeFiles\\cmTC_e1209.dir/objects.a
+        C:\\winlibs\\mingw64\\bin\\ar.exe qc CMakeFiles\\cmTC_e1209.dir/objects.a @CMakeFiles\\cmTC_e1209.dir\\objects1.rsp
+        C:\\winlibs\\mingw64\\bin\\c++.exe -Wl,--whole-archive CMakeFiles\\cmTC_e1209.dir/objects.a -Wl,--no-whole-archive -o cmTC_e1209.exe -Wl,--out-implib,libcmTC_e1209.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\\cmTC_e1209.dir\\linkLibs.rsp
+        mingw32-make[1]: Leaving directory 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-iuwx01'
+        
+      exitCode: 0
+...

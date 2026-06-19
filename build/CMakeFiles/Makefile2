@@ -84,12 +84,12 @@ clean: CMakeFiles/csopesy_os_mp.dir/clean
 CMakeFiles/csopesy_os_mp.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" --progress-num=1,2,3,4,5,6,7,8,9,10 "Built target csopesy_os_mp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" --progress-num=1,2,3,4,5,6,7,8 "Built target csopesy_os_mp"
 .PHONY : CMakeFiles/csopesy_os_mp.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/csopesy_os_mp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" 10
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" 8
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/csopesy_os_mp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" 0
 .PHONY : CMakeFiles/csopesy_os_mp.dir/rule
@@ -101,7 +101,7 @@ csopesy_os_mp: CMakeFiles/csopesy_os_mp.dir/rule
 # codegen rule for target.
 CMakeFiles/csopesy_os_mp.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" --progress-num=1,2,3,4,5,6,7,8,9,10 "Finished codegen for target csopesy_os_mp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" --progress-num=1,2,3,4,5,6,7,8 "Finished codegen for target csopesy_os_mp"
 .PHONY : CMakeFiles/csopesy_os_mp.dir/codegen
 
 # clean rule for target.

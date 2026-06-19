@@ -101,12 +101,6 @@ CMakeFiles/csopesy_os_mp.dir/src/ReportManager.cpp.obj: \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/uses_allocator.h \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/uses_allocator_args.h \
  C:/winlibs/mingw64/include/c++/15.2.0/tuple \
- C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\MockProcessData.h \
- C:/winlibs/mingw64/include/c++/15.2.0/vector \
- C:/winlibs/mingw64/include/c++/15.2.0/bits/stl_uninitialized.h \
- C:/winlibs/mingw64/include/c++/15.2.0/bits/stl_vector.h \
- C:/winlibs/mingw64/include/c++/15.2.0/bits/stl_bvector.h \
- C:/winlibs/mingw64/include/c++/15.2.0/bits/vector.tcc \
  C:/winlibs/mingw64/include/c++/15.2.0/fstream \
  C:/winlibs/mingw64/include/c++/15.2.0/istream \
  C:/winlibs/mingw64/include/c++/15.2.0/ios \
@@ -121,10 +115,8 @@ CMakeFiles/csopesy_os_mp.dir/src/ReportManager.cpp.obj: \
  C:/winlibs/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/gthr-default.h \
  C:/winlibs/mingw64/x86_64-w64-mingw32/include/pthread.h \
  C:/winlibs/mingw64/x86_64-w64-mingw32/include/sys/types.h \
- C:/Users/asus/Desktop/CSOPES~1/src/process.h \
- C:/winlibs/mingw64/include/c++/15.2.0/cstdint \
- C:/winlibs/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/stdint.h \
- C:/winlibs/mingw64/x86_64-w64-mingw32/include/stdint.h \
+ C:/winlibs/mingw64/x86_64-w64-mingw32/include/process.h \
+ C:/winlibs/mingw64/x86_64-w64-mingw32/include/corecrt_startup.h \
  C:/winlibs/mingw64/x86_64-w64-mingw32/include/signal.h \
  C:/winlibs/mingw64/x86_64-w64-mingw32/include/pthread_signal.h \
  C:/winlibs/mingw64/x86_64-w64-mingw32/include/time.h \

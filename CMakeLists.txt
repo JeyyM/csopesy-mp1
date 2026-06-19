@@ -8,15 +8,16 @@ add_executable(csopesy_os_mp
     src/main.cpp
     src/Config.cpp
     src/ConsoleManager.cpp
-    src/Process.cpp
-    src/ProcessManager.cpp
+    src/ProcessModel.cpp
     src/ReportManager.cpp
-    src/MockProcessData.cpp
     src/Scheduler.cpp
     src/TimeUtil.cpp
 )
 
 target_include_directories(csopesy_os_mp PRIVATE src)
+
+find_package(Threads REQUIRED)
+target_link_libraries(csopesy_os_mp PRIVATE Threads::Threads)
 
 # Avoid MinGW DLL conflicts when two toolchains are on PATH (Windows)
 if(MINGW)

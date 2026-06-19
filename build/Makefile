@@ -176,77 +176,29 @@ src/ConsoleManager.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/ConsoleManager.cpp.s
 .PHONY : src/ConsoleManager.cpp.s
 
-src/MockProcessData.obj: src/MockProcessData.cpp.obj
-.PHONY : src/MockProcessData.obj
+src/ProcessModel.obj: src/ProcessModel.cpp.obj
+.PHONY : src/ProcessModel.obj
 
 # target to build an object file
-src/MockProcessData.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/MockProcessData.cpp.obj
-.PHONY : src/MockProcessData.cpp.obj
+src/ProcessModel.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/ProcessModel.cpp.obj
+.PHONY : src/ProcessModel.cpp.obj
 
-src/MockProcessData.i: src/MockProcessData.cpp.i
-.PHONY : src/MockProcessData.i
-
-# target to preprocess a source file
-src/MockProcessData.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/MockProcessData.cpp.i
-.PHONY : src/MockProcessData.cpp.i
-
-src/MockProcessData.s: src/MockProcessData.cpp.s
-.PHONY : src/MockProcessData.s
-
-# target to generate assembly for a file
-src/MockProcessData.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/MockProcessData.cpp.s
-.PHONY : src/MockProcessData.cpp.s
-
-src/Process.obj: src/Process.cpp.obj
-.PHONY : src/Process.obj
-
-# target to build an object file
-src/Process.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/Process.cpp.obj
-.PHONY : src/Process.cpp.obj
-
-src/Process.i: src/Process.cpp.i
-.PHONY : src/Process.i
+src/ProcessModel.i: src/ProcessModel.cpp.i
+.PHONY : src/ProcessModel.i
 
 # target to preprocess a source file
-src/Process.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/Process.cpp.i
-.PHONY : src/Process.cpp.i
+src/ProcessModel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/ProcessModel.cpp.i
+.PHONY : src/ProcessModel.cpp.i
 
-src/Process.s: src/Process.cpp.s
-.PHONY : src/Process.s
-
-# target to generate assembly for a file
-src/Process.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/Process.cpp.s
-.PHONY : src/Process.cpp.s
-
-src/ProcessManager.obj: src/ProcessManager.cpp.obj
-.PHONY : src/ProcessManager.obj
-
-# target to build an object file
-src/ProcessManager.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/ProcessManager.cpp.obj
-.PHONY : src/ProcessManager.cpp.obj
-
-src/ProcessManager.i: src/ProcessManager.cpp.i
-.PHONY : src/ProcessManager.i
-
-# target to preprocess a source file
-src/ProcessManager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/ProcessManager.cpp.i
-.PHONY : src/ProcessManager.cpp.i
-
-src/ProcessManager.s: src/ProcessManager.cpp.s
-.PHONY : src/ProcessManager.s
+src/ProcessModel.s: src/ProcessModel.cpp.s
+.PHONY : src/ProcessModel.s
 
 # target to generate assembly for a file
-src/ProcessManager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/ProcessManager.cpp.s
-.PHONY : src/ProcessManager.cpp.s
+src/ProcessModel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/ProcessModel.cpp.s
+.PHONY : src/ProcessModel.cpp.s
 
 src/ReportManager.obj: src/ReportManager.cpp.obj
 .PHONY : src/ReportManager.obj
@@ -359,15 +311,9 @@ help:
 	@echo ... src/ConsoleManager.obj
 	@echo ... src/ConsoleManager.i
 	@echo ... src/ConsoleManager.s
-	@echo ... src/MockProcessData.obj
-	@echo ... src/MockProcessData.i
-	@echo ... src/MockProcessData.s
-	@echo ... src/Process.obj
-	@echo ... src/Process.i
-	@echo ... src/Process.s
-	@echo ... src/ProcessManager.obj
-	@echo ... src/ProcessManager.i
-	@echo ... src/ProcessManager.s
+	@echo ... src/ProcessModel.obj
+	@echo ... src/ProcessModel.i
+	@echo ... src/ProcessModel.s
 	@echo ... src/ReportManager.obj
 	@echo ... src/ReportManager.i
 	@echo ... src/ReportManager.s

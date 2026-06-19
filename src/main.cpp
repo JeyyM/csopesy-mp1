@@ -1,10 +1,18 @@
 #include "Config.h"
 #include "ConsoleManager.h"
+#include "ProcessModel.h"
+#include "ReportManager.h"
+#include "Scheduler.h"
 
 #include <iostream>
+#include <memory>
+#include <random>
 #include <string>
 
 namespace {
+
+constexpr int kTestProcessCount = 10;
+constexpr int kTestPrintsPerProcess = 100;
 
 std::string trim(const std::string& value) {
     const auto start = value.find_first_not_of(" \t\r\n");
@@ -24,10 +32,96 @@ void printNotInitialized() {
         "Please initialize the system first by typing \"initialize\".");
 }
 
+int randomInstructionCount(const Config& config) {
+    static std::mt19937 rng(std::random_device{}());
+    const int low = static_cast<int>(config.minIns);
+    const int high = static_cast<int>(config.maxIns < config.minIns ? config.minIns
+                                                                     : config.maxIns);
+    std::uniform_int_distribution<int> dist(low, high);
+    return dist(rng);
+}
+
+// Runs the process screen loop for a live process until the user types exit.
+void runProcessScreen(const std::shared_ptr<Process>& process) {
+    ConsoleManager::clearScreen();
+    std::cout << process->formatSmi();
+    ConsoleManager::printProcessScreenHint(process->name());
+
+    while (true) {
+        ConsoleManager::printPrompt();
+
+        std::string command;
+        if (!std::getline(std::cin, command)) {
+            return;
+        }
+        command = trim(command);
+        if (command.empty()) {
+            continue;
+        }
+
+        if (command == "process-smi") {
+            std::cout << process->formatSmi();
+            continue;
+        }
+
+        if (command == "exit") {
+            ConsoleManager::clearScreen();
+            ConsoleManager::printHeader();
+            return;
+        }
+
+        ConsoleManager::printLine("Unknown command inside process screen.");
+    }
+}
+
+bool handleScreenCommand(const std::string& command, Scheduler& scheduler,
+                         const Config& config) {
+    if (command == "screen -ls") {
+        std::cout << scheduler.buildStatusReport();
+        return true;
+    }
+
+    const std::string createPrefix = "screen -s ";
+    const std::string attachPrefix = "screen -r ";
+
+    if (startsWith(command, createPrefix)) {
+        const std::string name = trim(command.substr(createPrefix.size()));
+        if (name.empty()) {
+            ConsoleManager::printLine("Unknown command. Please try again.");
+            return true;
+        }
+        if (scheduler.processExists(name)) {
+            ConsoleManager::printLine("Process " + name + " already exists.");
+            return true;
+        }
+        auto process = scheduler.createProcess(name, randomInstructionCount(config));
+        runProcessScreen(process);
+        return true;
+    }
+
+    if (startsWith(command, attachPrefix)) {
+        const std::string name = trim(command.substr(attachPrefix.size()));
+        if (name.empty()) {
+            ConsoleManager::printLine("Unknown command. Please try again.");
+            return true;
+        }
+        auto process = scheduler.findProcess(name);
+        if (!process || process->status() == ProcessStatus::Finished) {
+            ConsoleManager::printLine("Process " + name + " not found.");
+            return true;
+        }
+        runProcessScreen(process);
+        return true;
+    }
+
+    return false;
+}
+
 }  // namespace
 
 int main() {
     Config config;
+    Scheduler scheduler;
 
     bool initialized = false;
     bool running = true;
@@ -48,6 +142,8 @@ int main() {
         }
 
         if (command == "exit") {
+            ConsoleManager::printLine("Exiting CSOPESY Emulator.");
+            scheduler.stop();
             running = false;
             continue;
         }
@@ -59,30 +155,75 @@ int main() {
         }
 
         if (command == "initialize") {
+            if (initialized) {
+                ConsoleManager::printLine("System is already initialized.");
+                continue;
+            }
             std::string error;
             if (!ConfigLoader::loadFromFile("config.txt", config, error)) {
                 ConsoleManager::printLine(error);
+                continue;
+            }
+            initialized = true;
+            scheduler.start(config);
+            scheduler.generateBatch(kTestProcessCount, kTestPrintsPerProcess);
+            ConsoleManager::printLine("System initialized successfully using config.txt.");
+            ConsoleManager::printLine(
+                "Declared " + std::to_string(config.numCpu) + " CPU cores. Generated " +
+                std::to_string(kTestProcessCount) + " processes (" +
+                std::to_string(kTestPrintsPerProcess) +
+                " print commands each). FCFS scheduler is running.");
+            continue;
+        }
+
+        if (!initialized) {
+            printNotInitialized();
+            continue;
+        }
+
+        if (command == "scheduler-start") {
+            if (scheduler.isEngineRunning()) {
+                ConsoleManager::printLine("Scheduler is already running.");
             } else {
-                initialized = true;
-                ConsoleManager::printLine(
-                    "System initialized successfully using config.txt.");
+                scheduler.start(config);
+                scheduler.generateBatch(kTestProcessCount, kTestPrintsPerProcess);
+                ConsoleManager::printLine("Scheduler started. Generating processes.");
             }
             continue;
         }
 
-        if (command == "scheduler-start" || command == "scheduler-stop" ||
-            command == "report-util" || command == "screen -ls" ||
-            startsWith(command, "screen -s ") || startsWith(command, "screen -r ")) {
-            if (!initialized) {
-                printNotInitialized();
+        if (command == "scheduler-stop") {
+            if (!scheduler.isEngineRunning()) {
+                ConsoleManager::printLine("Scheduler is not running.");
+            } else {
+                scheduler.stop();
+                ConsoleManager::printLine("Scheduler stopped.");
+            }
+            continue;
+        }
+
+        if (command == "report-util") {
+            const std::string report = scheduler.buildStatusReport();
+            std::string error;
+            if (ReportManager::saveReport(ReportManager::defaultReportPath(), report,
+                                          error)) {
+                ConsoleManager::printLine("Report generated at C:/csopesy-log.txt!");
+            } else {
+                ConsoleManager::printLine(error);
+            }
+            continue;
+        }
+
+        if (command == "screen -ls" || startsWith(command, "screen -s ") ||
+            startsWith(command, "screen -r ")) {
+            if (handleScreenCommand(command, scheduler, config)) {
                 continue;
             }
-            ConsoleManager::printLine(command + " command recognized. Doing something.");
-            continue;
         }
 
         ConsoleManager::printLine("Unknown command. Please try again.");
     }
 
+    scheduler.stop();
     return 0;
 }

@@ -10,9 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/Config.cpp" "CMakeFiles/csopesy_os_mp.dir/src/Config.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/Config.cpp.obj.d"
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/ConsoleManager.cpp" "CMakeFiles/csopesy_os_mp.dir/src/ConsoleManager.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/ConsoleManager.cpp.obj.d"
-  "C:/Users/asus/Desktop/CSOPESY OS MP/src/MockProcessData.cpp" "CMakeFiles/csopesy_os_mp.dir/src/MockProcessData.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/MockProcessData.cpp.obj.d"
-  "C:/Users/asus/Desktop/CSOPESY OS MP/src/Process.cpp" "CMakeFiles/csopesy_os_mp.dir/src/Process.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/Process.cpp.obj.d"
-  "C:/Users/asus/Desktop/CSOPESY OS MP/src/ProcessManager.cpp" "CMakeFiles/csopesy_os_mp.dir/src/ProcessManager.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/ProcessManager.cpp.obj.d"
+  "C:/Users/asus/Desktop/CSOPESY OS MP/src/ProcessModel.cpp" "CMakeFiles/csopesy_os_mp.dir/src/ProcessModel.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/ProcessModel.cpp.obj.d"
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/ReportManager.cpp" "CMakeFiles/csopesy_os_mp.dir/src/ReportManager.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/ReportManager.cpp.obj.d"
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/Scheduler.cpp" "CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.obj.d"
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/TimeUtil.cpp" "CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.obj.d"
