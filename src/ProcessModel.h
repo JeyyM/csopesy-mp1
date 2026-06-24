@@ -42,6 +42,7 @@ public:
     Process(int id, std::string name, std::string creationTimestamp);
 
     void addPrintInstruction(const std::string& message = "");
+    void addInstruction(InstructionType type, const std::string& text);
 
     int id() const { return id_; }
     const std::string& name() const { return name_; }

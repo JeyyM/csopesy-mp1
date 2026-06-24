@@ -11,9 +11,6 @@
 
 namespace {
 
-constexpr int kTestProcessCount = 10;
-constexpr int kTestPrintsPerProcess = 100;
-
 std::string trim(const std::string& value) {
     const auto start = value.find_first_not_of(" \t\r\n");
     if (start == std::string::npos) {
@@ -165,14 +162,7 @@ int main() {
                 continue;
             }
             initialized = true;
-            scheduler.start(config);
-            scheduler.generateBatch(kTestProcessCount, kTestPrintsPerProcess);
             ConsoleManager::printLine("System initialized successfully using config.txt.");
-            ConsoleManager::printLine(
-                "Declared " + std::to_string(config.numCpu) + " CPU cores. Generated " +
-                std::to_string(kTestProcessCount) + " processes (" +
-                std::to_string(kTestPrintsPerProcess) +
-                " print commands each). FCFS scheduler is running.");
             continue;
         }
 
@@ -186,8 +176,7 @@ int main() {
                 ConsoleManager::printLine("Scheduler is already running.");
             } else {
                 scheduler.start(config);
-                scheduler.generateBatch(kTestProcessCount, kTestPrintsPerProcess);
-                ConsoleManager::printLine("Scheduler started. Generating processes.");
+                ConsoleManager::printLine("Scheduler started. Generating dummy processes.");
             }
             continue;
         }
