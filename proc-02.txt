@@ -1,0 +1,6 @@
+Process name: proc-02
+Logs:
+
+(06/25/2026 09:54:23PM) Core:1 "Hello world from proc-02!"
+(06/25/2026 09:54:23PM) Core:1 "Hello world from proc-02!"
+(06/25/2026 09:54:23PM) Core:1 "Hello world from proc-02!"

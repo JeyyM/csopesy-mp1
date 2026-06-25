@@ -20,7 +20,7 @@ struct Config {
     // Extra CPU cycles to wait between executing consecutive instructions.
     uint32_t delayPerExec = 0;
 
-    // Number of processes to create automatically when initialize runs.
+    // Optional: processes created immediately on scheduler-start (0 = batch-only).
     uint32_t initialProcessCount = 0;
 
     // True only after config.txt was parsed successfully.

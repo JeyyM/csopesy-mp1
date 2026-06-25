@@ -33,6 +33,13 @@ int randomInstructionCount(const Config& config) {
     return dist(rng);
 }
 
+int printsPerProcessFromConfig(const Config& config) {
+    if (config.minIns == config.maxIns) {
+        return static_cast<int>(config.minIns);
+    }
+    return randomInstructionCount(config);
+}
+
 void runProcessScreen(const std::shared_ptr<Process>& process) {
     ConsoleManager::clearScreen();
     std::cout << process->formatSmi();
@@ -100,7 +107,9 @@ bool ScreenManager::handleCommand(const std::string& command, Scheduler& schedul
             ConsoleManager::printLine("Process " + name + " already exists.");
             return true;
         }
-        auto process = scheduler.createProcess(name, randomInstructionCount(config));
+        scheduler.ensureEngineRunning(config);
+        const int instructionCount = printsPerProcessFromConfig(config);
+        auto process = scheduler.createUserProcess(name, instructionCount);
         runProcessScreen(process);
         return true;
     }

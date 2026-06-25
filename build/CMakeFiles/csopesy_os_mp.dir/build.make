@@ -146,11 +146,26 @@ CMakeFiles/csopesy_os_mp.dir/src/ReportManager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/csopesy_os_mp.dir/src/ReportManager.cpp.s"
 	C:\winlibs\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\asus\Desktop\CSOPESY OS MP\src\ReportManager.cpp" -o CMakeFiles\csopesy_os_mp.dir\src\ReportManager.cpp.s
 
+CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.obj: CMakeFiles/csopesy_os_mp.dir/flags.make
+CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.obj: CMakeFiles/csopesy_os_mp.dir/includes_CXX.rsp
+CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.obj: C:/Users/asus/Desktop/CSOPESY\ OS\ MP/src/OutputManager.cpp
+CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.obj: CMakeFiles/csopesy_os_mp.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.obj"
+	C:\winlibs\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.obj -MF CMakeFiles\csopesy_os_mp.dir\src\OutputManager.cpp.obj.d -o CMakeFiles\csopesy_os_mp.dir\src\OutputManager.cpp.obj -c "C:\Users\asus\Desktop\CSOPESY OS MP\src\OutputManager.cpp"
+
+CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.i"
+	C:\winlibs\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Users\asus\Desktop\CSOPESY OS MP\src\OutputManager.cpp" > CMakeFiles\csopesy_os_mp.dir\src\OutputManager.cpp.i
+
+CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.s"
+	C:\winlibs\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\asus\Desktop\CSOPESY OS MP\src\OutputManager.cpp" -o CMakeFiles\csopesy_os_mp.dir\src\OutputManager.cpp.s
+
 CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj: CMakeFiles/csopesy_os_mp.dir/flags.make
 CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj: CMakeFiles/csopesy_os_mp.dir/includes_CXX.rsp
 CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj: C:/Users/asus/Desktop/CSOPESY\ OS\ MP/src/ScreenManager.cpp
 CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj: CMakeFiles/csopesy_os_mp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj"
 	C:\winlibs\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj -MF CMakeFiles\csopesy_os_mp.dir\src\ScreenManager.cpp.obj.d -o CMakeFiles\csopesy_os_mp.dir\src\ScreenManager.cpp.obj -c "C:\Users\asus\Desktop\CSOPESY OS MP\src\ScreenManager.cpp"
 
 CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.i: cmake_force
@@ -165,7 +180,7 @@ CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.obj: CMakeFiles/csopesy_os_mp.dir
 CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.obj: CMakeFiles/csopesy_os_mp.dir/includes_CXX.rsp
 CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.obj: C:/Users/asus/Desktop/CSOPESY\ OS\ MP/src/Scheduler.cpp
 CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.obj: CMakeFiles/csopesy_os_mp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.obj"
 	C:\winlibs\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.obj -MF CMakeFiles\csopesy_os_mp.dir\src\Scheduler.cpp.obj.d -o CMakeFiles\csopesy_os_mp.dir\src\Scheduler.cpp.obj -c "C:\Users\asus\Desktop\CSOPESY OS MP\src\Scheduler.cpp"
 
 CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.i: cmake_force
@@ -176,11 +191,26 @@ CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.s"
 	C:\winlibs\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\asus\Desktop\CSOPESY OS MP\src\Scheduler.cpp" -o CMakeFiles\csopesy_os_mp.dir\src\Scheduler.cpp.s
 
+CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.obj: CMakeFiles/csopesy_os_mp.dir/flags.make
+CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.obj: CMakeFiles/csopesy_os_mp.dir/includes_CXX.rsp
+CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.obj: C:/Users/asus/Desktop/CSOPESY\ OS\ MP/src/InstructionEngine.cpp
+CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.obj: CMakeFiles/csopesy_os_mp.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.obj"
+	C:\winlibs\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.obj -MF CMakeFiles\csopesy_os_mp.dir\src\InstructionEngine.cpp.obj.d -o CMakeFiles\csopesy_os_mp.dir\src\InstructionEngine.cpp.obj -c "C:\Users\asus\Desktop\CSOPESY OS MP\src\InstructionEngine.cpp"
+
+CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.i"
+	C:\winlibs\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Users\asus\Desktop\CSOPESY OS MP\src\InstructionEngine.cpp" > CMakeFiles\csopesy_os_mp.dir\src\InstructionEngine.cpp.i
+
+CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.s"
+	C:\winlibs\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\asus\Desktop\CSOPESY OS MP\src\InstructionEngine.cpp" -o CMakeFiles\csopesy_os_mp.dir\src\InstructionEngine.cpp.s
+
 CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.obj: CMakeFiles/csopesy_os_mp.dir/flags.make
 CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.obj: CMakeFiles/csopesy_os_mp.dir/includes_CXX.rsp
 CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.obj: C:/Users/asus/Desktop/CSOPESY\ OS\ MP/src/TimeUtil.cpp
 CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.obj: CMakeFiles/csopesy_os_mp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.obj"
 	C:\winlibs\mingw64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.obj -MF CMakeFiles\csopesy_os_mp.dir\src\TimeUtil.cpp.obj.d -o CMakeFiles\csopesy_os_mp.dir\src\TimeUtil.cpp.obj -c "C:\Users\asus\Desktop\CSOPESY OS MP\src\TimeUtil.cpp"
 
 CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.i: cmake_force
@@ -198,8 +228,10 @@ csopesy_os_mp_OBJECTS = \
 "CMakeFiles/csopesy_os_mp.dir/src/ConsoleManager.cpp.obj" \
 "CMakeFiles/csopesy_os_mp.dir/src/ProcessModel.cpp.obj" \
 "CMakeFiles/csopesy_os_mp.dir/src/ReportManager.cpp.obj" \
+"CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.obj" \
 "CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj" \
 "CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.obj" \
+"CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.obj" \
 "CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.obj"
 
 # External object files for target csopesy_os_mp
@@ -210,14 +242,16 @@ csopesy_os_mp.exe: CMakeFiles/csopesy_os_mp.dir/src/Config.cpp.obj
 csopesy_os_mp.exe: CMakeFiles/csopesy_os_mp.dir/src/ConsoleManager.cpp.obj
 csopesy_os_mp.exe: CMakeFiles/csopesy_os_mp.dir/src/ProcessModel.cpp.obj
 csopesy_os_mp.exe: CMakeFiles/csopesy_os_mp.dir/src/ReportManager.cpp.obj
+csopesy_os_mp.exe: CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.obj
 csopesy_os_mp.exe: CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj
 csopesy_os_mp.exe: CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.obj
+csopesy_os_mp.exe: CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.obj
 csopesy_os_mp.exe: CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.obj
 csopesy_os_mp.exe: CMakeFiles/csopesy_os_mp.dir/build.make
 csopesy_os_mp.exe: CMakeFiles/csopesy_os_mp.dir/linkLibs.rsp
 csopesy_os_mp.exe: CMakeFiles/csopesy_os_mp.dir/objects1.rsp
 csopesy_os_mp.exe: CMakeFiles/csopesy_os_mp.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX executable csopesy_os_mp.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="C:\Users\asus\Desktop\CSOPESY OS MP\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable csopesy_os_mp.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\csopesy_os_mp.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

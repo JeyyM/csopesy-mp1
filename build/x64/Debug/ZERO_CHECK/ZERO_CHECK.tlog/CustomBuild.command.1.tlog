@@ -1,0 +1,10 @@
+^C:\USERS\VON\DOCUMENTS\CSOPESY-MP1\BUILD\CMAKEFILES\65221332B791550EED4F150F09144718\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Von/Documents/csopesy-mp1 -BC:/Users/Von/Documents/csopesy-mp1/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/Von/Documents/csopesy-mp1/build/CSOPESY_OS_MP.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

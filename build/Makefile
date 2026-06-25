@@ -176,6 +176,54 @@ src/ConsoleManager.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/ConsoleManager.cpp.s
 .PHONY : src/ConsoleManager.cpp.s
 
+src/InstructionEngine.obj: src/InstructionEngine.cpp.obj
+.PHONY : src/InstructionEngine.obj
+
+# target to build an object file
+src/InstructionEngine.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.obj
+.PHONY : src/InstructionEngine.cpp.obj
+
+src/InstructionEngine.i: src/InstructionEngine.cpp.i
+.PHONY : src/InstructionEngine.i
+
+# target to preprocess a source file
+src/InstructionEngine.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.i
+.PHONY : src/InstructionEngine.cpp.i
+
+src/InstructionEngine.s: src/InstructionEngine.cpp.s
+.PHONY : src/InstructionEngine.s
+
+# target to generate assembly for a file
+src/InstructionEngine.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.s
+.PHONY : src/InstructionEngine.cpp.s
+
+src/OutputManager.obj: src/OutputManager.cpp.obj
+.PHONY : src/OutputManager.obj
+
+# target to build an object file
+src/OutputManager.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.obj
+.PHONY : src/OutputManager.cpp.obj
+
+src/OutputManager.i: src/OutputManager.cpp.i
+.PHONY : src/OutputManager.i
+
+# target to preprocess a source file
+src/OutputManager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.i
+.PHONY : src/OutputManager.cpp.i
+
+src/OutputManager.s: src/OutputManager.cpp.s
+.PHONY : src/OutputManager.s
+
+# target to generate assembly for a file
+src/OutputManager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.s
+.PHONY : src/OutputManager.cpp.s
+
 src/ProcessModel.obj: src/ProcessModel.cpp.obj
 .PHONY : src/ProcessModel.obj
 
@@ -335,6 +383,12 @@ help:
 	@echo ... src/ConsoleManager.obj
 	@echo ... src/ConsoleManager.i
 	@echo ... src/ConsoleManager.s
+	@echo ... src/InstructionEngine.obj
+	@echo ... src/InstructionEngine.i
+	@echo ... src/InstructionEngine.s
+	@echo ... src/OutputManager.obj
+	@echo ... src/OutputManager.i
+	@echo ... src/OutputManager.s
 	@echo ... src/ProcessModel.obj
 	@echo ... src/ProcessModel.i
 	@echo ... src/ProcessModel.s

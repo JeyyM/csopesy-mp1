@@ -213,10 +213,7 @@ bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::strin
         errorMessage = "config.txt is missing max-ins.";
         return false;
     }
-    if (parsed.initialProcessCount < 1) {
-        errorMessage = "config.txt is missing initial-process-count.";
-        return false;
-    }
+    // initial-process-count is optional (0 = rely on batch-process-freq only).
 
     // --- Step 5: success — hand the parsed config back to main.cpp ---
     parsed.loaded = true;

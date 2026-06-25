@@ -1,0 +1,7 @@
+initialize
+scheduler-start
+screen -ls
+screen -r process01
+process-smi
+exit
+exit

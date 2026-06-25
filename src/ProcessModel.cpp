@@ -3,13 +3,26 @@
 #include <sstream>
 #include <utility>
 
-// multiple threads (the core thread running this process, and the main
-// thread showing its screen) can call these methods at the same time,
-// so we lock stateMutex_ whenever we touch the logs_ vector or
-// finishTimestamp_ to avoid two threads stepping on each other.
-
 Process::Process(int id, std::string name, std::string creationTimestamp)
-    : id_(id), name_(std::move(name)), creationTimestamp_(std::move(creationTimestamp)) {}
+    : id_(id), name_(std::move(name)), creationTimestamp_(std::move(creationTimestamp)) {
+    initializeStandardVariables();
+}
+
+void Process::initializeStandardVariables() {
+    setVariable("x", 0);
+    setVariable("y", 0);
+    setVariable("z", 0);
+}
+
+void Process::addStandardForProgram(int targetLineCount) {
+    static const std::string kStandardFor =
+        "FOR([ADD(x, x, 1), PRINT(\"Value from: \" +x), ADD(y, y, 1), "
+        "PRINT(\"Value from: \" +y), ADD(z, z, 1), PRINT(\"Value from: \" +z)], 100)";
+    addInstruction(InstructionType::For, kStandardFor);
+    while (totalLines() < targetLineCount) {
+        addInstruction(InstructionType::Declare, "DECLARE(pad, 0)");
+    }
+}
 
 void Process::addPrintInstruction(const std::string& message) {
     instructions_.push_back({InstructionType::Print, message});
@@ -19,28 +32,38 @@ void Process::addInstruction(InstructionType type, const std::string& text) {
     instructions_.push_back({type, text});
 }
 
+std::string Process::instructionTextAt(int line) const {
+    if (line < 0 || line >= static_cast<int>(instructions_.size())) {
+        return "";
+    }
+    const Instruction& instruction = instructions_[line];
+    switch (instruction.type) {
+        case InstructionType::Print:
+            if (instruction.arg.empty()) {
+                return "PRINT(\"" + defaultPrintMessage() + "\")";
+            }
+            return "PRINT(" + instruction.arg + ")";
+        case InstructionType::Declare:
+        case InstructionType::Add:
+        case InstructionType::Subtract:
+        case InstructionType::Sleep:
+        case InstructionType::For:
+            return instruction.arg;
+    }
+    return instruction.arg;
+}
+
 void Process::appendLog(const std::string& line) {
-    // 1. Lock the mutex so no other thread can read/write logs_ at the
-    //    same time.
-    // 2. Add the new log line.
-    // 3. The lock automatically releases when this function returns
-    //    (that's what std::lock_guard does for us).
     std::lock_guard<std::mutex> lock(stateMutex_);
     logs_.push_back(line);
 }
 
 std::vector<std::string> Process::snapshotLogs() {
-    // Returns a COPY of the log list while holding the lock, so the
-    // caller can safely loop over it afterward without risking another
-    // thread changing logs_ mid-loop.
     std::lock_guard<std::mutex> lock(stateMutex_);
     return logs_;
 }
 
 void Process::setFinishTimestamp(const std::string& timestamp) {
-    // Called once, the moment a process executes its very last
-    // instruction (see Scheduler::executeProcess). Recorded so
-    // "screen -ls" can show when each finished process completed.
     std::lock_guard<std::mutex> lock(stateMutex_);
     finishTimestamp_ = timestamp;
 }
@@ -50,6 +73,32 @@ std::string Process::finishTimestamp() {
     return finishTimestamp_;
 }
 
+uint16_t Process::getVariable(const std::string& name) const {
+    std::lock_guard<std::mutex> lock(stateMutex_);
+    const auto it = variables_.find(name);
+    if (it == variables_.end()) {
+        return 0;
+    }
+    return it->second;
+}
+
+void Process::setVariable(const std::string& name, uint16_t value) {
+    std::lock_guard<std::mutex> lock(stateMutex_);
+    variables_[name] = value;
+}
+
+void Process::setSleepUntilCycle(uint64_t cycle) {
+    sleepUntilCycle_.store(cycle);
+}
+
+uint64_t Process::sleepUntilCycle() const {
+    return sleepUntilCycle_.load();
+}
+
+bool Process::isSleeping() const {
+    return sleepUntilCycle_.load() > 0;
+}
+
 std::string Process::defaultPrintMessage() const {
     return "Hello world from " + name_ + "!";
 }
@@ -57,6 +106,7 @@ std::string Process::defaultPrintMessage() const {
 std::string Process::formatSmi() {
     const std::vector<std::string> logs = snapshotLogs();
     const ProcessStatus currentStatus = status_.load();
+    const int line = currentLine_.load();
 
     std::ostringstream output;
     output << "Process name: " << name_ << "\n";
@@ -71,7 +121,15 @@ std::string Process::formatSmi() {
         return output.str();
     }
 
-    output << "\nCurrent instruction line: " << currentLine_.load() << "\n";
+    output << "\nCurrent instruction line: " << line << "\n";
     output << "Lines of code: " << totalLines() << "\n";
+    output << "Variables: x=" << getVariable("x") << " y=" << getVariable("y")
+           << " z=" << getVariable("z") << "\n";
+    if (line >= 0 && line < totalLines()) {
+        output << "Instruction: " << instructionTextAt(line) << "\n";
+    }
+    if (isSleeping()) {
+        output << "Status: sleeping until CPU cycle " << sleepUntilCycle() << "\n";
+    }
     return output.str();
 }

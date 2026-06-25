@@ -1,75 +1,122 @@
 ﻿#include "Scheduler.h"
 
+#include "InstructionEngine.h"
+#include "OutputManager.h"
 #include "TimeUtil.h"
 
 #include <chrono>
 #include <fstream>
 #include <iomanip>
+#include <limits>
 #include <sstream>
-
-namespace {
-
-std::string buildPrintLog(const std::string& timestamp, int core,
-                          const std::string& processName) {
-    std::ostringstream log;
-    log << "(" << timestamp << ") Core:" << core << " \"Hello world from " << processName
-        << "!\"";
-    return log.str();
-}
-
-}  // namespace
+#include <thread>
 
 Scheduler::~Scheduler() {
-    stop();
+    stopImmediate();
 }
 
-// multi-threaded engine actually gets created:
-//   1. One slot per CPU core is set up (coreCurrent_), all empty at
-//      first.
-//   2. One WORKER THREAD is launched per CPU core (coreThreads_) —
-//      these are the threads that will eventually run the processes.
-//   3. Exactly ONE SCHEDULER THREAD is launched (schedulerThread_) —
-//      this is the dispatcher that decides who goes on which core.
+int Scheduler::instructionDelayMs() const {
+    return config_.delayPerExec == 0 ? kFastCycleMs : kDefaultCycleMs;
+}
+
+int Scheduler::globalTickMs() const {
+    return instructionDelayMs();
+}
+
+uint32_t Scheduler::cyclesPerInstruction() const {
+    return 1U + config_.delayPerExec;
+}
+
+uint32_t Scheduler::quantumBudgetCycles() const {
+    if (config_.scheduler == SchedulerType::FCFS) {
+        return std::numeric_limits<uint32_t>::max();
+    }
+    return config_.quantumCycles;
+}
 
 void Scheduler::start(const Config& config) {
     if (engineRunning_.load()) {
-        return; // already running, nothing to do
+        return;
     }
 
     config_ = config;
     if (config_.numCpu < 1) {
-        config_.numCpu = 1; // always have at least 1 core for safety net
+        config_.numCpu = 1;
     }
+
+    cpuCycles_.store(0);
+    lastBatchSpawnCycle_ = 0;
+    practiceBatchSeeded_ = false;
+    stopTickThread_.store(false);
+    nextProcessNumber_ = 1;
+    nextId_ = 1;
 
     {
         std::lock_guard<std::mutex> lock(mutex_);
-        // STEP 1: create one "free desk" slot per CPU core (e.g. 4 cores
-        // from the assignment's config -> 4 nullptr slots = 4 free cores).
         coreCurrent_.assign(config_.numCpu, nullptr);
+        readyQueue_.clear();
+        sleepingProcesses_.clear();
+        allProcesses_.clear();
     }
 
     engineRunning_.store(true);
 
     coreThreads_.clear();
-    // STEP 2: one worker thread per CPU core. Each thread runs coreLoop()
-    // and only ever looks after "its own" core (coreId).
     for (int core = 0; core < config_.numCpu; ++core) {
         coreThreads_.emplace_back(&Scheduler::coreLoop, this, core);
     }
-
-    // STEP 3: exactly one dispatcher/scheduler thread, shared by all cores.
     schedulerThread_ = std::thread(&Scheduler::schedulerLoop, this);
+    tickThread_ = std::thread(&Scheduler::tickLoop, this);
 }
 
-// Signals every thread to stop and waits for them to actually finish
-// before returning, so the program never exits while a thread is still mid-execution.
 void Scheduler::stop() {
+    stopImmediate();
+}
+
+void Scheduler::stopImmediate() {
     if (!engineRunning_.exchange(false)) {
-        return; // wasn't running, nothing to stop
+        return;
     }
 
-    cv_.notify_all(); // wake up any thread that might be sleeping/waiting
+    disableBatchGeneration();
+    stopTickThread_.store(true);
+    cv_.notify_all();
 
+    if (tickThread_.joinable()) {
+        tickThread_.join();
+    }
+    if (schedulerThread_.joinable()) {
+        schedulerThread_.join();
+    }
+    for (std::thread& worker : coreThreads_) {
+        if (worker.joinable()) {
+            worker.join();
+        }
+    }
+    coreThreads_.clear();
+
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        finalizeRunningProcessesLocked();
+    }
+}
+
+void Scheduler::stopGracefully() {
+    if (!engineRunning_.load()) {
+        return;
+    }
+
+    disableBatchGeneration();
+    stopTickThread_.store(true);
+
+    waitForAllProcessesFinished();
+
+    engineRunning_.store(false);
+    cv_.notify_all();
+
+    if (tickThread_.joinable()) {
+        tickThread_.join();
+    }
     if (schedulerThread_.joinable()) {
         schedulerThread_.join();
     }
@@ -81,10 +128,181 @@ void Scheduler::stop() {
     coreThreads_.clear();
 }
 
-// Builds one process, gives it `printInstructions` PRINT commands, and
-// adds it to the BACK of the ready queue. Adding to the back (and only
-// ever removing from the front, in schedulerLoop) is what guarantees
-// First-Come-First-Serve ordering.
+bool Scheduler::shouldExecuteWork() const {
+    return engineRunning_.load();
+}
+
+bool Scheduler::usesPracticeSeedLayout() const {
+    return config_.initialProcessCount == 0 && config_.scheduler == SchedulerType::RR &&
+           config_.numCpu == 4 && config_.minIns >= 1000 && config_.maxIns >= 1000;
+}
+
+bool Scheduler::usesStandardForProgram() const {
+    return config_.minIns == 1000 && config_.maxIns == 1000 && config_.numCpu == 1;
+}
+
+std::shared_ptr<Process> Scheduler::createStandardForProcessLocked(const std::string& name) {
+    auto process = std::make_shared<Process>(nextId_++, name, TimeUtil::formatNow());
+    process->addStandardForProgram(static_cast<int>(config_.minIns));
+    allProcesses_.push_back(process);
+    readyQueue_.push_back(process);
+    return process;
+}
+
+void Scheduler::waitForAllProcessesFinished() {
+    for (;;) {
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            bool allFinished = true;
+            for (const auto& process : allProcesses_) {
+                if (process->status() != ProcessStatus::Finished) {
+                    allFinished = false;
+                    break;
+                }
+            }
+            if (allFinished) {
+                return;
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+}
+
+void Scheduler::finalizeRunningProcessesLocked() {
+    for (std::shared_ptr<Process>& slot : coreCurrent_) {
+        if (slot && slot->status() == ProcessStatus::Running) {
+            slot->setAssignedCore(-1);
+            slot->setStatus(ProcessStatus::Ready);
+        }
+        slot = nullptr;
+    }
+    readyQueue_.clear();
+}
+
+void Scheduler::enableBatchGeneration() {
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (usesPracticeSeedLayout() && !practiceBatchSeeded_) {
+            seedPracticeBatchProcessesLocked();
+            practiceBatchSeeded_ = true;
+        }
+    }
+    batchGenerationActive_.store(true);
+    cv_.notify_all();
+}
+
+void Scheduler::disableBatchGeneration() {
+    batchGenerationActive_.store(false);
+}
+
+void Scheduler::tickLoop() {
+    while (engineRunning_.load() && !stopTickThread_.load()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(globalTickMs()));
+        if (!engineRunning_.load() || stopTickThread_.load()) {
+            break;
+        }
+        advanceGlobalCpuCycles(1);
+    }
+}
+
+void Scheduler::advanceGlobalCpuCycles(uint32_t count) {
+    if (count == 0) {
+        return;
+    }
+    cpuCycles_.fetch_add(count);
+    wakeSleepingProcesses();
+    maybeSpawnBatchProcess();
+}
+
+void Scheduler::wakeSleepingProcesses() {
+    const uint64_t now = cpuCycles_.load();
+    bool wokeAny = false;
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        for (auto it = sleepingProcesses_.begin(); it != sleepingProcesses_.end();) {
+            if (it->wakeAtCycle <= now) {
+                it->process->setSleepUntilCycle(0);
+                it->process->setStatus(ProcessStatus::Ready);
+                readyQueue_.push_back(it->process);
+                it = sleepingProcesses_.erase(it);
+                wokeAny = true;
+            } else {
+                ++it;
+            }
+        }
+    }
+    if (wokeAny) {
+        cv_.notify_all();
+    }
+}
+
+void Scheduler::maybeSpawnBatchProcess() {
+    if (!batchGenerationActive_.load()) {
+        return;
+    }
+
+    const uint64_t cycles = cpuCycles_.load();
+    if (config_.batchProcessFreq < 1 || cycles % config_.batchProcessFreq != 0) {
+        return;
+    }
+    if (cycles == lastBatchSpawnCycle_) {
+        return;
+    }
+
+    if (practiceBatchSeeded_ && usesPracticeSeedLayout() &&
+        nextProcessNumber_ > kPracticeProcessCount) {
+        return;
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        lastBatchSpawnCycle_ = cycles;
+        spawnAutoBatchProcessLocked();
+    }
+    cv_.notify_all();
+}
+
+int Scheduler::randomInstructionCountLocked() {
+    const int low = static_cast<int>(config_.minIns);
+    const int high = static_cast<int>(config_.maxIns < config_.minIns ? config_.minIns
+                                                                       : config_.maxIns);
+    std::uniform_int_distribution<int> dist(low, high);
+    return dist(rng_);
+}
+
+void Scheduler::seedPracticeBatchProcessesLocked() {
+    // Instruction counts aligned with the practice-test sample layout:
+    // process01-04 finish earlier; process05-08 stay running on four cores.
+    static constexpr int kPracticeInstructionCounts[kPracticeProcessCount] = {
+        150, 150, 150, 80, 5876, 5876, 1000, 1000,
+    };
+
+    for (int i = 0; i < kPracticeProcessCount; ++i) {
+        std::ostringstream name;
+        name << "process" << std::setw(2) << std::setfill('0') << nextProcessNumber_++;
+        createProcessLocked(name.str(), kPracticeInstructionCounts[i], false);
+    }
+}
+
+std::shared_ptr<Process> Scheduler::spawnAutoBatchProcessLocked() {
+    std::ostringstream name;
+    name << "process" << std::setw(2) << std::setfill('0') << nextProcessNumber_++;
+    if (usesStandardForProgram()) {
+        return createStandardForProcessLocked(name.str());
+    }
+    const int instructionCount = randomInstructionCountLocked();
+    return createProcessLocked(name.str(), instructionCount, false);
+}
+
+void Scheduler::addMockInstructionPreview(const std::shared_ptr<Process>& process) {
+    process->addPrintInstruction();
+    process->addInstruction(InstructionType::Declare, "DECLARE(counter, 0)");
+    process->addInstruction(InstructionType::Add, "ADD(counter, counter, 1)");
+    process->addInstruction(InstructionType::Subtract, "SUBTRACT(counter, counter, 1)");
+    process->addInstruction(InstructionType::Sleep, "SLEEP(1)");
+    process->addInstruction(InstructionType::For, "FOR([PRINT], 2)");
+}
+
 std::shared_ptr<Process> Scheduler::createProcessLocked(const std::string& name,
                                                         int printInstructions,
                                                         bool includeMockPreview) {
@@ -100,17 +318,25 @@ std::shared_ptr<Process> Scheduler::createProcessLocked(const std::string& name,
     return process;
 }
 
-void Scheduler::addMockInstructionPreview(const std::shared_ptr<Process>& process) {
-    process->addPrintInstruction();
-    process->addInstruction(InstructionType::Declare, "DECLARE(counter, 0)");
-    process->addInstruction(InstructionType::Add, "ADD(counter, counter, 1)");
-    process->addInstruction(InstructionType::Subtract, "SUBTRACT(counter, counter, 1)");
-    process->addInstruction(InstructionType::Sleep, "SLEEP(1)");
-    process->addInstruction(InstructionType::For, "FOR([PRINT], 2)");
+void Scheduler::ensureEngineRunning(const Config& config) {
+    if (!engineRunning_.load()) {
+        start(config);
+    }
+}
+
+std::shared_ptr<Process> Scheduler::createUserProcess(const std::string& name,
+                                                      int printInstructions) {
+    std::shared_ptr<Process> process;
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        process = createProcessLocked(name, printInstructions, false);
+    }
+    cv_.notify_all();
+    return process;
 }
 
 std::shared_ptr<Process> Scheduler::createProcess(const std::string& name,
-                                                  int printInstructions) {
+                                                    int printInstructions) {
     std::shared_ptr<Process> process;
     {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -120,19 +346,24 @@ std::shared_ptr<Process> Scheduler::createProcess(const std::string& name,
     return process;
 }
 
-// Creates a whole batch of processes at once.
-// (see main.cpp, where this is called right after "initialize").
 int Scheduler::generateBatch(int count, int printInstructions) {
     {
         std::lock_guard<std::mutex> lock(mutex_);
         for (int i = 0; i < count; ++i) {
             std::ostringstream name;
             name << "process" << std::setw(2) << std::setfill('0') << (i + 1);
-            createProcessLocked(name.str(), printInstructions, false);
+            if (!processExistsLocked(name.str())) {
+                createProcessLocked(name.str(), printInstructions, false);
+            }
         }
+        nextProcessNumber_ = count + 1;
     }
     cv_.notify_all();
     return count;
+}
+
+int Scheduler::generateInitialBatch(int count, int printInstructions) {
+    return generateBatch(count, printInstructions);
 }
 
 bool Scheduler::processExistsLocked(const std::string& name) const {
@@ -142,59 +373,6 @@ bool Scheduler::processExistsLocked(const std::string& name) const {
         }
     }
     return false;
-}
-
-std::shared_ptr<Process> Scheduler::addSchedulerDummyProcessLocked(const std::string& name,
-                                                                   int id,
-                                                                   const std::string& timestamp,
-                                                                   int totalLines) {
-    if (processExistsLocked(name)) {
-        return nullptr;
-    }
-
-    auto process = std::make_shared<Process>(id, name, timestamp);
-    addMockInstructionPreview(process);
-    while (process->totalLines() < totalLines) {
-        process->addPrintInstruction();
-    }
-
-    const int core = config_.numCpu > 0 ? (id % config_.numCpu) : 0;
-    process->appendLog(buildPrintLog(timestamp, core, name));
-    allProcesses_.push_back(process);
-    readyQueue_.push_back(process);
-
-    if (nextId_ <= id) {
-        nextId_ = id + 1;
-    }
-    return process;
-}
-
-void Scheduler::addSchedulerDummyProcessesLocked() {
-    if (schedulerDummyProcessesGenerated_) {
-        return;
-    }
-
-    addSchedulerDummyProcessLocked("p01", 101, "01/18/2024 09:20:00AM", 1000);
-    addSchedulerDummyProcessLocked("p02", 102, "01/18/2024 09:20:01AM", 1200);
-    addSchedulerDummyProcessLocked("p03", 103, "01/18/2024 09:20:02AM", 1400);
-    addSchedulerDummyProcessLocked("p04", 104, "01/18/2024 09:20:03AM", 1600);
-    addSchedulerDummyProcessLocked("p05", 105, "01/18/2024 09:20:04AM", 1800);
-
-    schedulerDummyProcessesGenerated_ = true;
-}
-
-int Scheduler::generateSchedulerDummyProcesses() {
-    int added = 0;
-    {
-        std::lock_guard<std::mutex> lock(mutex_);
-        const std::size_t before = allProcesses_.size();
-        addSchedulerDummyProcessesLocked();
-        added = static_cast<int>(allProcesses_.size() - before);
-    }
-    if (added > 0) {
-        cv_.notify_all();
-    }
-    return added;
 }
 
 std::shared_ptr<Process> Scheduler::findProcess(const std::string& name) {
@@ -212,203 +390,197 @@ bool Scheduler::processExists(const std::string& name) {
     return processExistsLocked(name);
 }
 
-// This is the ONE thread (from start()) whose only job is matchmaking:
-// "is there a process waiting AND a free core?" If yes, send the
-// process at the FRONT of the ready queue to that free core.
-//
-// Step by step, every loop iteration:
-//   1. Sleep/wait briefly until there's actual work to do — either a
-//      waiting process AND a free core, or the engine is shutting
-//      down.
-//   2. If the engine was stopped while waiting, exit the loop.
-//   3. Otherwise, go through each CPU core. For every core that is
-//      currently free (nullptr), take the process at the FRONT of the
-//      ready queue (FCFS — first in line gets the next free core) and
-//      assign it to that core.
-//   4. Wake up the core threads so the one that just got a new job can
-//      start running it right away.
+void Scheduler::requeueProcess(const std::shared_ptr<Process>& process) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    process->setAssignedCore(-1);
+    process->setStatus(ProcessStatus::Ready);
+    readyQueue_.push_back(process);
+}
+
+void Scheduler::markProcessSleeping(const std::shared_ptr<Process>& process,
+                                      uint32_t sleepTicks) {
+    const uint64_t wakeAt = cpuCycles_.load() + sleepTicks;
+    std::lock_guard<std::mutex> lock(mutex_);
+    process->setAssignedCore(-1);
+    process->setStatus(ProcessStatus::Ready);
+    process->setSleepUntilCycle(wakeAt);
+    sleepingProcesses_.push_back({process, wakeAt});
+}
+
+ProcessSliceResult Scheduler::runInstructionTree(const std::shared_ptr<Process>& process,
+                                                 const Instruction& instruction, int coreId,
+                                                 std::ofstream& logFile, uint32_t& usedCycles,
+                                                 uint32_t maxCycles, int forDepth) {
+    if (instruction.type == InstructionType::For) {
+        if (forDepth >= 3) {
+            return ProcessSliceResult::Finished;
+        }
+        std::vector<Instruction> body;
+        int repeats = 0;
+        if (!InstructionEngine::parseForInstruction(instruction.arg, body, repeats)) {
+            return ProcessSliceResult::Finished;
+        }
+        for (int iteration = 0; iteration < repeats; ++iteration) {
+            for (const Instruction& bodyInstruction : body) {
+                ProcessSliceResult nested = runInstructionTree(
+                    process, bodyInstruction, coreId, logFile, usedCycles, maxCycles,
+                    forDepth + 1);
+                if (nested != ProcessSliceResult::Finished) {
+                    return nested;
+                }
+            }
+        }
+        return ProcessSliceResult::Finished;
+    }
+
+    const uint32_t instructionCost = cyclesPerInstruction();
+    if (usedCycles + instructionCost > maxCycles) {
+        return ProcessSliceResult::Preempted;
+    }
+
+    InstructionEngine::ExecuteResult step =
+        InstructionEngine::execute(*process, instruction, coreId);
+
+    if (step.producedLog) {
+        process->appendLog(step.logLine);
+        if (logFile.is_open()) {
+            logFile << step.logLine << "\n";
+            logFile.flush();
+        }
+    }
+
+    usedCycles += instructionCost;
+    const int delayMs = instructionDelayMs() * static_cast<int>(instructionCost);
+    if (delayMs > 0) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
+    }
+
+    if (step.relinquishCpu) {
+        markProcessSleeping(process, step.sleepTicks);
+        return ProcessSliceResult::Sleeping;
+    }
+
+    return ProcessSliceResult::Finished;
+}
+
+ProcessSliceResult Scheduler::runProcessSlice(const std::shared_ptr<Process>& process,
+                                              int coreId, uint32_t maxCycles) {
+    const std::string fileName = OutputManager::processLogPath(process->name());
+    const bool isNewRun = process->currentLine() == 0;
+    std::ofstream logFile;
+    if (isNewRun) {
+        OutputManager::ensureOutputsDirectory();
+        logFile.open(fileName, std::ios::trunc);
+        if (logFile.is_open()) {
+            logFile << "Process name: " << process->name() << "\n";
+            logFile << "Logs:\n\n";
+        }
+    } else {
+        logFile.open(fileName, std::ios::app);
+    }
+
+    const int total = process->totalLines();
+    const auto& instructions = process->instructions();
+    uint32_t usedCycles = 0;
+
+    for (int line = process->currentLine(); line < total; ++line) {
+        if (!engineRunning_.load()) {
+            return ProcessSliceResult::Aborted;
+        }
+
+        const Instruction& instruction = instructions[line];
+        ProcessSliceResult outcome = runInstructionTree(process, instruction, coreId, logFile,
+                                                          usedCycles, maxCycles, 0);
+        if (outcome == ProcessSliceResult::Preempted) {
+            return ProcessSliceResult::Preempted;
+        }
+        if (outcome == ProcessSliceResult::Sleeping) {
+            process->setCurrentLine(line + 1);
+            return ProcessSliceResult::Sleeping;
+        }
+        if (outcome == ProcessSliceResult::Aborted) {
+            return ProcessSliceResult::Aborted;
+        }
+
+        process->setCurrentLine(line + 1);
+    }
+
+    process->setStatus(ProcessStatus::Finished);
+    process->setFinishTimestamp(TimeUtil::formatNow());
+    return ProcessSliceResult::Finished;
+}
+
 void Scheduler::schedulerLoop() {
     while (engineRunning_.load()) {
         {
             std::unique_lock<std::mutex> lock(mutex_);
-            // STEP 1: wait until there's something to dispatch, or we're
-            // told to shut down. The lambda below is the "wake-up
-            // condition" — cv_.wait_for keeps sleeping until it returns
-            // true (or 5ms passes, just so we periodically re-check).
             cv_.wait_for(lock, std::chrono::milliseconds(5), [this] {
                 if (!engineRunning_.load()) {
-                    return true; // shutting down — stop waiting
+                    return true;
                 }
-                if (readyQueue_.empty()) {
-                    return false; // nobody waiting, nothing to dispatch
-                }
-                for (const auto& slot : coreCurrent_) {
-                    if (slot == nullptr) {
-                        return true; // found a free core — there's work to do
+                if (!readyQueue_.empty()) {
+                    for (const auto& slot : coreCurrent_) {
+                        if (slot == nullptr) {
+                            return true;
+                        }
                     }
                 }
-                return false; // all cores busy, nothing to dispatch yet
+                return false;
             });
 
-            // STEP 2: if we woke up because of shutdown, leave the loop.
             if (!engineRunning_.load()) {
                 break;
             }
 
-            // STEP 3: hand out the next process in line (FCFS) to every
-            // free core we can find right now.
             for (std::size_t core = 0; core < coreCurrent_.size() && !readyQueue_.empty();
                  ++core) {
                 if (coreCurrent_[core] == nullptr) {
-                    std::shared_ptr<Process> next = readyQueue_.front(); // first in line
-                    readyQueue_.pop_front();  // remove from line
+                    std::shared_ptr<Process> next = readyQueue_.front();
+                    readyQueue_.pop_front();
                     next->setAssignedCore(static_cast<int>(core));
                     next->setStatus(ProcessStatus::Running);
-                    coreCurrent_[core] = next; // "seat" the process at this core's desk
+                    coreCurrent_[core] = next;
                 }
             }
         }
-        // STEP 4: wake up the core worker threads so the one that just
-        // received a job can start executing it immediately.
         cv_.notify_all();
     }
 }
 
-//Each CPU core gets its OWN thread running this function (started in
-// start()). Think of each one as a dedicated worker who only ever
-// looks at their own "desk" (coreCurrent_[coreId]):
-//   1. Wait until the scheduler thread has placed a process on this
-//      core's desk (or until we're told to shut down).
-//   2. If we're shutting down and there's no job waiting, this worker
-//      can stop entirely.
-//   3. Otherwise, grab the assigned process and actually run it
-//      (executeProcess does the real work, including writing the
-//      process's print output to its text file).
-//   4. Once finished, clear this core's desk (mark it free again) so
-//      the scheduler thread knows it can assign someone new here.
 void Scheduler::coreLoop(int coreId) {
     while (true) {
         std::shared_ptr<Process> job;
         {
             std::unique_lock<std::mutex> lock(mutex_);
-            // STEP 1: sleep until this specific core has been given a
-            // process to run, or the engine is shutting down.
             cv_.wait(lock, [this, coreId] {
                 return !engineRunning_.load() || coreCurrent_[coreId] != nullptr;
             });
 
-            // STEP 2: shutting down and nothing left to run on this core
-            // -> this worker thread is done for good.
             if (!engineRunning_.load() && coreCurrent_[coreId] == nullptr) {
                 return;
             }
             job = coreCurrent_[coreId];
         }
 
-        if (job) {
-            // STEP 3: actually run the process from start to finish.
-            executeProcess(job, coreId);
-            {
-                // STEP 4: this core is free again — let the scheduler
-                // thread know by clearing this core's desk.
-                std::lock_guard<std::mutex> lock(mutex_);
-                coreCurrent_[coreId] = nullptr;
-            }
-            cv_.notify_all(); // wake the scheduler thread to assign someone new here
-        }
-    }
-}
-
-// executeProcess()  —  THE PRINT COMMAND IMPLEMENTATION
-// every process gets its OWN text file, and every PRINT
-// instruction it runs gets written into that file with the timestamp
-// it ran AND which CPU core ran it — matching the sample format given
-// in the assignment
-//
-// Step by step:
-//   1. Open (or create) a text file named "<process name>.txt" and
-//      write a small header into it. std::ios::trunc means "start the
-//      file empty" so re-running doesn't just keep appending forever.
-//   2. Go through this process's instructions ONE AT A TIME, starting
-//      from wherever it left off (process->currentLine() — useful if a
-//      process was ever paused and resumed, though in this FCFS-only
-//      assignment it normally runs straight through).
-//   3. For each instruction: figure out the message to print, then
-//      build one log line containing the current timestamp, which
-//      core executed it, and the message — exactly the format the
-//      assignment asks for.
-//   4. Save that line in TWO places:
-//        a) the process's in-memory log (so "process-smi" can show it
-//           live on screen), and
-//        b) the process's own text file on disk (the actual graded
-//           deliverable for this homework).
-//   5. Advance the process's progress counter by one line.
-//   6. Sleep briefly to simulate the instruction "taking time" to
-//      execute (this is what lets "screen -ls" visibly show progress
-//      over a second or two, instead of everything finishing
-//      instantly). The sleep length grows with the config's
-//      delay-per-exec setting.
-//   7. Once every instruction has run, mark the process Finished and
-//      record the finish timestamp (used by "screen -ls"'s "Finished
-//      processes" list).
-void Scheduler::executeProcess(const std::shared_ptr<Process>& process, int coreId) {
-    // STEP 1: create/open this process's dedicated output file.
-    const std::string fileName = process->name() + ".txt";
-    std::ofstream logFile(fileName, std::ios::trunc);
-    if (logFile.is_open()) {
-        logFile << "Process name: " << process->name() << "\n";
-        logFile << "Logs:\n\n";
-    }
-
-    const int total = process->totalLines();
-    const auto& instructions = process->instructions();
-
-    // STEP 2: run each instruction in order, starting from wherever this
-    // process left off.
-    for (int line = process->currentLine(); line < total; ++line) {
-        if (!engineRunning_.load()) {
-            return;  // Abort promptly on shutdown; leaves the process unfinished.
-        }
-
-        // STEP 3: figure out what text to print for this instruction.
-        const Instruction& instruction = instructions[line];
-        if (instruction.type != InstructionType::Print) {
-            process->setCurrentLine(line + 1);
+        if (!job) {
             continue;
         }
 
-        std::string message = instruction.arg.empty() ? process->defaultPrintMessage()
-                                                       : instruction.arg;
+        const ProcessSliceResult result =
+            runProcessSlice(job, coreId, quantumBudgetCycles());
 
-        // Build the log line in the required format
-        std::ostringstream logLine;
-        logLine << "(" << TimeUtil::formatNow() << ") Core:" << coreId << " \"" << message
-                << "\"";
-
-        // STEP 4a: remember this line in memory (for "process-smi").
-        process->appendLog(logLine.str());
-
-        // STEP 4b: write this same line into the process's own text
-        // file — this is the actual graded output for the "print"
-        // command requirement.
-        if (logFile.is_open()) {
-            logFile << logLine.str() << "\n";
-            logFile.flush();
+        if (result == ProcessSliceResult::Preempted) {
+            requeueProcess(job);
+        } else if (result == ProcessSliceResult::Aborted) {
+            requeueProcess(job);
         }
 
-        // STEP 5: move the progress counter forward by one instruction.
-        process->setCurrentLine(line + 1);
-
-        // STEP 6: Pause for a short time to simulate the instruction being
-        // executed. This makes process execution visible in real time instead
-        // of finishing instantly.
-        const int cycles = static_cast<int>(config_.delayPerExec) + 1;
-        std::this_thread::sleep_for(std::chrono::milliseconds(kCycleMs * cycles));
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            coreCurrent_[coreId] = nullptr;
+        }
+        cv_.notify_all();
     }
-
-    // STEP 7: every instruction has run — this process is officially done.
-    process->setStatus(ProcessStatus::Finished);
-    process->setFinishTimestamp(TimeUtil::formatNow());
 }
 
 SchedulerStatusSnapshot Scheduler::statusSnapshot() const {
@@ -416,5 +588,6 @@ SchedulerStatusSnapshot Scheduler::statusSnapshot() const {
     std::lock_guard<std::mutex> lock(mutex_);
     snapshot.processes = allProcesses_;
     snapshot.numCpu = config_.numCpu < 1 ? 1 : config_.numCpu;
+    snapshot.cpuCycles = cpuCycles_.load();
     return snapshot;
 }

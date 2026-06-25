@@ -3,6 +3,7 @@
 #include "ProcessModel.h"
 #include "Scheduler.h"
 
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 
@@ -15,10 +16,18 @@ std::string padRight(const std::string& text, std::size_t width) {
     return text + std::string(width - text.size(), ' ');
 }
 
+bool processNameLess(const std::shared_ptr<Process>& left,
+                     const std::shared_ptr<Process>& right) {
+    return left->name() < right->name();
+}
+
 }  // namespace
 
 std::string ReportManager::generateSystemReport(Scheduler& scheduler) {
     const SchedulerStatusSnapshot snapshot = scheduler.statusSnapshot();
+
+    std::vector<std::shared_ptr<Process>> processes = snapshot.processes;
+    std::sort(processes.begin(), processes.end(), processNameLess);
 
     int coresUsed = 0;
     for (const auto& process : snapshot.processes) {
@@ -41,7 +50,7 @@ std::string ReportManager::generateSystemReport(Scheduler& scheduler) {
     report << "\n";
     report << "---------------------------------------------\n";
     report << "Running processes:\n";
-    for (const auto& process : snapshot.processes) {
+    for (const auto& process : processes) {
         if (process->status() == ProcessStatus::Running) {
             report << padRight(process->name(), 12) << " (" << process->creationTimestamp()
                    << ")    Core: " << process->assignedCore() << "    "
@@ -50,7 +59,7 @@ std::string ReportManager::generateSystemReport(Scheduler& scheduler) {
     }
 
     report << "\nFinished processes:\n";
-    for (const auto& process : snapshot.processes) {
+    for (const auto& process : processes) {
         if (process->status() == ProcessStatus::Finished) {
             report << padRight(process->name(), 12) << " (" << process->finishTimestamp()
                    << ")    Finished    " << process->totalLines() << " / "

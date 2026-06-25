@@ -105,6 +105,7 @@ CMakeFiles/csopesy_os_mp.dir/src/main.cpp.obj: \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/uses_allocator_args.h \
  C:/winlibs/mingw64/include/c++/15.2.0/tuple \
  C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\ConsoleManager.h \
+ C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\OutputManager.h \
  C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\ReportManager.h \
  C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\ScreenManager.h \
  C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\Scheduler.h \
@@ -139,6 +140,14 @@ CMakeFiles/csopesy_os_mp.dir/src/main.cpp.obj: \
  C:/winlibs/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/error_constants.h \
  C:/winlibs/mingw64/include/c++/15.2.0/ext/atomicity.h \
  C:/winlibs/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/atomic_word.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/unordered_map \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/unordered_map.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/hashtable.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/hashtable_policy.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/ext/aligned_buffer.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/enable_special_members.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/node_handle.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/erase_if.h \
  C:/winlibs/mingw64/include/c++/15.2.0/vector \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/stl_uninitialized.h \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/stl_vector.h \
@@ -150,7 +159,6 @@ CMakeFiles/csopesy_os_mp.dir/src/main.cpp.obj: \
  C:/winlibs/mingw64/include/c++/15.2.0/typeinfo \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/allocated_ptr.h \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/unique_ptr.h \
- C:/winlibs/mingw64/include/c++/15.2.0/ext/aligned_buffer.h \
  C:/winlibs/mingw64/include/c++/15.2.0/ext/concurrence.h \
  C:/winlibs/mingw64/include/c++/15.2.0/exception \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/exception_ptr.h \
@@ -167,6 +175,29 @@ CMakeFiles/csopesy_os_mp.dir/src/main.cpp.obj: \
  C:/winlibs/mingw64/include/c++/15.2.0/backward/auto_ptr.h \
  C:/winlibs/mingw64/include/c++/15.2.0/pstl/glue_memory_defs.h \
  C:/winlibs/mingw64/include/c++/15.2.0/pstl/execution_defs.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/random \
+ C:/winlibs/mingw64/include/c++/15.2.0/cmath \
+ C:/winlibs/mingw64/x86_64-w64-mingw32/include/math.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/specfun.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/tr1/gamma.tcc \
+ C:/winlibs/mingw64/include/c++/15.2.0/tr1/special_function_util.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/tr1/bessel_function.tcc \
+ C:/winlibs/mingw64/include/c++/15.2.0/tr1/beta_function.tcc \
+ C:/winlibs/mingw64/include/c++/15.2.0/tr1/ell_integral.tcc \
+ C:/winlibs/mingw64/include/c++/15.2.0/tr1/exp_integral.tcc \
+ C:/winlibs/mingw64/include/c++/15.2.0/tr1/hypergeometric.tcc \
+ C:/winlibs/mingw64/include/c++/15.2.0/tr1/legendre_function.tcc \
+ C:/winlibs/mingw64/include/c++/15.2.0/tr1/modified_bessel_func.tcc \
+ C:/winlibs/mingw64/include/c++/15.2.0/tr1/poly_hermite.tcc \
+ C:/winlibs/mingw64/include/c++/15.2.0/tr1/poly_laguerre.tcc \
+ C:/winlibs/mingw64/include/c++/15.2.0/tr1/riemann_zeta.tcc \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/random.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/uniform_int_dist.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/opt_random.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/random.tcc \
+ C:/winlibs/mingw64/include/c++/15.2.0/numeric \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/stl_numeric.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/pstl/glue_numeric_defs.h \
  C:/winlibs/mingw64/include/c++/15.2.0/thread \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/std_thread.h \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/this_thread_sleep.h \
@@ -192,27 +223,4 @@ CMakeFiles/csopesy_os_mp.dir/src/main.cpp.obj: \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/basic_ios.tcc \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/ostream.tcc \
  C:/winlibs/mingw64/include/c++/15.2.0/istream \
- C:/winlibs/mingw64/include/c++/15.2.0/bits/istream.tcc \
- C:/winlibs/mingw64/include/c++/15.2.0/random \
- C:/winlibs/mingw64/include/c++/15.2.0/cmath \
- C:/winlibs/mingw64/x86_64-w64-mingw32/include/math.h \
- C:/winlibs/mingw64/include/c++/15.2.0/bits/specfun.h \
- C:/winlibs/mingw64/include/c++/15.2.0/tr1/gamma.tcc \
- C:/winlibs/mingw64/include/c++/15.2.0/tr1/special_function_util.h \
- C:/winlibs/mingw64/include/c++/15.2.0/tr1/bessel_function.tcc \
- C:/winlibs/mingw64/include/c++/15.2.0/tr1/beta_function.tcc \
- C:/winlibs/mingw64/include/c++/15.2.0/tr1/ell_integral.tcc \
- C:/winlibs/mingw64/include/c++/15.2.0/tr1/exp_integral.tcc \
- C:/winlibs/mingw64/include/c++/15.2.0/tr1/hypergeometric.tcc \
- C:/winlibs/mingw64/include/c++/15.2.0/tr1/legendre_function.tcc \
- C:/winlibs/mingw64/include/c++/15.2.0/tr1/modified_bessel_func.tcc \
- C:/winlibs/mingw64/include/c++/15.2.0/tr1/poly_hermite.tcc \
- C:/winlibs/mingw64/include/c++/15.2.0/tr1/poly_laguerre.tcc \
- C:/winlibs/mingw64/include/c++/15.2.0/tr1/riemann_zeta.tcc \
- C:/winlibs/mingw64/include/c++/15.2.0/bits/random.h \
- C:/winlibs/mingw64/include/c++/15.2.0/bits/uniform_int_dist.h \
- C:/winlibs/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/opt_random.h \
- C:/winlibs/mingw64/include/c++/15.2.0/bits/random.tcc \
- C:/winlibs/mingw64/include/c++/15.2.0/numeric \
- C:/winlibs/mingw64/include/c++/15.2.0/bits/stl_numeric.h \
- C:/winlibs/mingw64/include/c++/15.2.0/pstl/glue_numeric_defs.h
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/istream.tcc
