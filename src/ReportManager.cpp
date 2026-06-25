@@ -3,7 +3,6 @@
 #include "ProcessModel.h"
 #include "Scheduler.h"
 
-#include <algorithm>
 #include <fstream>
 #include <sstream>
 
@@ -16,18 +15,12 @@ std::string padRight(const std::string& text, std::size_t width) {
     return text + std::string(width - text.size(), ' ');
 }
 
-bool processNameLess(const std::shared_ptr<Process>& left,
-                     const std::shared_ptr<Process>& right) {
-    return left->name() < right->name();
-}
-
 }  // namespace
 
 std::string ReportManager::generateSystemReport(Scheduler& scheduler) {
     const SchedulerStatusSnapshot snapshot = scheduler.statusSnapshot();
 
-    std::vector<std::shared_ptr<Process>> processes = snapshot.processes;
-    std::sort(processes.begin(), processes.end(), processNameLess);
+    const std::vector<std::shared_ptr<Process>>& processes = snapshot.processes;
 
     int coresUsed = 0;
     for (const auto& process : snapshot.processes) {

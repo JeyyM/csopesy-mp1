@@ -4,7 +4,6 @@
 #include "OutputManager.h"
 #include "TimeUtil.h"
 
-#include <chrono>
 #include <fstream>
 #include <iomanip>
 #include <limits>
@@ -20,7 +19,7 @@ int Scheduler::instructionDelayMs() const {
 }
 
 int Scheduler::globalTickMs() const {
-    return instructionDelayMs();
+    return config_.delayPerExec == 0 ? kFastCycleMs : instructionDelayMs();
 }
 
 uint32_t Scheduler::cyclesPerInstruction() const {
@@ -35,6 +34,10 @@ uint32_t Scheduler::quantumBudgetCycles() const {
 }
 
 void Scheduler::start(const Config& config) {
+    if (gracefulStopThread_.joinable()) {
+        gracefulStopThread_.join();
+    }
+
     if (engineRunning_.load()) {
         return;
     }
@@ -46,7 +49,6 @@ void Scheduler::start(const Config& config) {
 
     cpuCycles_.store(0);
     lastBatchSpawnCycle_ = 0;
-    practiceBatchSeeded_ = false;
     stopTickThread_.store(false);
     nextProcessNumber_ = 1;
     nextId_ = 1;
@@ -73,15 +75,7 @@ void Scheduler::stop() {
     stopImmediate();
 }
 
-void Scheduler::stopImmediate() {
-    if (!engineRunning_.exchange(false)) {
-        return;
-    }
-
-    disableBatchGeneration();
-    stopTickThread_.store(true);
-    cv_.notify_all();
-
+void Scheduler::joinWorkerThreads() {
     if (tickThread_.joinable()) {
         tickThread_.join();
     }
@@ -94,8 +88,23 @@ void Scheduler::stopImmediate() {
         }
     }
     coreThreads_.clear();
+}
 
-    {
+void Scheduler::stopImmediate() {
+    disableBatchGeneration();
+    stopTickThread_.store(true);
+    gracefulStopRequested_.store(false);
+
+    const bool wasRunning = engineRunning_.exchange(false);
+    cv_.notify_all();
+
+    if (gracefulStopThread_.joinable()) {
+        gracefulStopThread_.join();
+    }
+
+    joinWorkerThreads();
+
+    if (wasRunning) {
         std::lock_guard<std::mutex> lock(mutex_);
         finalizeRunningProcessesLocked();
     }
@@ -105,52 +114,44 @@ void Scheduler::stopGracefully() {
     if (!engineRunning_.load()) {
         return;
     }
+    if (gracefulStopRequested_.exchange(true)) {
+        return;
+    }
 
     disableBatchGeneration();
     stopTickThread_.store(true);
 
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        wakeAllSleepingProcessesLocked();
+    }
+    cv_.notify_all();
+
+    if (gracefulStopThread_.joinable()) {
+        gracefulStopThread_.join();
+    }
+    gracefulStopThread_ = std::thread(&Scheduler::finishGracefulStop, this);
+}
+
+void Scheduler::finishGracefulStop() {
     waitForAllProcessesFinished();
 
     engineRunning_.store(false);
     cv_.notify_all();
-
-    if (tickThread_.joinable()) {
-        tickThread_.join();
-    }
-    if (schedulerThread_.joinable()) {
-        schedulerThread_.join();
-    }
-    for (std::thread& worker : coreThreads_) {
-        if (worker.joinable()) {
-            worker.join();
-        }
-    }
-    coreThreads_.clear();
+    joinWorkerThreads();
+    gracefulStopRequested_.store(false);
 }
 
 bool Scheduler::shouldExecuteWork() const {
     return engineRunning_.load();
 }
 
-bool Scheduler::usesPracticeSeedLayout() const {
-    return config_.initialProcessCount == 0 && config_.scheduler == SchedulerType::RR &&
-           config_.numCpu == 4 && config_.minIns >= 1000 && config_.maxIns >= 1000;
-}
-
-bool Scheduler::usesStandardForProgram() const {
-    return config_.minIns == 1000 && config_.maxIns == 1000 && config_.numCpu == 1;
-}
-
-std::shared_ptr<Process> Scheduler::createStandardForProcessLocked(const std::string& name) {
-    auto process = std::make_shared<Process>(nextId_++, name, TimeUtil::formatNow());
-    process->addStandardForProgram(static_cast<int>(config_.minIns));
-    allProcesses_.push_back(process);
-    readyQueue_.push_back(process);
-    return process;
-}
-
 void Scheduler::waitForAllProcessesFinished() {
     for (;;) {
+        if (!engineRunning_.load()) {
+            return;
+        }
+
         {
             std::lock_guard<std::mutex> lock(mutex_);
             bool allFinished = true;
@@ -168,6 +169,15 @@ void Scheduler::waitForAllProcessesFinished() {
     }
 }
 
+void Scheduler::wakeAllSleepingProcessesLocked() {
+    for (const auto& entry : sleepingProcesses_) {
+        entry.process->setSleepUntilCycle(0);
+        entry.process->setStatus(ProcessStatus::Ready);
+        readyQueue_.push_back(entry.process);
+    }
+    sleepingProcesses_.clear();
+}
+
 void Scheduler::finalizeRunningProcessesLocked() {
     for (std::shared_ptr<Process>& slot : coreCurrent_) {
         if (slot && slot->status() == ProcessStatus::Running) {
@@ -180,13 +190,6 @@ void Scheduler::finalizeRunningProcessesLocked() {
 }
 
 void Scheduler::enableBatchGeneration() {
-    {
-        std::lock_guard<std::mutex> lock(mutex_);
-        if (usesPracticeSeedLayout() && !practiceBatchSeeded_) {
-            seedPracticeBatchProcessesLocked();
-            practiceBatchSeeded_ = true;
-        }
-    }
     batchGenerationActive_.store(true);
     cv_.notify_all();
 }
@@ -249,11 +252,6 @@ void Scheduler::maybeSpawnBatchProcess() {
         return;
     }
 
-    if (practiceBatchSeeded_ && usesPracticeSeedLayout() &&
-        nextProcessNumber_ > kPracticeProcessCount) {
-        return;
-    }
-
     {
         std::lock_guard<std::mutex> lock(mutex_);
         lastBatchSpawnCycle_ = cycles;
@@ -262,57 +260,26 @@ void Scheduler::maybeSpawnBatchProcess() {
     cv_.notify_all();
 }
 
-int Scheduler::randomInstructionCountLocked() {
-    const int low = static_cast<int>(config_.minIns);
-    const int high = static_cast<int>(config_.maxIns < config_.minIns ? config_.minIns
-                                                                       : config_.maxIns);
-    std::uniform_int_distribution<int> dist(low, high);
-    return dist(rng_);
-}
-
-void Scheduler::seedPracticeBatchProcessesLocked() {
-    // Instruction counts aligned with the practice-test sample layout:
-    // process01-04 finish earlier; process05-08 stay running on four cores.
-    static constexpr int kPracticeInstructionCounts[kPracticeProcessCount] = {
-        150, 150, 150, 80, 5876, 5876, 1000, 1000,
-    };
-
-    for (int i = 0; i < kPracticeProcessCount; ++i) {
-        std::ostringstream name;
-        name << "process" << std::setw(2) << std::setfill('0') << nextProcessNumber_++;
-        createProcessLocked(name.str(), kPracticeInstructionCounts[i], false);
+void Scheduler::addStandardProgram(const std::shared_ptr<Process>& process) {
+    for (int iteration = 0; iteration < 100; ++iteration) {
+        process->addInstruction(InstructionType::Add, "ADD(x, x, 1)");
+        process->addInstruction(InstructionType::Print, "\"Value from: \" + x");
+        process->addInstruction(InstructionType::Add, "ADD(y, y, 1)");
+        process->addInstruction(InstructionType::Print, "\"Value from: \" + y");
+        process->addInstruction(InstructionType::Add, "ADD(z, z, 1)");
+        process->addInstruction(InstructionType::Print, "\"Value from: \" + z");
     }
 }
 
 std::shared_ptr<Process> Scheduler::spawnAutoBatchProcessLocked() {
     std::ostringstream name;
     name << "process" << std::setw(2) << std::setfill('0') << nextProcessNumber_++;
-    if (usesStandardForProgram()) {
-        return createStandardForProcessLocked(name.str());
-    }
-    const int instructionCount = randomInstructionCountLocked();
-    return createProcessLocked(name.str(), instructionCount, false);
+    return createProcessLocked(name.str());
 }
 
-void Scheduler::addMockInstructionPreview(const std::shared_ptr<Process>& process) {
-    process->addPrintInstruction();
-    process->addInstruction(InstructionType::Declare, "DECLARE(counter, 0)");
-    process->addInstruction(InstructionType::Add, "ADD(counter, counter, 1)");
-    process->addInstruction(InstructionType::Subtract, "SUBTRACT(counter, counter, 1)");
-    process->addInstruction(InstructionType::Sleep, "SLEEP(1)");
-    process->addInstruction(InstructionType::For, "FOR([PRINT], 2)");
-}
-
-std::shared_ptr<Process> Scheduler::createProcessLocked(const std::string& name,
-                                                        int printInstructions,
-                                                        bool includeMockPreview) {
+std::shared_ptr<Process> Scheduler::createProcessLocked(const std::string& name) {
     auto process = std::make_shared<Process>(nextId_++, name, TimeUtil::formatNow());
-    if (includeMockPreview) {
-        addMockInstructionPreview(process);
-    }
-    while (process->totalLines() < printInstructions) {
-        process->addPrintInstruction();
-    }
+    addStandardProgram(process);
     allProcesses_.push_back(process);
     readyQueue_.push_back(process);
     return process;
@@ -324,36 +291,24 @@ void Scheduler::ensureEngineRunning(const Config& config) {
     }
 }
 
-std::shared_ptr<Process> Scheduler::createUserProcess(const std::string& name,
-                                                      int printInstructions) {
+std::shared_ptr<Process> Scheduler::createUserProcess(const std::string& name) {
     std::shared_ptr<Process> process;
     {
         std::lock_guard<std::mutex> lock(mutex_);
-        process = createProcessLocked(name, printInstructions, false);
+        process = createProcessLocked(name);
     }
     cv_.notify_all();
     return process;
 }
 
-std::shared_ptr<Process> Scheduler::createProcess(const std::string& name,
-                                                    int printInstructions) {
-    std::shared_ptr<Process> process;
-    {
-        std::lock_guard<std::mutex> lock(mutex_);
-        process = createProcessLocked(name, printInstructions, true);
-    }
-    cv_.notify_all();
-    return process;
-}
-
-int Scheduler::generateBatch(int count, int printInstructions) {
+int Scheduler::generateBatch(int count) {
     {
         std::lock_guard<std::mutex> lock(mutex_);
         for (int i = 0; i < count; ++i) {
             std::ostringstream name;
             name << "process" << std::setw(2) << std::setfill('0') << (i + 1);
             if (!processExistsLocked(name.str())) {
-                createProcessLocked(name.str(), printInstructions, false);
+                createProcessLocked(name.str());
             }
         }
         nextProcessNumber_ = count + 1;
@@ -362,8 +317,8 @@ int Scheduler::generateBatch(int count, int printInstructions) {
     return count;
 }
 
-int Scheduler::generateInitialBatch(int count, int printInstructions) {
-    return generateBatch(count, printInstructions);
+int Scheduler::generateInitialBatch(int count) {
+    return generateBatch(count);
 }
 
 bool Scheduler::processExistsLocked(const std::string& name) const {

@@ -114,12 +114,16 @@ std::string InstructionEngine::resolvePrintMessage(Process& process,
 
     const std::string plusSpaced = " + ";
     auto plusPos = message.find(plusSpaced);
+    std::size_t plusSkip = 0;
     if (plusPos == std::string::npos) {
         plusPos = message.find('+');
+        plusSkip = 1;
+    } else {
+        plusSkip = plusSpaced.size();
     }
     if (plusPos != std::string::npos) {
         const std::string left = trim(message.substr(0, plusPos));
-        const std::string right = trim(message.substr(plusPos + 1));
+        const std::string right = trim(message.substr(plusPos + plusSkip));
         std::string leftText = left;
         if (left.size() >= 2 && left.front() == '"' && left.back() == '"') {
             leftText = left.substr(1, left.size() - 2);

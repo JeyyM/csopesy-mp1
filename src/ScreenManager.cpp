@@ -6,7 +6,6 @@
 
 #include <iostream>
 #include <memory>
-#include <random>
 #include <string>
 
 namespace {
@@ -22,22 +21,6 @@ std::string trim(const std::string& value) {
 
 bool startsWith(const std::string& text, const std::string& prefix) {
     return text.size() >= prefix.size() && text.compare(0, prefix.size(), prefix) == 0;
-}
-
-int randomInstructionCount(const Config& config) {
-    static std::mt19937 rng(std::random_device{}());
-    const int low = static_cast<int>(config.minIns);
-    const int high = static_cast<int>(config.maxIns < config.minIns ? config.minIns
-                                                                     : config.maxIns);
-    std::uniform_int_distribution<int> dist(low, high);
-    return dist(rng);
-}
-
-int printsPerProcessFromConfig(const Config& config) {
-    if (config.minIns == config.maxIns) {
-        return static_cast<int>(config.minIns);
-    }
-    return randomInstructionCount(config);
 }
 
 void runProcessScreen(const std::shared_ptr<Process>& process) {
@@ -108,8 +91,7 @@ bool ScreenManager::handleCommand(const std::string& command, Scheduler& schedul
             return true;
         }
         scheduler.ensureEngineRunning(config);
-        const int instructionCount = printsPerProcessFromConfig(config);
-        auto process = scheduler.createUserProcess(name, instructionCount);
+        auto process = scheduler.createUserProcess(name);
         runProcessScreen(process);
         return true;
     }

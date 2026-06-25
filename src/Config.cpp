@@ -169,7 +169,7 @@ bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::strin
             }
 
         } else if (key == "initial-process-count") {
-            // How many processes to auto-create when initialize runs.
+            // Optional batch created immediately on scheduler-start (0 = batch-only).
             if (!parseUint32(value, parsed.initialProcessCount) ||
                 parsed.initialProcessCount < 1 || parsed.initialProcessCount > 128) {
                 errorMessage = "initial-process-count must be in range [1, 128].";

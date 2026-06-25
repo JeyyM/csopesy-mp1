@@ -1,3 +1,9 @@
+/*
+cd "c:\Users\asus\Desktop\CSOPESY OS MP"
+cmake --build build
+.\build\csopesy_os_mp.exe
+*/
+
 #include "Config.h"
 
 #include "ConsoleManager.h"
@@ -12,8 +18,6 @@
 
 
 #include <iostream>
-
-#include <random>
 
 #include <string>
 
@@ -46,38 +50,6 @@ void printNotInitialized() {
     ConsoleManager::printLine(
 
         "Please initialize the system first by typing \"initialize\".");
-
-}
-
-
-
-int randomInstructionCount(const Config& config) {
-
-    static std::mt19937 rng(std::random_device{}());
-
-    const int low = static_cast<int>(config.minIns);
-
-    const int high = static_cast<int>(config.maxIns < config.minIns ? config.minIns
-
-                                                                     : config.maxIns);
-
-    std::uniform_int_distribution<int> dist(low, high);
-
-    return dist(rng);
-
-}
-
-
-
-int printsPerProcessFromConfig(const Config& config) {
-
-    if (config.minIns == config.maxIns) {
-
-        return static_cast<int>(config.minIns);
-
-    }
-
-    return randomInstructionCount(config);
 
 }
 
@@ -140,15 +112,15 @@ int main() {
 
 
         if (command == "exit") {
-
-            ConsoleManager::printLine("Exiting CSOPESY Emulator.");
-
             scheduler.stop();
 
+            std::size_t removedCount = 0;
+            std::string clearError;
+            OutputManager::clearAllProcessOutputs(removedCount, clearError);
+
+            ConsoleManager::printLine("Exiting CSOPESY Emulator.");
             running = false;
-
             continue;
-
         }
 
 
@@ -250,12 +222,10 @@ int main() {
             scheduler.enableBatchGeneration();
 
             if (config.initialProcessCount > 0) {
-                const int printsPerProcess = printsPerProcessFromConfig(config);
-                scheduler.generateInitialBatch(static_cast<int>(config.initialProcessCount),
-                                               printsPerProcess);
+                scheduler.generateInitialBatch(static_cast<int>(config.initialProcessCount));
             }
 
-            ConsoleManager::printLine("Scheduler started. Generating dummy processes.");
+            ConsoleManager::printLine("Scheduler started. Generating processes.");
             continue;
         }
 
@@ -266,7 +236,8 @@ int main() {
                 ConsoleManager::printLine("Scheduler is not running.");
             } else {
                 scheduler.stopGracefully();
-                ConsoleManager::printLine("Scheduler stopped.");
+                ConsoleManager::printLine(
+                    "Scheduler stopped. Remaining processes will finish in the background.");
             }
             continue;
         }

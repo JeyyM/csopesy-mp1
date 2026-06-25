@@ -14,16 +14,6 @@ void Process::initializeStandardVariables() {
     setVariable("z", 0);
 }
 
-void Process::addStandardForProgram(int targetLineCount) {
-    static const std::string kStandardFor =
-        "FOR([ADD(x, x, 1), PRINT(\"Value from: \" +x), ADD(y, y, 1), "
-        "PRINT(\"Value from: \" +y), ADD(z, z, 1), PRINT(\"Value from: \" +z)], 100)";
-    addInstruction(InstructionType::For, kStandardFor);
-    while (totalLines() < targetLineCount) {
-        addInstruction(InstructionType::Declare, "DECLARE(pad, 0)");
-    }
-}
-
 void Process::addPrintInstruction(const std::string& message) {
     instructions_.push_back({InstructionType::Print, message});
 }

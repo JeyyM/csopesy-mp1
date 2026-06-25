@@ -21,7 +21,6 @@ public:
     Process(int id, std::string name, std::string creationTimestamp);
 
     void initializeStandardVariables();
-    void addStandardForProgram(int targetLineCount);
     void addPrintInstruction(const std::string& message = "");
     void addInstruction(InstructionType type, const std::string& text);
 
