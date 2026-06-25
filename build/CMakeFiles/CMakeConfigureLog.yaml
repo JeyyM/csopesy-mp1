@@ -4,6 +4,1410 @@ events:
   -
     kind: "message-v1"
     backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineSystem.cmake:212 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Windows - 10.0.26200 - AMD64
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:468 (find_file)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:506 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/"
+    found: "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "c:\\Users\\Von\\AppData\\Local\\Programs\\cursor\\resources\\app\\node_modules\\@vscode\\ripgrep\\bin"
+        - "C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\java8path"
+        - "C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath"
+        - "C:\\Python312\\Scripts\\"
+        - "C:\\Python312\\"
+        - "C:\\Program Files\\ImageMagick-7.1.1-Q16-HDRI"
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\TIBCO\\Statistica\\"
+        - "C:\\Program Files\\swipl\\bin"
+        - "C:\\Program Files\\apache-maven-3.9.9\\bin"
+        - "C:\\Program Files\\Java\\jdk-17\\bin"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\iverilog\\bin"
+        - "C:\\Program Files\\MongoDB\\Server\\8.0\\bin"
+        - "C:\\Program Files\\Java\\jdk-17\\bin"
+        - "C:\\Program Files\\apache-maven-3.9.9\\bin"
+        - "C:\\Users\\Von\\AppData\\Roaming\\Python\\Python312\\Scripts"
+        - "C:\\Users\\Von\\AppData\\Roaming\\Python\\Python312\\Scripts"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\"
+        - "C:\\Program Files (x86)\\SASM\\NASM"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Users\\Von\\develop\\flutter\\bin"
+        - "C:\\Ruby33-x64\\bin"
+        - "C:\\Program Files\\MySQL\\MySQL Shell 8.0\\bin\\"
+        - "C:\\Users\\Von\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\Microsoft VS Code\\bin"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\Users\\Von\\AppData\\Local\\GitHubDesktop\\bin"
+        - "C:\\Users\\Von\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\Scripts"
+        - "C:\\Program Files\\JetBrains\\RubyMine 2024.3\\bin"
+        - "C:\\Users\\Von\\AppData\\Roaming\\npm"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\mongosh\\"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      MSBuild version 17.14.23+b0019275e for .NET Framework
+      Build started 25/06/2026 10:45:12 am.
+      
+      Project "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\4.3.3\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+        Creating directory "Debug\\CompilerIdCXX.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        Touching "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+      ClCompile:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TP /FC /errorReport:queue CMakeCXXCompilerId.cpp
+        CMakeCXXCompilerId.cpp
+      Link:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdCXX.lib" /MACHINE:X64 Debug\\CMakeCXXCompilerId.obj
+        CompilerIdCXX.vcxproj -> C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\4.3.3\\CompilerIdCXX\\CompilerIdCXX.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_CXX_COMPILER=C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdCXX.tlog\\CompilerIdCXX.lastbuildstate".
+      Done Building Project "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\4.3.3\\CompilerIdCXX\\CompilerIdCXX.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:01.00
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+      
+      The CXX compiler identification is MSVC, found in:
+        C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/4.3.3/CompilerIdCXX/CompilerIdCXX.exe
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:37 (find_program)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:65 (__resolve_tool_path)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:103 (__resolve_linker_path)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "_CMAKE_TOOL_WITH_PATH"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "link"
+    candidate_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/node_modules/@vscode/ripgrep/bin/"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/java8path/"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/javapath/"
+      - "C:/Python312/Scripts/"
+      - "C:/Python312/"
+      - "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files/TIBCO/Statistica/"
+      - "C:/Program Files/swipl/bin/"
+      - "C:/Program Files/apache-maven-3.9.9/bin/"
+      - "C:/Program Files/Java/jdk-17/bin/"
+      - "C:/ProgramData/chocolatey/bin/"
+      - "C:/Program Files/MySQL/MySQL Server 8.0/bin/"
+      - "C:/Program Files/nodejs/"
+      - "C:/iverilog/bin/"
+      - "C:/Program Files/MongoDB/Server/8.0/bin/"
+      - "C:/Users/Von/AppData/Roaming/Python/Python312/Scripts/"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/"
+      - "C:/Program Files (x86)/SASM/NASM/"
+      - "C:/Program Files/CMake/bin/"
+      - "C:/Users/Von/develop/flutter/bin/"
+      - "C:/Ruby33-x64/bin/"
+      - "C:/Program Files/MySQL/MySQL Shell 8.0/bin/"
+      - "C:/Users/Von/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Users/Von/AppData/Local/Programs/Microsoft VS Code/bin/"
+      - "C:/msys64/ucrt64/bin/"
+      - "C:/Users/Von/AppData/Local/GitHubDesktop/bin/"
+      - "C:/Users/Von/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/"
+      - "C:/Program Files/JetBrains/RubyMine 2024.3/bin/"
+      - "C:/Users/Von/AppData/Roaming/npm/"
+      - "C:/Users/Von/AppData/Local/Programs/mongosh/"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/bin/"
+    searched_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/link.com"
+    found: "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/link.exe"
+    search_context:
+      ENV{PATH}:
+        - "c:\\Users\\Von\\AppData\\Local\\Programs\\cursor\\resources\\app\\node_modules\\@vscode\\ripgrep\\bin"
+        - "C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\java8path"
+        - "C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath"
+        - "C:\\Python312\\Scripts\\"
+        - "C:\\Python312\\"
+        - "C:\\Program Files\\ImageMagick-7.1.1-Q16-HDRI"
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\TIBCO\\Statistica\\"
+        - "C:\\Program Files\\swipl\\bin"
+        - "C:\\Program Files\\apache-maven-3.9.9\\bin"
+        - "C:\\Program Files\\Java\\jdk-17\\bin"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\iverilog\\bin"
+        - "C:\\Program Files\\MongoDB\\Server\\8.0\\bin"
+        - "C:\\Program Files\\Java\\jdk-17\\bin"
+        - "C:\\Program Files\\apache-maven-3.9.9\\bin"
+        - "C:\\Users\\Von\\AppData\\Roaming\\Python\\Python312\\Scripts"
+        - "C:\\Users\\Von\\AppData\\Roaming\\Python\\Python312\\Scripts"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\"
+        - "C:\\Program Files (x86)\\SASM\\NASM"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Users\\Von\\develop\\flutter\\bin"
+        - "C:\\Ruby33-x64\\bin"
+        - "C:\\Program Files\\MySQL\\MySQL Shell 8.0\\bin\\"
+        - "C:\\Users\\Von\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\Microsoft VS Code\\bin"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\Users\\Von\\AppData\\Local\\GitHubDesktop\\bin"
+        - "C:\\Users\\Von\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\Scripts"
+        - "C:\\Program Files\\JetBrains\\RubyMine 2024.3\\bin"
+        - "C:\\Users\\Von\\AppData\\Roaming\\npm"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\mongosh\\"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:37 (find_program)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:65 (__resolve_tool_path)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:104 (__resolve_linker_path)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "_CMAKE_TOOL_WITH_PATH"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "lld-link"
+    candidate_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/node_modules/@vscode/ripgrep/bin/"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/java8path/"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/javapath/"
+      - "C:/Python312/Scripts/"
+      - "C:/Python312/"
+      - "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files/TIBCO/Statistica/"
+      - "C:/Program Files/swipl/bin/"
+      - "C:/Program Files/apache-maven-3.9.9/bin/"
+      - "C:/Program Files/Java/jdk-17/bin/"
+      - "C:/ProgramData/chocolatey/bin/"
+      - "C:/Program Files/MySQL/MySQL Server 8.0/bin/"
+      - "C:/Program Files/nodejs/"
+      - "C:/iverilog/bin/"
+      - "C:/Program Files/MongoDB/Server/8.0/bin/"
+      - "C:/Users/Von/AppData/Roaming/Python/Python312/Scripts/"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/"
+      - "C:/Program Files (x86)/SASM/NASM/"
+      - "C:/Program Files/CMake/bin/"
+      - "C:/Users/Von/develop/flutter/bin/"
+      - "C:/Ruby33-x64/bin/"
+      - "C:/Program Files/MySQL/MySQL Shell 8.0/bin/"
+      - "C:/Users/Von/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Users/Von/AppData/Local/Programs/Microsoft VS Code/bin/"
+      - "C:/msys64/ucrt64/bin/"
+      - "C:/Users/Von/AppData/Local/GitHubDesktop/bin/"
+      - "C:/Users/Von/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/"
+      - "C:/Program Files/JetBrains/RubyMine 2024.3/bin/"
+      - "C:/Users/Von/AppData/Roaming/npm/"
+      - "C:/Users/Von/AppData/Local/Programs/mongosh/"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/bin/"
+    searched_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/lld-link.com"
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/lld-link.exe"
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/lld-link"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/node_modules/@vscode/ripgrep/bin/lld-link.com"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/node_modules/@vscode/ripgrep/bin/lld-link.exe"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/node_modules/@vscode/ripgrep/bin/lld-link"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/java8path/lld-link.com"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/java8path/lld-link.exe"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/java8path/lld-link"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/javapath/lld-link.com"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/javapath/lld-link.exe"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/javapath/lld-link"
+      - "C:/Python312/Scripts/lld-link.com"
+      - "C:/Python312/Scripts/lld-link.exe"
+      - "C:/Python312/Scripts/lld-link"
+      - "C:/Python312/lld-link.com"
+      - "C:/Python312/lld-link.exe"
+      - "C:/Python312/lld-link"
+      - "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/lld-link.com"
+      - "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/lld-link.exe"
+      - "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/lld-link"
+      - "C:/Windows/System32/lld-link.com"
+      - "C:/Windows/System32/lld-link.exe"
+      - "C:/Windows/System32/lld-link"
+      - "C:/Windows/lld-link.com"
+      - "C:/Windows/lld-link.exe"
+      - "C:/Windows/lld-link"
+      - "C:/Windows/System32/wbem/lld-link.com"
+      - "C:/Windows/System32/wbem/lld-link.exe"
+      - "C:/Windows/System32/wbem/lld-link"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/lld-link.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/lld-link.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/lld-link"
+      - "C:/Windows/System32/OpenSSH/lld-link.com"
+      - "C:/Windows/System32/OpenSSH/lld-link.exe"
+      - "C:/Windows/System32/OpenSSH/lld-link"
+      - "C:/Program Files/Git/cmd/lld-link.com"
+      - "C:/Program Files/Git/cmd/lld-link.exe"
+      - "C:/Program Files/Git/cmd/lld-link"
+      - "C:/Program Files/TIBCO/Statistica/lld-link.com"
+      - "C:/Program Files/TIBCO/Statistica/lld-link.exe"
+      - "C:/Program Files/TIBCO/Statistica/lld-link"
+      - "C:/Program Files/swipl/bin/lld-link.com"
+      - "C:/Program Files/swipl/bin/lld-link.exe"
+      - "C:/Program Files/swipl/bin/lld-link"
+      - "C:/Program Files/apache-maven-3.9.9/bin/lld-link.com"
+      - "C:/Program Files/apache-maven-3.9.9/bin/lld-link.exe"
+      - "C:/Program Files/apache-maven-3.9.9/bin/lld-link"
+      - "C:/Program Files/Java/jdk-17/bin/lld-link.com"
+      - "C:/Program Files/Java/jdk-17/bin/lld-link.exe"
+      - "C:/Program Files/Java/jdk-17/bin/lld-link"
+      - "C:/ProgramData/chocolatey/bin/lld-link.com"
+      - "C:/ProgramData/chocolatey/bin/lld-link.exe"
+      - "C:/ProgramData/chocolatey/bin/lld-link"
+      - "C:/Program Files/MySQL/MySQL Server 8.0/bin/lld-link.com"
+      - "C:/Program Files/MySQL/MySQL Server 8.0/bin/lld-link.exe"
+      - "C:/Program Files/MySQL/MySQL Server 8.0/bin/lld-link"
+      - "C:/Program Files/nodejs/lld-link.com"
+      - "C:/Program Files/nodejs/lld-link.exe"
+      - "C:/Program Files/nodejs/lld-link"
+      - "C:/iverilog/bin/lld-link.com"
+      - "C:/iverilog/bin/lld-link.exe"
+      - "C:/iverilog/bin/lld-link"
+      - "C:/Program Files/MongoDB/Server/8.0/bin/lld-link.com"
+      - "C:/Program Files/MongoDB/Server/8.0/bin/lld-link.exe"
+      - "C:/Program Files/MongoDB/Server/8.0/bin/lld-link"
+      - "C:/Users/Von/AppData/Roaming/Python/Python312/Scripts/lld-link.com"
+      - "C:/Users/Von/AppData/Roaming/Python/Python312/Scripts/lld-link.exe"
+      - "C:/Users/Von/AppData/Roaming/Python/Python312/Scripts/lld-link"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/lld-link.com"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/lld-link.exe"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/lld-link"
+      - "C:/Program Files (x86)/SASM/NASM/lld-link.com"
+      - "C:/Program Files (x86)/SASM/NASM/lld-link.exe"
+      - "C:/Program Files (x86)/SASM/NASM/lld-link"
+      - "C:/Program Files/CMake/bin/lld-link.com"
+      - "C:/Program Files/CMake/bin/lld-link.exe"
+      - "C:/Program Files/CMake/bin/lld-link"
+      - "C:/Users/Von/develop/flutter/bin/lld-link.com"
+      - "C:/Users/Von/develop/flutter/bin/lld-link.exe"
+      - "C:/Users/Von/develop/flutter/bin/lld-link"
+      - "C:/Ruby33-x64/bin/lld-link.com"
+      - "C:/Ruby33-x64/bin/lld-link.exe"
+      - "C:/Ruby33-x64/bin/lld-link"
+      - "C:/Program Files/MySQL/MySQL Shell 8.0/bin/lld-link.com"
+      - "C:/Program Files/MySQL/MySQL Shell 8.0/bin/lld-link.exe"
+      - "C:/Program Files/MySQL/MySQL Shell 8.0/bin/lld-link"
+      - "C:/Users/Von/AppData/Local/Microsoft/WindowsApps/lld-link.com"
+      - "C:/Users/Von/AppData/Local/Microsoft/WindowsApps/lld-link.exe"
+      - "C:/Users/Von/AppData/Local/Microsoft/WindowsApps/lld-link"
+      - "C:/Users/Von/AppData/Local/Programs/Microsoft VS Code/bin/lld-link.com"
+      - "C:/Users/Von/AppData/Local/Programs/Microsoft VS Code/bin/lld-link.exe"
+      - "C:/Users/Von/AppData/Local/Programs/Microsoft VS Code/bin/lld-link"
+      - "C:/msys64/ucrt64/bin/lld-link.com"
+      - "C:/msys64/ucrt64/bin/lld-link.exe"
+      - "C:/msys64/ucrt64/bin/lld-link"
+      - "C:/Users/Von/AppData/Local/GitHubDesktop/bin/lld-link.com"
+      - "C:/Users/Von/AppData/Local/GitHubDesktop/bin/lld-link.exe"
+      - "C:/Users/Von/AppData/Local/GitHubDesktop/bin/lld-link"
+      - "C:/Users/Von/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/lld-link.com"
+      - "C:/Users/Von/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/lld-link.exe"
+      - "C:/Users/Von/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/lld-link"
+      - "C:/Program Files/JetBrains/RubyMine 2024.3/bin/lld-link.com"
+      - "C:/Program Files/JetBrains/RubyMine 2024.3/bin/lld-link.exe"
+      - "C:/Program Files/JetBrains/RubyMine 2024.3/bin/lld-link"
+      - "C:/Users/Von/AppData/Roaming/npm/lld-link.com"
+      - "C:/Users/Von/AppData/Roaming/npm/lld-link.exe"
+      - "C:/Users/Von/AppData/Roaming/npm/lld-link"
+      - "C:/Users/Von/AppData/Local/Programs/mongosh/lld-link.com"
+      - "C:/Users/Von/AppData/Local/Programs/mongosh/lld-link.exe"
+      - "C:/Users/Von/AppData/Local/Programs/mongosh/lld-link"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/bin/lld-link.com"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/bin/lld-link.exe"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/bin/lld-link"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "c:\\Users\\Von\\AppData\\Local\\Programs\\cursor\\resources\\app\\node_modules\\@vscode\\ripgrep\\bin"
+        - "C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\java8path"
+        - "C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath"
+        - "C:\\Python312\\Scripts\\"
+        - "C:\\Python312\\"
+        - "C:\\Program Files\\ImageMagick-7.1.1-Q16-HDRI"
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\TIBCO\\Statistica\\"
+        - "C:\\Program Files\\swipl\\bin"
+        - "C:\\Program Files\\apache-maven-3.9.9\\bin"
+        - "C:\\Program Files\\Java\\jdk-17\\bin"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\iverilog\\bin"
+        - "C:\\Program Files\\MongoDB\\Server\\8.0\\bin"
+        - "C:\\Program Files\\Java\\jdk-17\\bin"
+        - "C:\\Program Files\\apache-maven-3.9.9\\bin"
+        - "C:\\Users\\Von\\AppData\\Roaming\\Python\\Python312\\Scripts"
+        - "C:\\Users\\Von\\AppData\\Roaming\\Python\\Python312\\Scripts"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\"
+        - "C:\\Program Files (x86)\\SASM\\NASM"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Users\\Von\\develop\\flutter\\bin"
+        - "C:\\Ruby33-x64\\bin"
+        - "C:\\Program Files\\MySQL\\MySQL Shell 8.0\\bin\\"
+        - "C:\\Users\\Von\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\Microsoft VS Code\\bin"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\Users\\Von\\AppData\\Local\\GitHubDesktop\\bin"
+        - "C:\\Users\\Von\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\Scripts"
+        - "C:\\Program Files\\JetBrains\\RubyMine 2024.3\\bin"
+        - "C:\\Users\\Von\\AppData\\Roaming\\npm"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\mongosh\\"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_LINKER"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "link"
+    candidate_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/node_modules/@vscode/ripgrep/bin/"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/java8path/"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/javapath/"
+      - "C:/Python312/Scripts/"
+      - "C:/Python312/"
+      - "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files/TIBCO/Statistica/"
+      - "C:/Program Files/swipl/bin/"
+      - "C:/Program Files/apache-maven-3.9.9/bin/"
+      - "C:/Program Files/Java/jdk-17/bin/"
+      - "C:/ProgramData/chocolatey/bin/"
+      - "C:/Program Files/MySQL/MySQL Server 8.0/bin/"
+      - "C:/Program Files/nodejs/"
+      - "C:/iverilog/bin/"
+      - "C:/Program Files/MongoDB/Server/8.0/bin/"
+      - "C:/Users/Von/AppData/Roaming/Python/Python312/Scripts/"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/"
+      - "C:/Program Files (x86)/SASM/NASM/"
+      - "C:/Program Files/CMake/bin/"
+      - "C:/Users/Von/develop/flutter/bin/"
+      - "C:/Ruby33-x64/bin/"
+      - "C:/Program Files/MySQL/MySQL Shell 8.0/bin/"
+      - "C:/Users/Von/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Users/Von/AppData/Local/Programs/Microsoft VS Code/bin/"
+      - "C:/msys64/ucrt64/bin/"
+      - "C:/Users/Von/AppData/Local/GitHubDesktop/bin/"
+      - "C:/Users/Von/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/"
+      - "C:/Program Files/JetBrains/RubyMine 2024.3/bin/"
+      - "C:/Users/Von/AppData/Roaming/npm/"
+      - "C:/Users/Von/AppData/Local/Programs/mongosh/"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/bin/"
+    searched_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/link.com"
+    found: "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/link.exe"
+    search_context:
+      ENV{PATH}:
+        - "c:\\Users\\Von\\AppData\\Local\\Programs\\cursor\\resources\\app\\node_modules\\@vscode\\ripgrep\\bin"
+        - "C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\java8path"
+        - "C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath"
+        - "C:\\Python312\\Scripts\\"
+        - "C:\\Python312\\"
+        - "C:\\Program Files\\ImageMagick-7.1.1-Q16-HDRI"
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\TIBCO\\Statistica\\"
+        - "C:\\Program Files\\swipl\\bin"
+        - "C:\\Program Files\\apache-maven-3.9.9\\bin"
+        - "C:\\Program Files\\Java\\jdk-17\\bin"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\iverilog\\bin"
+        - "C:\\Program Files\\MongoDB\\Server\\8.0\\bin"
+        - "C:\\Program Files\\Java\\jdk-17\\bin"
+        - "C:\\Program Files\\apache-maven-3.9.9\\bin"
+        - "C:\\Users\\Von\\AppData\\Roaming\\Python\\Python312\\Scripts"
+        - "C:\\Users\\Von\\AppData\\Roaming\\Python\\Python312\\Scripts"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\"
+        - "C:\\Program Files (x86)\\SASM\\NASM"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Users\\Von\\develop\\flutter\\bin"
+        - "C:\\Ruby33-x64\\bin"
+        - "C:\\Program Files\\MySQL\\MySQL Shell 8.0\\bin\\"
+        - "C:\\Users\\Von\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\Microsoft VS Code\\bin"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\Users\\Von\\AppData\\Local\\GitHubDesktop\\bin"
+        - "C:\\Users\\Von\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\Scripts"
+        - "C:\\Program Files\\JetBrains\\RubyMine 2024.3\\bin"
+        - "C:\\Users\\Von\\AppData\\Roaming\\npm"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\mongosh\\"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_MT"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "mt"
+    candidate_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/node_modules/@vscode/ripgrep/bin/"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/java8path/"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/javapath/"
+      - "C:/Python312/Scripts/"
+      - "C:/Python312/"
+      - "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files/TIBCO/Statistica/"
+      - "C:/Program Files/swipl/bin/"
+      - "C:/Program Files/apache-maven-3.9.9/bin/"
+      - "C:/Program Files/Java/jdk-17/bin/"
+      - "C:/ProgramData/chocolatey/bin/"
+      - "C:/Program Files/MySQL/MySQL Server 8.0/bin/"
+      - "C:/Program Files/nodejs/"
+      - "C:/iverilog/bin/"
+      - "C:/Program Files/MongoDB/Server/8.0/bin/"
+      - "C:/Users/Von/AppData/Roaming/Python/Python312/Scripts/"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/"
+      - "C:/Program Files (x86)/SASM/NASM/"
+      - "C:/Program Files/CMake/bin/"
+      - "C:/Users/Von/develop/flutter/bin/"
+      - "C:/Ruby33-x64/bin/"
+      - "C:/Program Files/MySQL/MySQL Shell 8.0/bin/"
+      - "C:/Users/Von/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Users/Von/AppData/Local/Programs/Microsoft VS Code/bin/"
+      - "C:/msys64/ucrt64/bin/"
+      - "C:/Users/Von/AppData/Local/GitHubDesktop/bin/"
+      - "C:/Users/Von/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/"
+      - "C:/Program Files/JetBrains/RubyMine 2024.3/bin/"
+      - "C:/Users/Von/AppData/Roaming/npm/"
+      - "C:/Users/Von/AppData/Local/Programs/mongosh/"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/bin/"
+    searched_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/mt.com"
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/mt.exe"
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/mt"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/node_modules/@vscode/ripgrep/bin/mt.com"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/node_modules/@vscode/ripgrep/bin/mt.exe"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/node_modules/@vscode/ripgrep/bin/mt"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/java8path/mt.com"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/java8path/mt.exe"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/java8path/mt"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/javapath/mt.com"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/javapath/mt.exe"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/javapath/mt"
+      - "C:/Python312/Scripts/mt.com"
+      - "C:/Python312/Scripts/mt.exe"
+      - "C:/Python312/Scripts/mt"
+      - "C:/Python312/mt.com"
+      - "C:/Python312/mt.exe"
+      - "C:/Python312/mt"
+      - "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/mt.com"
+      - "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/mt.exe"
+      - "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/mt"
+      - "C:/Windows/System32/mt.com"
+      - "C:/Windows/System32/mt.exe"
+      - "C:/Windows/System32/mt"
+      - "C:/Windows/mt.com"
+      - "C:/Windows/mt.exe"
+      - "C:/Windows/mt"
+      - "C:/Windows/System32/wbem/mt.com"
+      - "C:/Windows/System32/wbem/mt.exe"
+      - "C:/Windows/System32/wbem/mt"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/mt.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/mt.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/mt"
+      - "C:/Windows/System32/OpenSSH/mt.com"
+      - "C:/Windows/System32/OpenSSH/mt.exe"
+      - "C:/Windows/System32/OpenSSH/mt"
+      - "C:/Program Files/Git/cmd/mt.com"
+      - "C:/Program Files/Git/cmd/mt.exe"
+      - "C:/Program Files/Git/cmd/mt"
+      - "C:/Program Files/TIBCO/Statistica/mt.com"
+      - "C:/Program Files/TIBCO/Statistica/mt.exe"
+      - "C:/Program Files/TIBCO/Statistica/mt"
+      - "C:/Program Files/swipl/bin/mt.com"
+      - "C:/Program Files/swipl/bin/mt.exe"
+      - "C:/Program Files/swipl/bin/mt"
+      - "C:/Program Files/apache-maven-3.9.9/bin/mt.com"
+      - "C:/Program Files/apache-maven-3.9.9/bin/mt.exe"
+      - "C:/Program Files/apache-maven-3.9.9/bin/mt"
+      - "C:/Program Files/Java/jdk-17/bin/mt.com"
+      - "C:/Program Files/Java/jdk-17/bin/mt.exe"
+      - "C:/Program Files/Java/jdk-17/bin/mt"
+      - "C:/ProgramData/chocolatey/bin/mt.com"
+      - "C:/ProgramData/chocolatey/bin/mt.exe"
+      - "C:/ProgramData/chocolatey/bin/mt"
+      - "C:/Program Files/MySQL/MySQL Server 8.0/bin/mt.com"
+      - "C:/Program Files/MySQL/MySQL Server 8.0/bin/mt.exe"
+      - "C:/Program Files/MySQL/MySQL Server 8.0/bin/mt"
+      - "C:/Program Files/nodejs/mt.com"
+      - "C:/Program Files/nodejs/mt.exe"
+      - "C:/Program Files/nodejs/mt"
+      - "C:/iverilog/bin/mt.com"
+      - "C:/iverilog/bin/mt.exe"
+      - "C:/iverilog/bin/mt"
+      - "C:/Program Files/MongoDB/Server/8.0/bin/mt.com"
+      - "C:/Program Files/MongoDB/Server/8.0/bin/mt.exe"
+      - "C:/Program Files/MongoDB/Server/8.0/bin/mt"
+      - "C:/Users/Von/AppData/Roaming/Python/Python312/Scripts/mt.com"
+      - "C:/Users/Von/AppData/Roaming/Python/Python312/Scripts/mt.exe"
+      - "C:/Users/Von/AppData/Roaming/Python/Python312/Scripts/mt"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/mt.com"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/mt.exe"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/mt"
+      - "C:/Program Files (x86)/SASM/NASM/mt.com"
+      - "C:/Program Files (x86)/SASM/NASM/mt.exe"
+      - "C:/Program Files (x86)/SASM/NASM/mt"
+      - "C:/Program Files/CMake/bin/mt.com"
+      - "C:/Program Files/CMake/bin/mt.exe"
+      - "C:/Program Files/CMake/bin/mt"
+      - "C:/Users/Von/develop/flutter/bin/mt.com"
+      - "C:/Users/Von/develop/flutter/bin/mt.exe"
+      - "C:/Users/Von/develop/flutter/bin/mt"
+      - "C:/Ruby33-x64/bin/mt.com"
+      - "C:/Ruby33-x64/bin/mt.exe"
+      - "C:/Ruby33-x64/bin/mt"
+      - "C:/Program Files/MySQL/MySQL Shell 8.0/bin/mt.com"
+      - "C:/Program Files/MySQL/MySQL Shell 8.0/bin/mt.exe"
+      - "C:/Program Files/MySQL/MySQL Shell 8.0/bin/mt"
+      - "C:/Users/Von/AppData/Local/Microsoft/WindowsApps/mt.com"
+      - "C:/Users/Von/AppData/Local/Microsoft/WindowsApps/mt.exe"
+      - "C:/Users/Von/AppData/Local/Microsoft/WindowsApps/mt"
+      - "C:/Users/Von/AppData/Local/Programs/Microsoft VS Code/bin/mt.com"
+      - "C:/Users/Von/AppData/Local/Programs/Microsoft VS Code/bin/mt.exe"
+      - "C:/Users/Von/AppData/Local/Programs/Microsoft VS Code/bin/mt"
+      - "C:/msys64/ucrt64/bin/mt.com"
+      - "C:/msys64/ucrt64/bin/mt.exe"
+      - "C:/msys64/ucrt64/bin/mt"
+      - "C:/Users/Von/AppData/Local/GitHubDesktop/bin/mt.com"
+      - "C:/Users/Von/AppData/Local/GitHubDesktop/bin/mt.exe"
+      - "C:/Users/Von/AppData/Local/GitHubDesktop/bin/mt"
+      - "C:/Users/Von/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/mt.com"
+      - "C:/Users/Von/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/mt.exe"
+      - "C:/Users/Von/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/mt"
+      - "C:/Program Files/JetBrains/RubyMine 2024.3/bin/mt.com"
+      - "C:/Program Files/JetBrains/RubyMine 2024.3/bin/mt.exe"
+      - "C:/Program Files/JetBrains/RubyMine 2024.3/bin/mt"
+      - "C:/Users/Von/AppData/Roaming/npm/mt.com"
+      - "C:/Users/Von/AppData/Roaming/npm/mt.exe"
+      - "C:/Users/Von/AppData/Roaming/npm/mt"
+      - "C:/Users/Von/AppData/Local/Programs/mongosh/mt.com"
+      - "C:/Users/Von/AppData/Local/Programs/mongosh/mt.exe"
+      - "C:/Users/Von/AppData/Local/Programs/mongosh/mt"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/bin/mt.com"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/bin/mt.exe"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/bin/mt"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "c:\\Users\\Von\\AppData\\Local\\Programs\\cursor\\resources\\app\\node_modules\\@vscode\\ripgrep\\bin"
+        - "C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\java8path"
+        - "C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath"
+        - "C:\\Python312\\Scripts\\"
+        - "C:\\Python312\\"
+        - "C:\\Program Files\\ImageMagick-7.1.1-Q16-HDRI"
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\TIBCO\\Statistica\\"
+        - "C:\\Program Files\\swipl\\bin"
+        - "C:\\Program Files\\apache-maven-3.9.9\\bin"
+        - "C:\\Program Files\\Java\\jdk-17\\bin"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\iverilog\\bin"
+        - "C:\\Program Files\\MongoDB\\Server\\8.0\\bin"
+        - "C:\\Program Files\\Java\\jdk-17\\bin"
+        - "C:\\Program Files\\apache-maven-3.9.9\\bin"
+        - "C:\\Users\\Von\\AppData\\Roaming\\Python\\Python312\\Scripts"
+        - "C:\\Users\\Von\\AppData\\Roaming\\Python\\Python312\\Scripts"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\"
+        - "C:\\Program Files (x86)\\SASM\\NASM"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Users\\Von\\develop\\flutter\\bin"
+        - "C:\\Ruby33-x64\\bin"
+        - "C:\\Program Files\\MySQL\\MySQL Shell 8.0\\bin\\"
+        - "C:\\Users\\Von\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\Microsoft VS Code\\bin"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\Users\\Von\\AppData\\Local\\GitHubDesktop\\bin"
+        - "C:\\Users\\Von\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\Scripts"
+        - "C:\\Program Files\\JetBrains\\RubyMine 2024.3\\bin"
+        - "C:\\Users\\Von\\AppData\\Roaming\\npm"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\mongosh\\"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_AR"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "lib"
+    candidate_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/node_modules/@vscode/ripgrep/bin/"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/java8path/"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/javapath/"
+      - "C:/Python312/Scripts/"
+      - "C:/Python312/"
+      - "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files/TIBCO/Statistica/"
+      - "C:/Program Files/swipl/bin/"
+      - "C:/Program Files/apache-maven-3.9.9/bin/"
+      - "C:/Program Files/Java/jdk-17/bin/"
+      - "C:/ProgramData/chocolatey/bin/"
+      - "C:/Program Files/MySQL/MySQL Server 8.0/bin/"
+      - "C:/Program Files/nodejs/"
+      - "C:/iverilog/bin/"
+      - "C:/Program Files/MongoDB/Server/8.0/bin/"
+      - "C:/Users/Von/AppData/Roaming/Python/Python312/Scripts/"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/"
+      - "C:/Program Files (x86)/SASM/NASM/"
+      - "C:/Program Files/CMake/bin/"
+      - "C:/Users/Von/develop/flutter/bin/"
+      - "C:/Ruby33-x64/bin/"
+      - "C:/Program Files/MySQL/MySQL Shell 8.0/bin/"
+      - "C:/Users/Von/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Users/Von/AppData/Local/Programs/Microsoft VS Code/bin/"
+      - "C:/msys64/ucrt64/bin/"
+      - "C:/Users/Von/AppData/Local/GitHubDesktop/bin/"
+      - "C:/Users/Von/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/"
+      - "C:/Program Files/JetBrains/RubyMine 2024.3/bin/"
+      - "C:/Users/Von/AppData/Roaming/npm/"
+      - "C:/Users/Von/AppData/Local/Programs/mongosh/"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/bin/"
+    searched_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/lib.com"
+    found: "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/lib.exe"
+    search_context:
+      ENV{PATH}:
+        - "c:\\Users\\Von\\AppData\\Local\\Programs\\cursor\\resources\\app\\node_modules\\@vscode\\ripgrep\\bin"
+        - "C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\java8path"
+        - "C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath"
+        - "C:\\Python312\\Scripts\\"
+        - "C:\\Python312\\"
+        - "C:\\Program Files\\ImageMagick-7.1.1-Q16-HDRI"
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\TIBCO\\Statistica\\"
+        - "C:\\Program Files\\swipl\\bin"
+        - "C:\\Program Files\\apache-maven-3.9.9\\bin"
+        - "C:\\Program Files\\Java\\jdk-17\\bin"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\iverilog\\bin"
+        - "C:\\Program Files\\MongoDB\\Server\\8.0\\bin"
+        - "C:\\Program Files\\Java\\jdk-17\\bin"
+        - "C:\\Program Files\\apache-maven-3.9.9\\bin"
+        - "C:\\Users\\Von\\AppData\\Roaming\\Python\\Python312\\Scripts"
+        - "C:\\Users\\Von\\AppData\\Roaming\\Python\\Python312\\Scripts"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\"
+        - "C:\\Program Files (x86)\\SASM\\NASM"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Users\\Von\\develop\\flutter\\bin"
+        - "C:\\Ruby33-x64\\bin"
+        - "C:\\Program Files\\MySQL\\MySQL Shell 8.0\\bin\\"
+        - "C:\\Users\\Von\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\Microsoft VS Code\\bin"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\Users\\Von\\AppData\\Local\\GitHubDesktop\\bin"
+        - "C:\\Users\\Von\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\Scripts"
+        - "C:\\Program Files\\JetBrains\\RubyMine 2024.3\\bin"
+        - "C:\\Users\\Von\\AppData\\Roaming\\npm"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\mongosh\\"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineRCCompiler.cmake:40 (find_program)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/Platform/Windows-MSVC.cmake:592 (enable_language)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/Platform/Windows-MSVC.cmake:565 (__windows_compiler_msvc_enable_rc)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/Platform/Windows-MSVC-CXX.cmake:6 (__windows_compiler_msvc)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeCXXInformation.cmake:48 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_RC_COMPILER"
+    description: "RC compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "rc"
+    candidate_directories:
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/node_modules/@vscode/ripgrep/bin/"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/java8path/"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/javapath/"
+      - "C:/Python312/Scripts/"
+      - "C:/Python312/"
+      - "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files/TIBCO/Statistica/"
+      - "C:/Program Files/swipl/bin/"
+      - "C:/Program Files/apache-maven-3.9.9/bin/"
+      - "C:/Program Files/Java/jdk-17/bin/"
+      - "C:/ProgramData/chocolatey/bin/"
+      - "C:/Program Files/MySQL/MySQL Server 8.0/bin/"
+      - "C:/Program Files/nodejs/"
+      - "C:/iverilog/bin/"
+      - "C:/Program Files/MongoDB/Server/8.0/bin/"
+      - "C:/Users/Von/AppData/Roaming/Python/Python312/Scripts/"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/"
+      - "C:/Program Files (x86)/SASM/NASM/"
+      - "C:/Program Files/CMake/bin/"
+      - "C:/Users/Von/develop/flutter/bin/"
+      - "C:/Ruby33-x64/bin/"
+      - "C:/Program Files/MySQL/MySQL Shell 8.0/bin/"
+      - "C:/Users/Von/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Users/Von/AppData/Local/Programs/Microsoft VS Code/bin/"
+      - "C:/msys64/ucrt64/bin/"
+      - "C:/Users/Von/AppData/Local/GitHubDesktop/bin/"
+      - "C:/Users/Von/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/"
+      - "C:/Program Files/JetBrains/RubyMine 2024.3/bin/"
+      - "C:/Users/Von/AppData/Roaming/npm/"
+      - "C:/Users/Von/AppData/Local/Programs/mongosh/"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Program Files/bin/"
+      - "C:/Program Files/sbin/"
+      - "C:/Program Files/"
+      - "C:/Program Files (x86)/bin/"
+      - "C:/Program Files (x86)/sbin/"
+      - "C:/Program Files (x86)/"
+      - "C:/Program Files/CMake/bin/"
+      - "C:/Program Files/CMake/sbin/"
+      - "C:/Program Files/CMake/"
+      - "C:/Program Files (x86)/CSOPESY_OS_MP/bin/"
+      - "C:/Program Files (x86)/CSOPESY_OS_MP/sbin/"
+      - "C:/Program Files (x86)/CSOPESY_OS_MP/"
+    searched_directories:
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/node_modules/@vscode/ripgrep/bin/rc.com"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/node_modules/@vscode/ripgrep/bin/rc.exe"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/node_modules/@vscode/ripgrep/bin/rc"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/java8path/rc.com"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/java8path/rc.exe"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/java8path/rc"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/javapath/rc.com"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/javapath/rc.exe"
+      - "C:/Program Files (x86)/Common Files/Oracle/Java/javapath/rc"
+      - "C:/Python312/Scripts/rc.com"
+      - "C:/Python312/Scripts/rc.exe"
+      - "C:/Python312/Scripts/rc"
+      - "C:/Python312/rc.com"
+      - "C:/Python312/rc.exe"
+      - "C:/Python312/rc"
+      - "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/rc.com"
+      - "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/rc.exe"
+      - "C:/Program Files/ImageMagick-7.1.1-Q16-HDRI/rc"
+      - "C:/Windows/System32/rc.com"
+      - "C:/Windows/System32/rc.exe"
+      - "C:/Windows/System32/rc"
+      - "C:/Windows/rc.com"
+      - "C:/Windows/rc.exe"
+      - "C:/Windows/rc"
+      - "C:/Windows/System32/wbem/rc.com"
+      - "C:/Windows/System32/wbem/rc.exe"
+      - "C:/Windows/System32/wbem/rc"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/rc.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/rc.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/rc"
+      - "C:/Windows/System32/OpenSSH/rc.com"
+      - "C:/Windows/System32/OpenSSH/rc.exe"
+      - "C:/Windows/System32/OpenSSH/rc"
+      - "C:/Program Files/Git/cmd/rc.com"
+      - "C:/Program Files/Git/cmd/rc.exe"
+      - "C:/Program Files/Git/cmd/rc"
+      - "C:/Program Files/TIBCO/Statistica/rc.com"
+      - "C:/Program Files/TIBCO/Statistica/rc.exe"
+      - "C:/Program Files/TIBCO/Statistica/rc"
+      - "C:/Program Files/swipl/bin/rc.com"
+      - "C:/Program Files/swipl/bin/rc.exe"
+      - "C:/Program Files/swipl/bin/rc"
+      - "C:/Program Files/apache-maven-3.9.9/bin/rc.com"
+      - "C:/Program Files/apache-maven-3.9.9/bin/rc.exe"
+      - "C:/Program Files/apache-maven-3.9.9/bin/rc"
+      - "C:/Program Files/Java/jdk-17/bin/rc.com"
+      - "C:/Program Files/Java/jdk-17/bin/rc.exe"
+      - "C:/Program Files/Java/jdk-17/bin/rc"
+      - "C:/ProgramData/chocolatey/bin/rc.com"
+      - "C:/ProgramData/chocolatey/bin/rc.exe"
+      - "C:/ProgramData/chocolatey/bin/rc"
+      - "C:/Program Files/MySQL/MySQL Server 8.0/bin/rc.com"
+      - "C:/Program Files/MySQL/MySQL Server 8.0/bin/rc.exe"
+      - "C:/Program Files/MySQL/MySQL Server 8.0/bin/rc"
+      - "C:/Program Files/nodejs/rc.com"
+      - "C:/Program Files/nodejs/rc.exe"
+      - "C:/Program Files/nodejs/rc"
+      - "C:/iverilog/bin/rc.com"
+      - "C:/iverilog/bin/rc.exe"
+      - "C:/iverilog/bin/rc"
+      - "C:/Program Files/MongoDB/Server/8.0/bin/rc.com"
+      - "C:/Program Files/MongoDB/Server/8.0/bin/rc.exe"
+      - "C:/Program Files/MongoDB/Server/8.0/bin/rc"
+      - "C:/Users/Von/AppData/Roaming/Python/Python312/Scripts/rc.com"
+      - "C:/Users/Von/AppData/Roaming/Python/Python312/Scripts/rc.exe"
+      - "C:/Users/Von/AppData/Roaming/Python/Python312/Scripts/rc"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/rc.com"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/rc.exe"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/rc"
+      - "C:/Program Files (x86)/SASM/NASM/rc.com"
+      - "C:/Program Files (x86)/SASM/NASM/rc.exe"
+      - "C:/Program Files (x86)/SASM/NASM/rc"
+      - "C:/Program Files/CMake/bin/rc.com"
+      - "C:/Program Files/CMake/bin/rc.exe"
+      - "C:/Program Files/CMake/bin/rc"
+      - "C:/Users/Von/develop/flutter/bin/rc.com"
+      - "C:/Users/Von/develop/flutter/bin/rc.exe"
+      - "C:/Users/Von/develop/flutter/bin/rc"
+      - "C:/Ruby33-x64/bin/rc.com"
+      - "C:/Ruby33-x64/bin/rc.exe"
+      - "C:/Ruby33-x64/bin/rc"
+      - "C:/Program Files/MySQL/MySQL Shell 8.0/bin/rc.com"
+      - "C:/Program Files/MySQL/MySQL Shell 8.0/bin/rc.exe"
+      - "C:/Program Files/MySQL/MySQL Shell 8.0/bin/rc"
+      - "C:/Users/Von/AppData/Local/Microsoft/WindowsApps/rc.com"
+      - "C:/Users/Von/AppData/Local/Microsoft/WindowsApps/rc.exe"
+      - "C:/Users/Von/AppData/Local/Microsoft/WindowsApps/rc"
+      - "C:/Users/Von/AppData/Local/Programs/Microsoft VS Code/bin/rc.com"
+      - "C:/Users/Von/AppData/Local/Programs/Microsoft VS Code/bin/rc.exe"
+      - "C:/Users/Von/AppData/Local/Programs/Microsoft VS Code/bin/rc"
+      - "C:/msys64/ucrt64/bin/rc.com"
+      - "C:/msys64/ucrt64/bin/rc.exe"
+      - "C:/msys64/ucrt64/bin/rc"
+      - "C:/Users/Von/AppData/Local/GitHubDesktop/bin/rc.com"
+      - "C:/Users/Von/AppData/Local/GitHubDesktop/bin/rc.exe"
+      - "C:/Users/Von/AppData/Local/GitHubDesktop/bin/rc"
+      - "C:/Users/Von/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/rc.com"
+      - "C:/Users/Von/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/rc.exe"
+      - "C:/Users/Von/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0/LocalCache/local-packages/Python311/Scripts/rc"
+      - "C:/Program Files/JetBrains/RubyMine 2024.3/bin/rc.com"
+      - "C:/Program Files/JetBrains/RubyMine 2024.3/bin/rc.exe"
+      - "C:/Program Files/JetBrains/RubyMine 2024.3/bin/rc"
+      - "C:/Users/Von/AppData/Roaming/npm/rc.com"
+      - "C:/Users/Von/AppData/Roaming/npm/rc.exe"
+      - "C:/Users/Von/AppData/Roaming/npm/rc"
+      - "C:/Users/Von/AppData/Local/Programs/mongosh/rc.com"
+      - "C:/Users/Von/AppData/Local/Programs/mongosh/rc.exe"
+      - "C:/Users/Von/AppData/Local/Programs/mongosh/rc"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/bin/rc.com"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/bin/rc.exe"
+      - "C:/Users/Von/AppData/Local/Programs/cursor/resources/app/bin/rc"
+      - "C:/Program Files/bin/rc.com"
+      - "C:/Program Files/bin/rc.exe"
+      - "C:/Program Files/bin/rc"
+      - "C:/Program Files/sbin/rc.com"
+      - "C:/Program Files/sbin/rc.exe"
+      - "C:/Program Files/sbin/rc"
+      - "C:/Program Files/rc.com"
+      - "C:/Program Files/rc.exe"
+      - "C:/Program Files/rc"
+      - "C:/Program Files (x86)/bin/rc.com"
+      - "C:/Program Files (x86)/bin/rc.exe"
+      - "C:/Program Files (x86)/bin/rc"
+      - "C:/Program Files (x86)/sbin/rc.com"
+      - "C:/Program Files (x86)/sbin/rc.exe"
+      - "C:/Program Files (x86)/sbin/rc"
+      - "C:/Program Files (x86)/rc.com"
+      - "C:/Program Files (x86)/rc.exe"
+      - "C:/Program Files (x86)/rc"
+      - "C:/Program Files/CMake/bin/rc.com"
+      - "C:/Program Files/CMake/bin/rc.exe"
+      - "C:/Program Files/CMake/bin/rc"
+      - "C:/Program Files/CMake/sbin/rc.com"
+      - "C:/Program Files/CMake/sbin/rc.exe"
+      - "C:/Program Files/CMake/sbin/rc"
+      - "C:/Program Files/CMake/rc.com"
+      - "C:/Program Files/CMake/rc.exe"
+      - "C:/Program Files/CMake/rc"
+      - "C:/Program Files (x86)/CSOPESY_OS_MP/bin/rc.com"
+      - "C:/Program Files (x86)/CSOPESY_OS_MP/bin/rc.exe"
+      - "C:/Program Files (x86)/CSOPESY_OS_MP/bin/rc"
+      - "C:/Program Files (x86)/CSOPESY_OS_MP/sbin/rc.com"
+      - "C:/Program Files (x86)/CSOPESY_OS_MP/sbin/rc.exe"
+      - "C:/Program Files (x86)/CSOPESY_OS_MP/sbin/rc"
+      - "C:/Program Files (x86)/CSOPESY_OS_MP/rc.com"
+      - "C:/Program Files (x86)/CSOPESY_OS_MP/rc.exe"
+      - "C:/Program Files (x86)/CSOPESY_OS_MP/rc"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "c:\\Users\\Von\\AppData\\Local\\Programs\\cursor\\resources\\app\\node_modules\\@vscode\\ripgrep\\bin"
+        - "C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\java8path"
+        - "C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath"
+        - "C:\\Python312\\Scripts\\"
+        - "C:\\Python312\\"
+        - "C:\\Program Files\\ImageMagick-7.1.1-Q16-HDRI"
+        - "C:\\WINDOWS\\system32"
+        - "C:\\WINDOWS"
+        - "C:\\WINDOWS\\System32\\Wbem"
+        - "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\WINDOWS\\System32\\OpenSSH\\"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files\\TIBCO\\Statistica\\"
+        - "C:\\Program Files\\swipl\\bin"
+        - "C:\\Program Files\\apache-maven-3.9.9\\bin"
+        - "C:\\Program Files\\Java\\jdk-17\\bin"
+        - "C:\\ProgramData\\chocolatey\\bin"
+        - "C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\iverilog\\bin"
+        - "C:\\Program Files\\MongoDB\\Server\\8.0\\bin"
+        - "C:\\Program Files\\Java\\jdk-17\\bin"
+        - "C:\\Program Files\\apache-maven-3.9.9\\bin"
+        - "C:\\Users\\Von\\AppData\\Roaming\\Python\\Python312\\Scripts"
+        - "C:\\Users\\Von\\AppData\\Roaming\\Python\\Python312\\Scripts"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\"
+        - "C:\\Program Files (x86)\\SASM\\NASM"
+        - "C:\\Program Files\\CMake\\bin"
+        - "C:\\Users\\Von\\develop\\flutter\\bin"
+        - "C:\\Ruby33-x64\\bin"
+        - "C:\\Program Files\\MySQL\\MySQL Shell 8.0\\bin\\"
+        - "C:\\Users\\Von\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\Microsoft VS Code\\bin"
+        - "C:\\msys64\\ucrt64\\bin"
+        - "C:\\Users\\Von\\AppData\\Local\\GitHubDesktop\\bin"
+        - "C:\\Users\\Von\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\Scripts"
+        - "C:\\Program Files\\JetBrains\\RubyMine 2024.3\\bin"
+        - "C:\\Users\\Von\\AppData\\Roaming\\npm"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\mongosh\\"
+        - "C:\\Users\\Von\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/CSOPESY_OS_MP"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "C:/Program Files"
+        - "C:/Program Files (x86)"
+        - "C:/Program Files/CMake"
+        - "C:/Program Files (x86)/CSOPESY_OS_MP"
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-fc0kuy"
+      binary: "C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-fc0kuy"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /GR /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_CXX_STDLIB_MODULES_JSON: ""
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-fc0kuy'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_22648.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        MSBuild version 17.14.23+b0019275e for .NET Framework
+        Build started 25/06/2026 10:45:14 am.
+        
+        Project "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fc0kuy\\cmTC_22648.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Creating directory "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fc0kuy\\Debug\\".
+          Creating directory "cmTC_22648.dir\\Debug\\cmTC_22648.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_22648.dir\\Debug\\cmTC_22648.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_22648.dir\\Debug\\cmTC_22648.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GR /Fo"cmTC_22648.dir\\Debug\\\\" /Fd"cmTC_22648.dir\\Debug\\vc143.pdb" /external:W1 /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCXXCompilerABI.cpp"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.44.35219 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GR /Fo"cmTC_22648.dir\\Debug\\\\" /Fd"cmTC_22648.dir\\Debug\\vc143.pdb" /external:W1 /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-4.3\\Modules\\CMakeCXXCompilerABI.cpp"
+          CMakeCXXCompilerABI.cpp
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /OUT:"C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fc0kuy\\Debug\\cmTC_22648.exe" /INCREMENTAL /ILK:"cmTC_22648.dir\\Debug\\cmTC_22648.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-fc0kuy/Debug/cmTC_22648.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-fc0kuy/Debug/cmTC_22648.lib" /MACHINE:X64  /machine:x64 cmTC_22648.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_22648.vcxproj -> C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fc0kuy\\Debug\\cmTC_22648.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_22648.dir\\Debug\\cmTC_22648.tlog\\unsuccessfulbuild".
+          Touching "cmTC_22648.dir\\Debug\\cmTC_22648.tlog\\cmTC_22648.lastbuildstate".
+        Done Building Project "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fc0kuy\\cmTC_22648.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:00.56
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'CXX': C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.44.35219.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CheckCXXSourceCompiles.cmake:103 (cmake_check_source_compiles)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/FindThreads.cmake:162 (check_cxx_source_compiles)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/FindThreads.cmake:226 (_threads_check_libc)"
+      - "CMakeLists.txt:20 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-ship7q"
+      binary: "C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-ship7q"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /GR /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_STDLIB_MODULES_JSON: ""
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-ship7q'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_9f172.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        MSBuild version 17.14.23+b0019275e for .NET Framework
+        Build started 25/06/2026 10:45:16 am.
+        
+        Project "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ship7q\\cmTC_9f172.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Creating directory "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ship7q\\Debug\\".
+          Creating directory "cmTC_9f172.dir\\Debug\\cmTC_9f172.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_9f172.dir\\Debug\\cmTC_9f172.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_9f172.dir\\Debug\\cmTC_9f172.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GR /std:c++17 /Fo"cmTC_9f172.dir\\Debug\\\\" /Fd"cmTC_9f172.dir\\Debug\\vc143.pdb" /external:W1 /TP /errorReport:queue "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ship7q\\src.cxx"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.44.35219 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GR /std:c++17 /Fo"cmTC_9f172.dir\\Debug\\\\" /Fd"cmTC_9f172.dir\\Debug\\vc143.pdb" /external:W1 /TP /errorReport:queue "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ship7q\\src.cxx"
+          src.cxx
+        C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ship7q\\src.cxx(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ship7q\\cmTC_9f172.vcxproj]
+        Done Building Project "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ship7q\\cmTC_9f172.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ship7q\\cmTC_9f172.vcxproj" (default target) (1) ->
+        (ClCompile target) -> 
+          C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ship7q\\src.cxx(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ship7q\\cmTC_9f172.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:00.41
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CheckLibraryExists.cmake:154 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/FindThreads.cmake:175 (check_library_exists)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/FindThreads.cmake:238 (_threads_check_lib)"
+      - "CMakeLists.txt:20 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthreads"
+    directories:
+      source: "C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-ijnsu4"
+      binary: "C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-ijnsu4"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /GR /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_STDLIB_MODULES_JSON: ""
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREADS_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-ijnsu4'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_d02a5.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        MSBuild version 17.14.23+b0019275e for .NET Framework
+        Build started 25/06/2026 10:45:16 am.
+        
+        Project "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ijnsu4\\cmTC_d02a5.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Creating directory "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ijnsu4\\Debug\\".
+          Creating directory "cmTC_d02a5.dir\\Debug\\cmTC_d02a5.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_d02a5.dir\\Debug\\cmTC_d02a5.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_d02a5.dir\\Debug\\cmTC_d02a5.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GR /std:c++17 /Fo"cmTC_d02a5.dir\\Debug\\\\" /Fd"cmTC_d02a5.dir\\Debug\\vc143.pdb" /external:W1 /TP /errorReport:queue "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ijnsu4\\CheckFunctionExists.cxx"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.44.35219 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GR /std:c++17 /Fo"cmTC_d02a5.dir\\Debug\\\\" /Fd"cmTC_d02a5.dir\\Debug\\vc143.pdb" /external:W1 /TP /errorReport:queue "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ijnsu4\\CheckFunctionExists.cxx"
+          CheckFunctionExists.cxx
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /OUT:"C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ijnsu4\\Debug\\cmTC_d02a5.exe" /INCREMENTAL /ILK:"cmTC_d02a5.dir\\Debug\\cmTC_d02a5.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-ijnsu4/Debug/cmTC_d02a5.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-ijnsu4/Debug/cmTC_d02a5.lib" /MACHINE:X64  /machine:x64 cmTC_d02a5.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ijnsu4\\cmTC_d02a5.vcxproj]
+        Done Building Project "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ijnsu4\\cmTC_d02a5.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ijnsu4\\cmTC_d02a5.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ijnsu4\\cmTC_d02a5.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:00.45
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/CheckLibraryExists.cmake:154 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/FindThreads.cmake:175 (check_library_exists)"
+      - "C:/Program Files/CMake/share/cmake-4.3/Modules/FindThreads.cmake:239 (_threads_check_lib)"
+      - "CMakeLists.txt:20 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthread"
+    directories:
+      source: "C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-zxemri"
+      binary: "C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-zxemri"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /GR /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_STDLIB_MODULES_JSON: ""
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREAD_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-zxemri'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_abe88.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        MSBuild version 17.14.23+b0019275e for .NET Framework
+        Build started 25/06/2026 10:45:17 am.
+        
+        Project "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zxemri\\cmTC_abe88.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Creating directory "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zxemri\\Debug\\".
+          Creating directory "cmTC_abe88.dir\\Debug\\cmTC_abe88.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_abe88.dir\\Debug\\cmTC_abe88.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_abe88.dir\\Debug\\cmTC_abe88.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GR /std:c++17 /Fo"cmTC_abe88.dir\\Debug\\\\" /Fd"cmTC_abe88.dir\\Debug\\vc143.pdb" /external:W1 /TP /errorReport:queue "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zxemri\\CheckFunctionExists.cxx"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.44.35219 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GR /std:c++17 /Fo"cmTC_abe88.dir\\Debug\\\\" /Fd"cmTC_abe88.dir\\Debug\\vc143.pdb" /external:W1 /TP /errorReport:queue "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zxemri\\CheckFunctionExists.cxx"
+          CheckFunctionExists.cxx
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /OUT:"C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zxemri\\Debug\\cmTC_abe88.exe" /INCREMENTAL /ILK:"cmTC_abe88.dir\\Debug\\cmTC_abe88.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-zxemri/Debug/cmTC_abe88.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"C:/Users/Von/Documents/csopesy-mp1/build/CMakeFiles/CMakeScratch/TryCompile-zxemri/Debug/cmTC_abe88.lib" /MACHINE:X64  /machine:x64 cmTC_abe88.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthread.lib' [C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zxemri\\cmTC_abe88.vcxproj]
+        Done Building Project "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zxemri\\cmTC_abe88.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zxemri\\cmTC_abe88.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: cannot open file 'pthread.lib' [C:\\Users\\Von\\Documents\\csopesy-mp1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-zxemri\\cmTC_abe88.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:00.42
+        
+      exitCode: 1
+...
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
       - "C:/winlibs/mingw64/share/cmake-4.1/Modules/CMakeDetermineSystem.cmake:212 (message)"
       - "CMakeLists.txt:2 (project)"
     message: |
@@ -63,6 +1467,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
       - "/REGISTRY-NOTFOUND/bin/"
       - "c:/MinGW/bin/"
       - "/MinGW/bin/"
@@ -167,6 +1572,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -228,6 +1634,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
     searched_directories:
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/resources/helpers/c++.com"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/resources/helpers/c++.exe"
@@ -776,6 +2183,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -842,6 +2250,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "message-v1"
     backtrace:
@@ -920,6 +2329,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
     searched_directories:
       - "C:/winlibs/mingw64/bin/ar.com"
     found: "C:/winlibs/mingw64/bin/ar.exe"
@@ -964,6 +2374,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1020,6 +2431,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
     searched_directories:
       - "C:/winlibs/mingw64/bin/ranlib.com"
     found: "C:/winlibs/mingw64/bin/ranlib.exe"
@@ -1064,6 +2476,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1120,6 +2533,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
     searched_directories:
       - "C:/winlibs/mingw64/bin/strip.com"
     found: "C:/winlibs/mingw64/bin/strip.exe"
@@ -1164,6 +2578,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1220,6 +2635,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
     searched_directories:
       - "C:/winlibs/mingw64/bin/ld.com"
     found: "C:/winlibs/mingw64/bin/ld.exe"
@@ -1264,6 +2680,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1320,6 +2737,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
     searched_directories:
       - "C:/winlibs/mingw64/bin/nm.com"
     found: "C:/winlibs/mingw64/bin/nm.exe"
@@ -1364,6 +2782,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1420,6 +2839,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
     searched_directories:
       - "C:/winlibs/mingw64/bin/objdump.com"
     found: "C:/winlibs/mingw64/bin/objdump.exe"
@@ -1464,6 +2884,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1520,6 +2941,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
     searched_directories:
       - "C:/winlibs/mingw64/bin/objcopy.com"
     found: "C:/winlibs/mingw64/bin/objcopy.exe"
@@ -1564,6 +2986,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1620,6 +3043,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
     searched_directories:
       - "C:/winlibs/mingw64/bin/readelf.com"
     found: "C:/winlibs/mingw64/bin/readelf.exe"
@@ -1664,6 +3088,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1720,6 +3145,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
     searched_directories:
       - "C:/winlibs/mingw64/bin/dlltool.com"
     found: "C:/winlibs/mingw64/bin/dlltool.exe"
@@ -1764,6 +3190,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1820,6 +3247,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
     searched_directories:
       - "C:/winlibs/mingw64/bin/addr2line.com"
     found: "C:/winlibs/mingw64/bin/addr2line.exe"
@@ -1864,6 +3292,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1920,6 +3349,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
     searched_directories:
       - "C:/winlibs/mingw64/bin/tapi.com"
       - "C:/winlibs/mingw64/bin/tapi.exe"
@@ -2029,6 +3459,9 @@ events:
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/tapi.com"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/tapi.exe"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/tapi"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/tapi.com"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/tapi.exe"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/tapi"
     found: false
     search_context:
       ENV{PATH}:
@@ -2071,6 +3504,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -2130,6 +3564,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
     searched_directories:
       - "C:/winlibs/mingw64/bin/gcc-ar-15.2.com"
       - "C:/winlibs/mingw64/bin/gcc-ar-15.2.exe"
@@ -2239,6 +3674,9 @@ events:
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ar-15.2.com"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ar-15.2.exe"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ar-15.2"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ar-15.2.com"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ar-15.2.exe"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ar-15.2"
       - "C:/winlibs/mingw64/bin/gcc-ar-15.com"
       - "C:/winlibs/mingw64/bin/gcc-ar-15.exe"
       - "C:/winlibs/mingw64/bin/gcc-ar-15"
@@ -2347,6 +3785,9 @@ events:
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ar-15.com"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ar-15.exe"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ar-15"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ar-15.com"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ar-15.exe"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ar-15"
       - "C:/winlibs/mingw64/bin/gcc-ar15.com"
       - "C:/winlibs/mingw64/bin/gcc-ar15.exe"
       - "C:/winlibs/mingw64/bin/gcc-ar15"
@@ -2455,6 +3896,9 @@ events:
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ar15.com"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ar15.exe"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ar15"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ar15.com"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ar15.exe"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ar15"
       - "C:/winlibs/mingw64/bin/gcc-ar.com"
     found: "C:/winlibs/mingw64/bin/gcc-ar.exe"
     search_context:
@@ -2498,6 +3942,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -2557,6 +4002,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
     searched_directories:
       - "C:/winlibs/mingw64/bin/gcc-ranlib-15.2.com"
       - "C:/winlibs/mingw64/bin/gcc-ranlib-15.2.exe"
@@ -2666,6 +4112,9 @@ events:
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ranlib-15.2.com"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ranlib-15.2.exe"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ranlib-15.2"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ranlib-15.2.com"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ranlib-15.2.exe"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ranlib-15.2"
       - "C:/winlibs/mingw64/bin/gcc-ranlib-15.com"
       - "C:/winlibs/mingw64/bin/gcc-ranlib-15.exe"
       - "C:/winlibs/mingw64/bin/gcc-ranlib-15"
@@ -2774,6 +4223,9 @@ events:
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ranlib-15.com"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ranlib-15.exe"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ranlib-15"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ranlib-15.com"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ranlib-15.exe"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ranlib-15"
       - "C:/winlibs/mingw64/bin/gcc-ranlib15.com"
       - "C:/winlibs/mingw64/bin/gcc-ranlib15.exe"
       - "C:/winlibs/mingw64/bin/gcc-ranlib15"
@@ -2882,6 +4334,9 @@ events:
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ranlib15.com"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ranlib15.exe"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/gcc-ranlib15"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ranlib15.com"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ranlib15.exe"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/gcc-ranlib15"
       - "C:/winlibs/mingw64/bin/gcc-ranlib.com"
     found: "C:/winlibs/mingw64/bin/gcc-ranlib.exe"
     search_context:
@@ -2925,6 +4380,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
   -
     kind: "find-v1"
     backtrace:
@@ -2984,6 +4440,7 @@ events:
       - "C:/tools/msys64/"
       - "C:/Users/asus/AppData/Local/bin/NASM/"
       - "C:/Users/asus/AppData/Local/Programs/cursor/resources/app/bin/"
+      - "C:/Users/asus/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/"
       - "C:/Program Files/bin/"
       - "C:/Program Files/sbin/"
       - "C:/Program Files/"
@@ -3124,6 +4581,7 @@ events:
         - "C:\\tools\\msys64"
         - "C:\\Users\\asus\\AppData\\Local\\bin\\NASM\\"
         - "C:\\Users\\asus\\AppData\\Local\\Programs\\cursor\\resources\\app\\bin"
+        - "C:\\Users\\asus\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin"
       CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/CSOPESY_OS_MP"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "C:/Program Files"
@@ -3139,8 +4597,8 @@ events:
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-u80nco"
-      binary: "C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-u80nco"
+      source: "C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-rf3oly"
+      binary: "C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-rf3oly"
     cmakeVariables:
       CMAKE_CXX_FLAGS: ""
       CMAKE_CXX_FLAGS_DEBUG: "-g"
@@ -3150,13 +4608,13 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-u80nco'
+        Change Dir: 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-rf3oly'
         
-        Run Build Command(s): C:/winlibs/mingw64/bin/cmake.exe -E env VERBOSE=1 C:/winlibs/mingw64/bin/mingw32-make.exe -f Makefile cmTC_4a400/fast
-        C:/winlibs/mingw64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_4a400.dir\\build.make CMakeFiles/cmTC_4a400.dir/build
-        mingw32-make[1]: Entering directory 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-u80nco'
-        Building CXX object CMakeFiles/cmTC_4a400.dir/CMakeCXXCompilerABI.cpp.obj
-        C:\\winlibs\\mingw64\\bin\\c++.exe   -v -o CMakeFiles\\cmTC_4a400.dir\\CMakeCXXCompilerABI.cpp.obj -c C:\\winlibs\\mingw64\\share\\cmake-4.1\\Modules\\CMakeCXXCompilerABI.cpp
+        Run Build Command(s): C:/winlibs/mingw64/bin/cmake.exe -E env VERBOSE=1 C:/winlibs/mingw64/bin/mingw32-make.exe -f Makefile cmTC_24aae/fast
+        C:/winlibs/mingw64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_24aae.dir\\build.make CMakeFiles/cmTC_24aae.dir/build
+        mingw32-make[1]: Entering directory 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-rf3oly'
+        Building CXX object CMakeFiles/cmTC_24aae.dir/CMakeCXXCompilerABI.cpp.obj
+        C:\\winlibs\\mingw64\\bin\\c++.exe   -v -o CMakeFiles\\cmTC_24aae.dir\\CMakeCXXCompilerABI.cpp.obj -c C:\\winlibs\\mingw64\\share\\cmake-4.1\\Modules\\CMakeCXXCompilerABI.cpp
         Using built-in specs.
         COLLECT_GCC=C:\\winlibs\\mingw64\\bin\\c++.exe
         OFFLOAD_TARGET_NAMES=nvptx-none
@@ -3165,8 +4623,8 @@ events:
         Thread model: posix
         Supported LTO compression algorithms: zlib zstd
         gcc version 15.2.0 (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_4a400.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles\\cmTC_4a400.dir\\'
-         C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/cc1plus.exe -quiet -v -iprefix C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/ -D_REENTRANT C:\\winlibs\\mingw64\\share\\cmake-4.1\\Modules\\CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles\\cmTC_4a400.dir\\ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -version -o C:\\Users\\asus\\AppData\\Local\\Temp\\ccW6yjYq.s
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_24aae.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles\\cmTC_24aae.dir\\'
+         C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/cc1plus.exe -quiet -v -iprefix C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/ -D_REENTRANT C:\\winlibs\\mingw64\\share\\cmake-4.1\\Modules\\CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles\\cmTC_24aae.dir\\ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -version -o C:\\Users\\asus\\AppData\\Local\\Temp\\ccHxUW8y.s
         GNU C++17 (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) version 15.2.0 (x86_64-w64-mingw32)
         	compiled by GNU C version 15.2.0, GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.3.1, isl version isl-0.27-GMP
         
@@ -3191,14 +4649,14 @@ events:
          C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include
         End of search list.
         Compiler executable checksum: 43a2d58255b90554ada10a53fa1a7228
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_4a400.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles\\cmTC_4a400.dir\\'
-         C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/as.exe -v -o CMakeFiles\\cmTC_4a400.dir\\CMakeCXXCompilerABI.cpp.obj C:\\Users\\asus\\AppData\\Local\\Temp\\ccW6yjYq.s
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_24aae.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles\\cmTC_24aae.dir\\'
+         C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/as.exe -v -o CMakeFiles\\cmTC_24aae.dir\\CMakeCXXCompilerABI.cpp.obj C:\\Users\\asus\\AppData\\Local\\Temp\\ccHxUW8y.s
         GNU assembler version 2.45 (x86_64-w64-mingw32) using BFD version (Binutils for MinGW-W64 x86_64, built by Brecht Sanders, r1) 2.45
         COMPILER_PATH=C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/;C:/winlibs/mingw64/bin/../libexec/gcc/;C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/
         LIBRARY_PATH=C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/;C:/winlibs/mingw64/bin/../lib/gcc/;C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/;C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../lib/;C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/;C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_4a400.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles\\cmTC_4a400.dir\\CMakeCXXCompilerABI.cpp.'
-        Linking CXX executable cmTC_4a400.exe
-        C:\\winlibs\\mingw64\\bin\\cmake.exe -E cmake_link_script CMakeFiles\\cmTC_4a400.dir\\link.txt --verbose=1
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_24aae.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles\\cmTC_24aae.dir\\CMakeCXXCompilerABI.cpp.'
+        Linking CXX executable cmTC_24aae.exe
+        C:\\winlibs\\mingw64\\bin\\cmake.exe -E cmake_link_script CMakeFiles\\cmTC_24aae.dir\\link.txt --verbose=1
         Using built-in specs.
         COLLECT_GCC=C:\\winlibs\\mingw64\\bin\\c++.exe
         COLLECT_LTO_WRAPPER=C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper.exe
@@ -3210,16 +4668,16 @@ events:
         gcc version 15.2.0 (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 
         COMPILER_PATH=C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/;C:/winlibs/mingw64/bin/../libexec/gcc/;C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/
         LIBRARY_PATH=C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/;C:/winlibs/mingw64/bin/../lib/gcc/;C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/;C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../lib/;C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/;C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../
-        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_4a400.exe' '-foffload-options=-l_GCC_stdc++' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_4a400.'
-         C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/collect2.exe -plugin C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.dll -plugin-opt=C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper.exe -plugin-opt=-fresolution=C:\\Users\\asus\\AppData\\Local\\Temp\\ccqYlYM2.res -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-ladvapi32 -plugin-opt=-pass-through=-lshell32 -plugin-opt=-pass-through=-luser32 -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -m i386pep -Bdynamic -o cmTC_4a400.exe C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0 -LC:/winlibs/mingw64/bin/../lib/gcc -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../.. -v --whole-archive CMakeFiles\\cmTC_4a400.dir/objects.a --no-whole-archive --out-implib libcmTC_4a400.dll.a --major-image-version 0 --minor-image-version 0 -lstdc++ -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_24aae.exe' '-foffload-options=-l_GCC_stdc++' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_24aae.'
+         C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/collect2.exe -plugin C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.dll -plugin-opt=C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper.exe -plugin-opt=-fresolution=C:\\Users\\asus\\AppData\\Local\\Temp\\cclsW4AX.res -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-ladvapi32 -plugin-opt=-pass-through=-lshell32 -plugin-opt=-pass-through=-luser32 -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -m i386pep -Bdynamic -o cmTC_24aae.exe C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0 -LC:/winlibs/mingw64/bin/../lib/gcc -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../.. -v --whole-archive CMakeFiles\\cmTC_24aae.dir/objects.a --no-whole-archive --out-implib libcmTC_24aae.dll.a --major-image-version 0 --minor-image-version 0 -lstdc++ -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o
         collect2 version 15.2.0
-        C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe -plugin C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.dll -plugin-opt=C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper.exe -plugin-opt=-fresolution=C:\\Users\\asus\\AppData\\Local\\Temp\\ccqYlYM2.res -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-ladvapi32 -plugin-opt=-pass-through=-lshell32 -plugin-opt=-pass-through=-luser32 -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -m i386pep -Bdynamic -o cmTC_4a400.exe C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0 -LC:/winlibs/mingw64/bin/../lib/gcc -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../.. -v --whole-archive CMakeFiles\\cmTC_4a400.dir/objects.a --no-whole-archive --out-implib libcmTC_4a400.dll.a --major-image-version 0 --minor-image-version 0 -lstdc++ -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o
+        C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe -plugin C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.dll -plugin-opt=C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper.exe -plugin-opt=-fresolution=C:\\Users\\asus\\AppData\\Local\\Temp\\cclsW4AX.res -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-ladvapi32 -plugin-opt=-pass-through=-lshell32 -plugin-opt=-pass-through=-luser32 -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -m i386pep -Bdynamic -o cmTC_24aae.exe C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0 -LC:/winlibs/mingw64/bin/../lib/gcc -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../.. -v --whole-archive CMakeFiles\\cmTC_24aae.dir/objects.a --no-whole-archive --out-implib libcmTC_24aae.dll.a --major-image-version 0 --minor-image-version 0 -lstdc++ -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o
         GNU ld (Binutils for MinGW-W64 x86_64, built by Brecht Sanders, r1) 2.45
-        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_4a400.exe' '-foffload-options=-l_GCC_stdc++' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_4a400.'
-        C:\\winlibs\\mingw64\\bin\\cmake.exe -E rm -f CMakeFiles\\cmTC_4a400.dir/objects.a
-        C:\\winlibs\\mingw64\\bin\\ar.exe qc CMakeFiles\\cmTC_4a400.dir/objects.a @CMakeFiles\\cmTC_4a400.dir\\objects1.rsp
-        C:\\winlibs\\mingw64\\bin\\c++.exe  -v -Wl,-v -Wl,--whole-archive CMakeFiles\\cmTC_4a400.dir/objects.a -Wl,--no-whole-archive -o cmTC_4a400.exe -Wl,--out-implib,libcmTC_4a400.dll.a -Wl,--major-image-version,0,--minor-image-version,0
-        mingw32-make[1]: Leaving directory 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-u80nco'
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_24aae.exe' '-foffload-options=-l_GCC_stdc++' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_24aae.'
+        C:\\winlibs\\mingw64\\bin\\cmake.exe -E rm -f CMakeFiles\\cmTC_24aae.dir/objects.a
+        C:\\winlibs\\mingw64\\bin\\ar.exe qc CMakeFiles\\cmTC_24aae.dir/objects.a @CMakeFiles\\cmTC_24aae.dir\\objects1.rsp
+        C:\\winlibs\\mingw64\\bin\\c++.exe  -v -Wl,-v -Wl,--whole-archive CMakeFiles\\cmTC_24aae.dir/objects.a -Wl,--no-whole-archive -o cmTC_24aae.exe -Wl,--out-implib,libcmTC_24aae.dll.a -Wl,--major-image-version,0,--minor-image-version,0
+        mingw32-make[1]: Leaving directory 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-rf3oly'
         
       exitCode: 0
   -
@@ -3260,13 +4718,13 @@ events:
       Parsed CXX implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
-        ignore line: [Change Dir: 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-u80nco']
+        ignore line: [Change Dir: 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-rf3oly']
         ignore line: []
-        ignore line: [Run Build Command(s): C:/winlibs/mingw64/bin/cmake.exe -E env VERBOSE=1 C:/winlibs/mingw64/bin/mingw32-make.exe -f Makefile cmTC_4a400/fast]
-        ignore line: [C:/winlibs/mingw64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_4a400.dir\\build.make CMakeFiles/cmTC_4a400.dir/build]
-        ignore line: [mingw32-make[1]: Entering directory 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-u80nco']
-        ignore line: [Building CXX object CMakeFiles/cmTC_4a400.dir/CMakeCXXCompilerABI.cpp.obj]
-        ignore line: [C:\\winlibs\\mingw64\\bin\\c++.exe   -v -o CMakeFiles\\cmTC_4a400.dir\\CMakeCXXCompilerABI.cpp.obj -c C:\\winlibs\\mingw64\\share\\cmake-4.1\\Modules\\CMakeCXXCompilerABI.cpp]
+        ignore line: [Run Build Command(s): C:/winlibs/mingw64/bin/cmake.exe -E env VERBOSE=1 C:/winlibs/mingw64/bin/mingw32-make.exe -f Makefile cmTC_24aae/fast]
+        ignore line: [C:/winlibs/mingw64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_24aae.dir\\build.make CMakeFiles/cmTC_24aae.dir/build]
+        ignore line: [mingw32-make[1]: Entering directory 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-rf3oly']
+        ignore line: [Building CXX object CMakeFiles/cmTC_24aae.dir/CMakeCXXCompilerABI.cpp.obj]
+        ignore line: [C:\\winlibs\\mingw64\\bin\\c++.exe   -v -o CMakeFiles\\cmTC_24aae.dir\\CMakeCXXCompilerABI.cpp.obj -c C:\\winlibs\\mingw64\\share\\cmake-4.1\\Modules\\CMakeCXXCompilerABI.cpp]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=C:\\winlibs\\mingw64\\bin\\c++.exe]
         ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none]
@@ -3275,8 +4733,8 @@ events:
         ignore line: [Thread model: posix]
         ignore line: [Supported LTO compression algorithms: zlib zstd]
         ignore line: [gcc version 15.2.0 (MinGW-W64 x86_64-msvcrt-posix-seh  built by Brecht Sanders  r1) ]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_4a400.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles\\cmTC_4a400.dir\\']
-        ignore line: [ C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/cc1plus.exe -quiet -v -iprefix C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/ -D_REENTRANT C:\\winlibs\\mingw64\\share\\cmake-4.1\\Modules\\CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles\\cmTC_4a400.dir\\ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -version -o C:\\Users\\asus\\AppData\\Local\\Temp\\ccW6yjYq.s]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_24aae.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles\\cmTC_24aae.dir\\']
+        ignore line: [ C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/cc1plus.exe -quiet -v -iprefix C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/ -D_REENTRANT C:\\winlibs\\mingw64\\share\\cmake-4.1\\Modules\\CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles\\cmTC_24aae.dir\\ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -version -o C:\\Users\\asus\\AppData\\Local\\Temp\\ccHxUW8y.s]
         ignore line: [GNU C++17 (MinGW-W64 x86_64-msvcrt-posix-seh  built by Brecht Sanders  r1) version 15.2.0 (x86_64-w64-mingw32)]
         ignore line: [	compiled by GNU C version 15.2.0  GMP version 6.3.0  MPFR version 4.2.2  MPC version 1.3.1  isl version isl-0.27-GMP]
         ignore line: []
@@ -3301,8 +4759,8 @@ events:
         ignore line: [ C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/include]
         ignore line: [End of search list.]
         ignore line: [Compiler executable checksum: 43a2d58255b90554ada10a53fa1a7228]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_4a400.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles\\cmTC_4a400.dir\\']
-        ignore line: [ C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/as.exe -v -o CMakeFiles\\cmTC_4a400.dir\\CMakeCXXCompilerABI.cpp.obj C:\\Users\\asus\\AppData\\Local\\Temp\\ccW6yjYq.s]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_24aae.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles\\cmTC_24aae.dir\\']
+        ignore line: [ C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/as.exe -v -o CMakeFiles\\cmTC_24aae.dir\\CMakeCXXCompilerABI.cpp.obj C:\\Users\\asus\\AppData\\Local\\Temp\\ccHxUW8y.s]
         ignore line: [GNU assembler version 2.45 (x86_64-w64-mingw32) using BFD version (Binutils for MinGW-W64 x86_64  built by Brecht Sanders  r1) 2.45]
         ignore line: [COMPILER_PATH=C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/]
         ignore line: [C:/winlibs/mingw64/bin/../libexec/gcc/]
@@ -3313,9 +4771,9 @@ events:
         ignore line: [C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../lib/]
         ignore line: [C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/]
         ignore line: [C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_4a400.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles\\cmTC_4a400.dir\\CMakeCXXCompilerABI.cpp.']
-        ignore line: [Linking CXX executable cmTC_4a400.exe]
-        ignore line: [C:\\winlibs\\mingw64\\bin\\cmake.exe -E cmake_link_script CMakeFiles\\cmTC_4a400.dir\\link.txt --verbose=1]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles\\cmTC_24aae.dir\\CMakeCXXCompilerABI.cpp.obj' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles\\cmTC_24aae.dir\\CMakeCXXCompilerABI.cpp.']
+        ignore line: [Linking CXX executable cmTC_24aae.exe]
+        ignore line: [C:\\winlibs\\mingw64\\bin\\cmake.exe -E cmake_link_script CMakeFiles\\cmTC_24aae.dir\\link.txt --verbose=1]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=C:\\winlibs\\mingw64\\bin\\c++.exe]
         ignore line: [COLLECT_LTO_WRAPPER=C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper.exe]
@@ -3334,13 +4792,13 @@ events:
         ignore line: [C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../lib/]
         ignore line: [C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/]
         ignore line: [C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_4a400.exe' '-foffload-options=-l_GCC_stdc++' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_4a400.']
-        link line: [ C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/collect2.exe -plugin C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.dll -plugin-opt=C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper.exe -plugin-opt=-fresolution=C:\\Users\\asus\\AppData\\Local\\Temp\\ccqYlYM2.res -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-ladvapi32 -plugin-opt=-pass-through=-lshell32 -plugin-opt=-pass-through=-luser32 -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -m i386pep -Bdynamic -o cmTC_4a400.exe C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0 -LC:/winlibs/mingw64/bin/../lib/gcc -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../.. -v --whole-archive CMakeFiles\\cmTC_4a400.dir/objects.a --no-whole-archive --out-implib libcmTC_4a400.dll.a --major-image-version 0 --minor-image-version 0 -lstdc++ -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_24aae.exe' '-foffload-options=-l_GCC_stdc++' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_24aae.']
+        link line: [ C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/collect2.exe -plugin C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.dll -plugin-opt=C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper.exe -plugin-opt=-fresolution=C:\\Users\\asus\\AppData\\Local\\Temp\\cclsW4AX.res -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-ladvapi32 -plugin-opt=-pass-through=-lshell32 -plugin-opt=-pass-through=-luser32 -plugin-opt=-pass-through=-lkernel32 -plugin-opt=-pass-through=-lmingw32 -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lmingwex -plugin-opt=-pass-through=-lmsvcrt -plugin-opt=-pass-through=-lkernel32 -m i386pep -Bdynamic -o cmTC_24aae.exe C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0 -LC:/winlibs/mingw64/bin/../lib/gcc -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib -LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../.. -v --whole-archive CMakeFiles\\cmTC_24aae.dir/objects.a --no-whole-archive --out-implib libcmTC_24aae.dll.a --major-image-version 0 --minor-image-version 0 -lstdc++ -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32 -lmingw32 -lgcc_s -lgcc -lmingwex -lmsvcrt -lkernel32 C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/crtend.o]
           arg [C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/collect2.exe] ==> ignore
           arg [-plugin] ==> ignore
           arg [C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/liblto_plugin.dll] ==> ignore
           arg [-plugin-opt=C:/winlibs/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/15.2.0/lto-wrapper.exe] ==> ignore
-          arg [-plugin-opt=-fresolution=C:\\Users\\asus\\AppData\\Local\\Temp\\ccqYlYM2.res] ==> ignore
+          arg [-plugin-opt=-fresolution=C:\\Users\\asus\\AppData\\Local\\Temp\\cclsW4AX.res] ==> ignore
           arg [-plugin-opt=-pass-through=-lmingw32] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
@@ -3362,7 +4820,7 @@ events:
           arg [i386pep] ==> ignore
           arg [-Bdynamic] ==> search dynamic
           arg [-o] ==> ignore
-          arg [cmTC_4a400.exe] ==> ignore
+          arg [cmTC_24aae.exe] ==> ignore
           arg [C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o] ==> obj [C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o]
           arg [C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o] ==> obj [C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/crtbegin.o]
           arg [-LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0] ==> dir [C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0]
@@ -3373,10 +4831,10 @@ events:
           arg [-LC:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../..] ==> dir [C:/winlibs/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../..]
           arg [-v] ==> ignore
           arg [--whole-archive] ==> ignore
-          arg [CMakeFiles\\cmTC_4a400.dir/objects.a] ==> ignore
+          arg [CMakeFiles\\cmTC_24aae.dir/objects.a] ==> ignore
           arg [--no-whole-archive] ==> ignore
           arg [--out-implib] ==> ignore
-          arg [libcmTC_4a400.dll.a] ==> ignore
+          arg [libcmTC_24aae.dll.a] ==> ignore
           arg [--major-image-version] ==> ignore
           arg [0] ==> ignore
           arg [--minor-image-version] ==> ignore
@@ -3448,10 +4906,6 @@ events:
     message: |
       Running the CXX compiler's linker: "Configured with: ../configure --prefix=/R/winlibs_staging_msvcrt64/inst_gcc-15.2.0/share/gcc --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32 --enable-offload-targets=nvptx-none --with-pkgversion='MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1' --with-tune=generic --enable-checking=release --enable-threads=posix --disable-sjlj-exceptions --disable-libunwind-exceptions --disable-serial-configure --disable-bootstrap --enable-host-shared --enable-plugin --disable-default-ssp --disable-rpath --disable-libstdcxx-debug --disable-version-specific-runtime-libs --disable-symvers --enable-languages=c,c++,fortran,lto,objc,obj-c++ --disable-gold --disable-nls --disable-stage1-checking --disable-win32-registry --disable-multilib --enable-ld --enable-libquadmath --enable-libada --enable-libssp --enable-libstdcxx --enable-lto --enable-fully-dynamic-string --enable-libgomp --enable-graphite --enable-mingw-wildcard --enable-libstdcxx-time --enable-libstdcxx-pch --with-mpc=/c/Prog/winlibs_staging_msvcrt/custombuilt64 --with-mpfr=/c/Prog/winlibs_staging_msvcrt/custombuilt64 --with-gmp=/c/Prog/winlibs_staging_msvcrt/custombuilt64 --with-isl=/c/Prog/winlibs_staging_msvcrt/custombuilt64 --disable-libstdcxx-backtrace --enable-install-libiberty --enable-__cxa_atexit --without-included-gettext --with-diagnostics-color=auto --enable-clocale=generic --enable-libgdiagnostics --with-libiconv --with-system-zlib --with-build-sysroot=/R/winlibs_staging_msvcrt64/gcc-15.2.0/build_mingw/mingw-w64 CFLAGS='-I/c/Prog/winlibs_staging_msvcrt/custombuilt64/include/libdl-win32   -march=nocona -msahf -mtune=generic -O2 -Wno-error=format' CXXFLAGS='-Wno-int-conversion  -march=nocona -msahf -mtune=generic -O2' LDFLAGS='-pthread -Wl,--no-insert-timestamp -Wl,--dynamicbase -Wl,--high-entropy-va -Wl,--nxcompat -Wl,--tsaware' LD=/c/Prog/winlibs_staging_msvcrt/custombuilt64/share/binutils/bin/ld.exe" "--version"
       
-...
-
----
-events:
   -
     kind: "try_compile-v1"
     backtrace:
@@ -3459,12 +4913,12 @@ events:
       - "C:/winlibs/mingw64/share/cmake-4.1/Modules/CheckCXXSourceCompiles.cmake:103 (cmake_check_source_compiles)"
       - "C:/winlibs/mingw64/share/cmake-4.1/Modules/FindThreads.cmake:99 (check_cxx_source_compiles)"
       - "C:/winlibs/mingw64/share/cmake-4.1/Modules/FindThreads.cmake:163 (_threads_check_libc)"
-      - "CMakeLists.txt:19 (find_package)"
+      - "CMakeLists.txt:20 (find_package)"
     checks:
       - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
     directories:
-      source: "C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-iuwx01"
-      binary: "C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-iuwx01"
+      source: "C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-59o3mz"
+      binary: "C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-59o3mz"
     cmakeVariables:
       CMAKE_CXX_FLAGS: ""
       CMAKE_CXX_FLAGS_DEBUG: "-g"
@@ -3473,19 +4927,19 @@ events:
       variable: "CMAKE_HAVE_LIBC_PTHREAD"
       cached: true
       stdout: |
-        Change Dir: 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-iuwx01'
+        Change Dir: 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-59o3mz'
         
-        Run Build Command(s): C:/winlibs/mingw64/bin/cmake.exe -E env VERBOSE=1 C:/winlibs/mingw64/bin/mingw32-make.exe -f Makefile cmTC_e1209/fast
-        C:/winlibs/mingw64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_e1209.dir\\build.make CMakeFiles/cmTC_e1209.dir/build
-        mingw32-make[1]: Entering directory 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-iuwx01'
-        Building CXX object CMakeFiles/cmTC_e1209.dir/src.cxx.obj
-        C:\\winlibs\\mingw64\\bin\\c++.exe -DCMAKE_HAVE_LIBC_PTHREAD  -std=gnu++17 -o CMakeFiles\\cmTC_e1209.dir\\src.cxx.obj -c "C:\\Users\\asus\\Desktop\\CSOPESY OS MP\\build\\CMakeFiles\\CMakeScratch\\TryCompile-iuwx01\\src.cxx"
-        Linking CXX executable cmTC_e1209.exe
-        C:\\winlibs\\mingw64\\bin\\cmake.exe -E cmake_link_script CMakeFiles\\cmTC_e1209.dir\\link.txt --verbose=1
-        C:\\winlibs\\mingw64\\bin\\cmake.exe -E rm -f CMakeFiles\\cmTC_e1209.dir/objects.a
-        C:\\winlibs\\mingw64\\bin\\ar.exe qc CMakeFiles\\cmTC_e1209.dir/objects.a @CMakeFiles\\cmTC_e1209.dir\\objects1.rsp
-        C:\\winlibs\\mingw64\\bin\\c++.exe -Wl,--whole-archive CMakeFiles\\cmTC_e1209.dir/objects.a -Wl,--no-whole-archive -o cmTC_e1209.exe -Wl,--out-implib,libcmTC_e1209.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\\cmTC_e1209.dir\\linkLibs.rsp
-        mingw32-make[1]: Leaving directory 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-iuwx01'
+        Run Build Command(s): C:/winlibs/mingw64/bin/cmake.exe -E env VERBOSE=1 C:/winlibs/mingw64/bin/mingw32-make.exe -f Makefile cmTC_f0b2b/fast
+        C:/winlibs/mingw64/bin/mingw32-make.exe  -f CMakeFiles\\cmTC_f0b2b.dir\\build.make CMakeFiles/cmTC_f0b2b.dir/build
+        mingw32-make[1]: Entering directory 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-59o3mz'
+        Building CXX object CMakeFiles/cmTC_f0b2b.dir/src.cxx.obj
+        C:\\winlibs\\mingw64\\bin\\c++.exe -DCMAKE_HAVE_LIBC_PTHREAD  -std=gnu++17 -o CMakeFiles\\cmTC_f0b2b.dir\\src.cxx.obj -c "C:\\Users\\asus\\Desktop\\CSOPESY OS MP\\build\\CMakeFiles\\CMakeScratch\\TryCompile-59o3mz\\src.cxx"
+        Linking CXX executable cmTC_f0b2b.exe
+        C:\\winlibs\\mingw64\\bin\\cmake.exe -E cmake_link_script CMakeFiles\\cmTC_f0b2b.dir\\link.txt --verbose=1
+        C:\\winlibs\\mingw64\\bin\\cmake.exe -E rm -f CMakeFiles\\cmTC_f0b2b.dir/objects.a
+        C:\\winlibs\\mingw64\\bin\\ar.exe qc CMakeFiles\\cmTC_f0b2b.dir/objects.a @CMakeFiles\\cmTC_f0b2b.dir\\objects1.rsp
+        C:\\winlibs\\mingw64\\bin\\c++.exe -Wl,--whole-archive CMakeFiles\\cmTC_f0b2b.dir/objects.a -Wl,--no-whole-archive -o cmTC_f0b2b.exe -Wl,--out-implib,libcmTC_f0b2b.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\\cmTC_f0b2b.dir\\linkLibs.rsp
+        mingw32-make[1]: Leaving directory 'C:/Users/asus/Desktop/CSOPESY OS MP/build/CMakeFiles/CMakeScratch/TryCompile-59o3mz'
         
       exitCode: 0
 ...

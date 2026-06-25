@@ -169,6 +169,7 @@ CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj: \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/std_thread.h \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/this_thread_sleep.h \
  C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\ConsoleManager.h \
+ C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\ReportManager.h \
  C:/winlibs/mingw64/include/c++/15.2.0/iostream \
  C:/winlibs/mingw64/include/c++/15.2.0/ostream \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/ostream.h \
