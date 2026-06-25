@@ -26,9 +26,12 @@ void ConsoleManager::printHeader() {
         << "Welcome to CSOPESY Emulator!\n"
         << "\n"
         << "Developers:\n"
-        << "Del Gallego, Neil Patrick\n"
+        << "Alcantara, Van Asher\n"
+        << "Capote, Mary Grace\n"
+        << "Miranda, Juan Miguel\n"
+        << "Rojo, Von Matthew\n"
         << "\n"
-        << "Last updated: 01-18-2024\n"
+        << "Last updated: 06-24-2026 by grass\n"
         << "----------------------------------------------------\n"
         << "\n";
 }

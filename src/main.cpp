@@ -1,12 +1,10 @@
 #include "Config.h"
 #include "ConsoleManager.h"
-#include "ProcessModel.h"
 #include "ReportManager.h"
+#include "ScreenManager.h"
 #include "Scheduler.h"
 
 #include <iostream>
-#include <memory>
-#include <random>
 #include <string>
 
 namespace {
@@ -20,98 +18,9 @@ std::string trim(const std::string& value) {
     return value.substr(start, end - start + 1);
 }
 
-bool startsWith(const std::string& text, const std::string& prefix) {
-    return text.size() >= prefix.size() && text.compare(0, prefix.size(), prefix) == 0;
-}
-
 void printNotInitialized() {
     ConsoleManager::printLine(
         "Please initialize the system first by typing \"initialize\".");
-}
-
-int randomInstructionCount(const Config& config) {
-    static std::mt19937 rng(std::random_device{}());
-    const int low = static_cast<int>(config.minIns);
-    const int high = static_cast<int>(config.maxIns < config.minIns ? config.minIns
-                                                                     : config.maxIns);
-    std::uniform_int_distribution<int> dist(low, high);
-    return dist(rng);
-}
-
-// Runs the process screen loop for a live process until the user types exit.
-void runProcessScreen(const std::shared_ptr<Process>& process) {
-    ConsoleManager::clearScreen();
-    std::cout << process->formatSmi();
-    ConsoleManager::printProcessScreenHint(process->name());
-
-    while (true) {
-        ConsoleManager::printPrompt();
-
-        std::string command;
-        if (!std::getline(std::cin, command)) {
-            return;
-        }
-        command = trim(command);
-        if (command.empty()) {
-            continue;
-        }
-
-        if (command == "process-smi") {
-            std::cout << process->formatSmi();
-            continue;
-        }
-
-        if (command == "exit") {
-            ConsoleManager::clearScreen();
-            ConsoleManager::printHeader();
-            return;
-        }
-
-        ConsoleManager::printLine("Unknown command inside process screen.");
-    }
-}
-
-bool handleScreenCommand(const std::string& command, Scheduler& scheduler,
-                         const Config& config) {
-    if (command == "screen -ls") {
-        std::cout << scheduler.buildStatusReport();
-        return true;
-    }
-
-    const std::string createPrefix = "screen -s ";
-    const std::string attachPrefix = "screen -r ";
-
-    if (startsWith(command, createPrefix)) {
-        const std::string name = trim(command.substr(createPrefix.size()));
-        if (name.empty()) {
-            ConsoleManager::printLine("Unknown command. Please try again.");
-            return true;
-        }
-        if (scheduler.processExists(name)) {
-            ConsoleManager::printLine("Process " + name + " already exists.");
-            return true;
-        }
-        auto process = scheduler.createProcess(name, randomInstructionCount(config));
-        runProcessScreen(process);
-        return true;
-    }
-
-    if (startsWith(command, attachPrefix)) {
-        const std::string name = trim(command.substr(attachPrefix.size()));
-        if (name.empty()) {
-            ConsoleManager::printLine("Unknown command. Please try again.");
-            return true;
-        }
-        auto process = scheduler.findProcess(name);
-        if (!process || process->status() == ProcessStatus::Finished) {
-            ConsoleManager::printLine("Process " + name + " not found.");
-            return true;
-        }
-        runProcessScreen(process);
-        return true;
-    }
-
-    return false;
 }
 
 }  // namespace
@@ -145,12 +54,6 @@ int main() {
             continue;
         }
 
-        if (command == "clear") {
-            ConsoleManager::clearScreen();
-            ConsoleManager::printHeader();
-            continue;
-        }
-
         if (command == "initialize") {
             if (initialized) {
                 ConsoleManager::printLine("System is already initialized.");
@@ -168,6 +71,12 @@ int main() {
 
         if (!initialized) {
             printNotInitialized();
+            continue;
+        }
+
+        if (command == "clear") {
+            ConsoleManager::clearScreen();
+            ConsoleManager::printHeader();
             continue;
         }
 
@@ -203,11 +112,9 @@ int main() {
             continue;
         }
 
-        if (command == "screen -ls" || startsWith(command, "screen -s ") ||
-            startsWith(command, "screen -r ")) {
-            if (handleScreenCommand(command, scheduler, config)) {
-                continue;
-            }
+        if (ScreenManager::isScreenCommand(command)) {
+            ScreenManager::handleCommand(command, scheduler, config);
+            continue;
         }
 
         ConsoleManager::printLine("Unknown command. Please try again.");
