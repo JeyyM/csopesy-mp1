@@ -31,7 +31,7 @@ void ConsoleManager::printHeader() {
         << "Miranda, Juan Miguel\n"
         << "Rojo, Von Matthew\n"
         << "\n"
-        << "Last updated: 06-24-2026 by grass\n"
+        << "Last updated: 06-25-2026 by von\n"
         << "----------------------------------------------------\n"
         << "\n";
 }

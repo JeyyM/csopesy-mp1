@@ -7,28 +7,33 @@
 #include <iostream>
 #include <string>
 
-namespace {
+namespace
+{
 
-constexpr int kTestProcessCount = 10;
-constexpr int kTestPrintsPerProcess = 100;
+    constexpr int kTestProcessCount = 10;
+    constexpr int kTestPrintsPerProcess = 100;
 
-std::string trim(const std::string& value) {
-    const auto start = value.find_first_not_of(" \t\r\n");
-    if (start == std::string::npos) {
-        return "";
+    std::string trim(const std::string &value)
+    {
+        const auto start = value.find_first_not_of(" \t\r\n");
+        if (start == std::string::npos)
+        {
+            return "";
+        }
+        const auto end = value.find_last_not_of(" \t\r\n");
+        return value.substr(start, end - start + 1);
     }
-    const auto end = value.find_last_not_of(" \t\r\n");
-    return value.substr(start, end - start + 1);
-}
 
-void printNotInitialized() {
-    ConsoleManager::printLine(
-        "Please initialize the system first by typing \"initialize\".");
-}
+    void printNotInitialized()
+    {
+        ConsoleManager::printLine(
+            "Please initialize the system first by typing \"initialize\".");
+    }
 
-}  // namespace
+} // namespace
 
-int main() {
+int main()
+{
     Config config;
     Scheduler scheduler;
 
@@ -38,32 +43,39 @@ int main() {
     ConsoleManager::clearScreen();
     ConsoleManager::printHeader();
 
-    while (running) {
+    while (running)
+    {
         ConsoleManager::printPrompt();
 
         std::string command;
-        if (!std::getline(std::cin, command)) {
+        if (!std::getline(std::cin, command))
+        {
             break;
         }
         command = trim(command);
-        if (command.empty()) {
+        if (command.empty())
+        {
             continue;
         }
 
-        if (command == "exit") {
+        if (command == "exit")
+        {
             ConsoleManager::printLine("Exiting CSOPESY Emulator.");
             scheduler.stop();
             running = false;
             continue;
         }
 
-        if (command == "initialize") {
-            if (initialized) {
+        if (command == "initialize")
+        {
+            if (initialized)
+            {
                 ConsoleManager::printLine("System is already initialized.");
                 continue;
             }
             std::string error;
-            if (!ConfigLoader::loadFromFile("config.txt", config, error)) {
+            if (!ConfigLoader::loadFromFile("config.txt", config, error))
+            {
                 ConsoleManager::printLine(error);
                 continue;
             }
@@ -72,21 +84,27 @@ int main() {
             continue;
         }
 
-        if (!initialized) {
+        if (!initialized)
+        {
             printNotInitialized();
             continue;
         }
 
-        if (command == "clear") {
+        if (command == "clear")
+        {
             ConsoleManager::clearScreen();
             ConsoleManager::printHeader();
             continue;
         }
 
-        if (command == "scheduler-start") {
-            if (scheduler.isEngineRunning()) {
+        if (command == "scheduler-start")
+        {
+            if (scheduler.isEngineRunning())
+            {
                 ConsoleManager::printLine("Scheduler is already running.");
-            } else {
+            }
+            else
+            {
                 scheduler.start(config);
                 scheduler.generateBatch(kTestProcessCount, kTestPrintsPerProcess);
                 ConsoleManager::printLine("Scheduler started. Generating processes.");
@@ -94,29 +112,38 @@ int main() {
             continue;
         }
 
-        if (command == "scheduler-stop") {
-            if (!scheduler.isEngineRunning()) {
+        if (command == "scheduler-stop")
+        {
+            if (!scheduler.isEngineRunning())
+            {
                 ConsoleManager::printLine("Scheduler is not running.");
-            } else {
+            }
+            else
+            {
                 scheduler.stop();
                 ConsoleManager::printLine("Scheduler stopped.");
             }
             continue;
         }
 
-        if (command == "report-util") {
+        if (command == "report-util")
+        {
             const std::string report = scheduler.buildStatusReport();
+            const std::string path = ReportManager::defaultReportPath();
             std::string error;
-            if (ReportManager::saveReport(ReportManager::defaultReportPath(), report,
-                                          error)) {
-                ConsoleManager::printLine("Report generated at C:/csopesy-log.txt!");
-            } else {
+            if (ReportManager::saveReport(path, report, error))
+            {
+                ConsoleManager::printLine("Report generated at " + path + "!");
+            }
+            else
+            {
                 ConsoleManager::printLine(error);
             }
             continue;
         }
 
-        if (ScreenManager::isScreenCommand(command)) {
+        if (ScreenManager::isScreenCommand(command))
+        {
             ScreenManager::handleCommand(command, scheduler, config);
             continue;
         }

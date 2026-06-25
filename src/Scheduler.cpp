@@ -7,18 +7,22 @@
 #include <iomanip>
 #include <sstream>
 
-namespace {
+namespace
+{
 
-std::string padRight(const std::string& text, std::size_t width) {
-    if (text.size() >= width) {
-        return text;
+    std::string padRight(const std::string &text, std::size_t width)
+    {
+        if (text.size() >= width)
+        {
+            return text;
+        }
+        return text + std::string(width - text.size(), ' ');
     }
-    return text + std::string(width - text.size(), ' ');
-}
 
-}  // namespace
+} // namespace
 
-Scheduler::~Scheduler() {
+Scheduler::~Scheduler()
+{
     stop();
 }
 
@@ -30,13 +34,16 @@ Scheduler::~Scheduler() {
 //   3. Exactly ONE SCHEDULER THREAD is launched (schedulerThread_) —
 //      this is the dispatcher that decides who goes on which core.
 
-void Scheduler::start(const Config& config) {
-    if (engineRunning_.load()) {
+void Scheduler::start(const Config &config)
+{
+    if (engineRunning_.load())
+    {
         return; // already running, nothing to do
     }
 
     config_ = config;
-    if (config_.numCpu < 1) {
+    if (config_.numCpu < 1)
+    {
         config_.numCpu = 1; // always have at least 1 core for safety net
     }
 
@@ -52,7 +59,8 @@ void Scheduler::start(const Config& config) {
     coreThreads_.clear();
     // STEP 2: one worker thread per CPU core. Each thread runs coreLoop()
     // and only ever looks after "its own" core (coreId).
-    for (int core = 0; core < config_.numCpu; ++core) {
+    for (int core = 0; core < config_.numCpu; ++core)
+    {
         coreThreads_.emplace_back(&Scheduler::coreLoop, this, core);
     }
 
@@ -62,18 +70,23 @@ void Scheduler::start(const Config& config) {
 
 // Signals every thread to stop and waits for them to actually finish
 // before returning, so the program never exits while a thread is still mid-execution.
-void Scheduler::stop() {
-    if (!engineRunning_.exchange(false)) {
+void Scheduler::stop()
+{
+    if (!engineRunning_.exchange(false))
+    {
         return; // wasn't running, nothing to stop
     }
 
     cv_.notify_all(); // wake up any thread that might be sleeping/waiting
 
-    if (schedulerThread_.joinable()) {
+    if (schedulerThread_.joinable())
+    {
         schedulerThread_.join();
     }
-    for (std::thread& worker : coreThreads_) {
-        if (worker.joinable()) {
+    for (std::thread &worker : coreThreads_)
+    {
+        if (worker.joinable())
+        {
             worker.join();
         }
     }
@@ -84,10 +97,12 @@ void Scheduler::stop() {
 // adds it to the BACK of the ready queue. Adding to the back (and only
 // ever removing from the front, in schedulerLoop) is what guarantees
 // First-Come-First-Serve ordering.
-std::shared_ptr<Process> Scheduler::createProcessLocked(const std::string& name,
-                                                        int printInstructions) {
+std::shared_ptr<Process> Scheduler::createProcessLocked(const std::string &name,
+                                                        int printInstructions)
+{
     auto process = std::make_shared<Process>(nextId_++, name, TimeUtil::formatNow());
-    for (int i = 0; i < printInstructions; ++i) {
+    for (int i = 0; i < printInstructions; ++i)
+    {
         process->addPrintInstruction();
     }
     allProcesses_.push_back(process);
@@ -95,8 +110,9 @@ std::shared_ptr<Process> Scheduler::createProcessLocked(const std::string& name,
     return process;
 }
 
-std::shared_ptr<Process> Scheduler::createProcess(const std::string& name,
-                                                  int printInstructions) {
+std::shared_ptr<Process> Scheduler::createProcess(const std::string &name,
+                                                  int printInstructions)
+{
     std::shared_ptr<Process> process;
     {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -108,10 +124,12 @@ std::shared_ptr<Process> Scheduler::createProcess(const std::string& name,
 
 // Creates a whole batch of processes at once.
 // (see main.cpp, where this is called right after "initialize").
-int Scheduler::generateBatch(int count, int printInstructions) {
+int Scheduler::generateBatch(int count, int printInstructions)
+{
     {
         std::lock_guard<std::mutex> lock(mutex_);
-        for (int i = 0; i < count; ++i) {
+        for (int i = 0; i < count; ++i)
+        {
             std::ostringstream name;
             name << "process" << std::setw(2) << std::setfill('0') << (i + 1);
             createProcessLocked(name.str(), printInstructions);
@@ -121,17 +139,21 @@ int Scheduler::generateBatch(int count, int printInstructions) {
     return count;
 }
 
-std::shared_ptr<Process> Scheduler::findProcess(const std::string& name) {
+std::shared_ptr<Process> Scheduler::findProcess(const std::string &name)
+{
     std::lock_guard<std::mutex> lock(mutex_);
-    for (const auto& process : allProcesses_) {
-        if (process->name() == name) {
+    for (const auto &process : allProcesses_)
+    {
+        if (process->name() == name)
+        {
             return process;
         }
     }
     return nullptr;
 }
 
-bool Scheduler::processExists(const std::string& name) {
+bool Scheduler::processExists(const std::string &name)
+{
     return findProcess(name) != nullptr;
 }
 
@@ -150,41 +172,51 @@ bool Scheduler::processExists(const std::string& name) {
 //      assign it to that core.
 //   4. Wake up the core threads so the one that just got a new job can
 //      start running it right away.
-void Scheduler::schedulerLoop() {
-    while (engineRunning_.load()) {
+void Scheduler::schedulerLoop()
+{
+    while (engineRunning_.load())
+    {
         {
             std::unique_lock<std::mutex> lock(mutex_);
             // STEP 1: wait until there's something to dispatch, or we're
             // told to shut down. The lambda below is the "wake-up
             // condition" — cv_.wait_for keeps sleeping until it returns
             // true (or 5ms passes, just so we periodically re-check).
-            cv_.wait_for(lock, std::chrono::milliseconds(5), [this] {
-                if (!engineRunning_.load()) {
-                    return true; // shutting down — stop waiting
-                }
-                if (readyQueue_.empty()) {
-                    return false; // nobody waiting, nothing to dispatch
-                }
-                for (const auto& slot : coreCurrent_) {
-                    if (slot == nullptr) {
-                        return true; // found a free core — there's work to do
-                    }
-                }
-                return false; // all cores busy, nothing to dispatch yet
-            });
+            cv_.wait_for(lock, std::chrono::milliseconds(5), [this]
+                         {
+                             if (!engineRunning_.load())
+                             {
+                                 return true; // shutting down — stop waiting
+                             }
+                             if (readyQueue_.empty())
+                             {
+                                 return false; // nobody waiting, nothing to dispatch
+                             }
+                             for (const auto &slot : coreCurrent_)
+                             {
+                                 if (slot == nullptr)
+                                 {
+                                     return true; // found a free core — there's work to do
+                                 }
+                             }
+                             return false; // all cores busy, nothing to dispatch yet
+                         });
 
             // STEP 2: if we woke up because of shutdown, leave the loop.
-            if (!engineRunning_.load()) {
+            if (!engineRunning_.load())
+            {
                 break;
             }
 
             // STEP 3: hand out the next process in line (FCFS) to every
             // free core we can find right now.
             for (std::size_t core = 0; core < coreCurrent_.size() && !readyQueue_.empty();
-                 ++core) {
-                if (coreCurrent_[core] == nullptr) {
+                 ++core)
+            {
+                if (coreCurrent_[core] == nullptr)
+                {
                     std::shared_ptr<Process> next = readyQueue_.front(); // first in line
-                    readyQueue_.pop_front();  // remove from line
+                    readyQueue_.pop_front();                             // remove from line
                     next->setAssignedCore(static_cast<int>(core));
                     next->setStatus(ProcessStatus::Running);
                     coreCurrent_[core] = next; // "seat" the process at this core's desk
@@ -197,38 +229,41 @@ void Scheduler::schedulerLoop() {
     }
 }
 
-//Each CPU core gets its OWN thread running this function (started in
-// start()). Think of each one as a dedicated worker who only ever
-// looks at their own "desk" (coreCurrent_[coreId]):
-//   1. Wait until the scheduler thread has placed a process on this
-//      core's desk (or until we're told to shut down).
-//   2. If we're shutting down and there's no job waiting, this worker
-//      can stop entirely.
-//   3. Otherwise, grab the assigned process and actually run it
-//      (executeProcess does the real work, including writing the
-//      process's print output to its text file).
-//   4. Once finished, clear this core's desk (mark it free again) so
-//      the scheduler thread knows it can assign someone new here.
-void Scheduler::coreLoop(int coreId) {
-    while (true) {
+// Each CPU core gets its OWN thread running this function (started in
+//  start()). Think of each one as a dedicated worker who only ever
+//  looks at their own "desk" (coreCurrent_[coreId]):
+//    1. Wait until the scheduler thread has placed a process on this
+//       core's desk (or until we're told to shut down).
+//    2. If we're shutting down and there's no job waiting, this worker
+//       can stop entirely.
+//    3. Otherwise, grab the assigned process and actually run it
+//       (executeProcess does the real work, including writing the
+//       process's print output to its text file).
+//    4. Once finished, clear this core's desk (mark it free again) so
+//       the scheduler thread knows it can assign someone new here.
+void Scheduler::coreLoop(int coreId)
+{
+    while (true)
+    {
         std::shared_ptr<Process> job;
         {
             std::unique_lock<std::mutex> lock(mutex_);
             // STEP 1: sleep until this specific core has been given a
             // process to run, or the engine is shutting down.
-            cv_.wait(lock, [this, coreId] {
-                return !engineRunning_.load() || coreCurrent_[coreId] != nullptr;
-            });
+            cv_.wait(lock, [this, coreId]
+                     { return !engineRunning_.load() || coreCurrent_[coreId] != nullptr; });
 
             // STEP 2: shutting down and nothing left to run on this core
             // -> this worker thread is done for good.
-            if (!engineRunning_.load() && coreCurrent_[coreId] == nullptr) {
+            if (!engineRunning_.load() && coreCurrent_[coreId] == nullptr)
+            {
                 return;
             }
             job = coreCurrent_[coreId];
         }
 
-        if (job) {
+        if (job)
+        {
             // STEP 3: actually run the process from start to finish.
             executeProcess(job, coreId);
             {
@@ -274,29 +309,33 @@ void Scheduler::coreLoop(int coreId) {
 //   7. Once every instruction has run, mark the process Finished and
 //      record the finish timestamp (used by "screen -ls"'s "Finished
 //      processes" list).
-void Scheduler::executeProcess(const std::shared_ptr<Process>& process, int coreId) {
+void Scheduler::executeProcess(const std::shared_ptr<Process> &process, int coreId)
+{
     // STEP 1: create/open this process's dedicated output file.
     const std::string fileName = process->name() + ".txt";
     std::ofstream logFile(fileName, std::ios::trunc);
-    if (logFile.is_open()) {
+    if (logFile.is_open())
+    {
         logFile << "Process name: " << process->name() << "\n";
         logFile << "Logs:\n\n";
     }
 
     const int total = process->totalLines();
-    const auto& instructions = process->instructions();
+    const auto &instructions = process->instructions();
 
     // STEP 2: run each instruction in order, starting from wherever this
     // process left off.
-    for (int line = process->currentLine(); line < total; ++line) {
-        if (!engineRunning_.load()) {
-            return;  // Abort promptly on shutdown; leaves the process unfinished.
+    for (int line = process->currentLine(); line < total; ++line)
+    {
+        if (!engineRunning_.load())
+        {
+            return; // Abort promptly on shutdown; leaves the process unfinished.
         }
 
         // STEP 3: figure out what text to print for this instruction.
-        const Instruction& instruction = instructions[line];
+        const Instruction &instruction = instructions[line];
         std::string message = instruction.arg.empty() ? process->defaultPrintMessage()
-                                                       : instruction.arg;
+                                                      : instruction.arg;
 
         // Build the log line in the required format
         std::ostringstream logLine;
@@ -309,7 +348,8 @@ void Scheduler::executeProcess(const std::shared_ptr<Process>& process, int core
         // STEP 4b: write this same line into the process's own text
         // file — this is the actual graded output for the "print"
         // command requirement.
-        if (logFile.is_open()) {
+        if (logFile.is_open())
+        {
             logFile << logLine.str() << "\n";
             logFile.flush();
         }
@@ -329,7 +369,8 @@ void Scheduler::executeProcess(const std::shared_ptr<Process>& process, int core
     process->setFinishTimestamp(TimeUtil::formatNow());
 }
 
-std::string Scheduler::buildStatusReport() {
+std::string Scheduler::buildStatusReport()
+{
     std::vector<std::shared_ptr<Process>> processes;
     {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -339,12 +380,15 @@ std::string Scheduler::buildStatusReport() {
     // Count how many cores are currently busy running something, so we
     // can show "CPU utilization" and "Cores used/available".
     int coresUsed = 0;
-    for (const auto& process : processes) {
-        if (process->status() == ProcessStatus::Running) {
+    for (const auto &process : processes)
+    {
+        if (process->status() == ProcessStatus::Running)
+        {
             ++coresUsed;
         }
     }
-    if (coresUsed > config_.numCpu) {
+    if (coresUsed > config_.numCpu)
+    {
         coresUsed = config_.numCpu;
     }
     const int coresAvailable = config_.numCpu - coresUsed;
@@ -358,19 +402,23 @@ std::string Scheduler::buildStatusReport() {
     report << "\n";
     report << "---------------------------------------------\n";
     report << "Running processes:\n";
-    for (const auto& process : processes) {
-        if (process->status() == ProcessStatus::Running) {
+    for (const auto &process : processes)
+    {
+        if (process->status() == ProcessStatus::Running)
+        {
             report << padRight(process->name(), 12) << " (" << process->creationTimestamp()
-                   << ")    Core: " << process->assignedCore() << "    "
+                   << ") Core: " << process->assignedCore() << "   "
                    << process->currentLine() << " / " << process->totalLines() << "\n";
         }
     }
 
     report << "\nFinished processes:\n";
-    for (const auto& process : processes) {
-        if (process->status() == ProcessStatus::Finished) {
+    for (const auto &process : processes)
+    {
+        if (process->status() == ProcessStatus::Finished)
+        {
             report << padRight(process->name(), 12) << " (" << process->finishTimestamp()
-                   << ")    Finished    " << process->totalLines() << " / "
+                   << ") Finished " << process->totalLines() << " / "
                    << process->totalLines() << "\n";
         }
     }
