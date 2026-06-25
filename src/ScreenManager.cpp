@@ -2,6 +2,7 @@
 
 #include "ConsoleManager.h"
 #include "ProcessModel.h"
+#include "ReportManager.h"
 
 #include <iostream>
 #include <memory>
@@ -81,7 +82,8 @@ bool ScreenManager::handleCommand(const std::string& command, Scheduler& schedul
     }
 
     if (command == "screen -ls") {
-        std::cout << scheduler.buildStatusReport();
+        std::cout << ReportManager::generateSystemReport(scheduler);
+        ConsoleManager::printLsAttachHint();
         return true;
     }
 

@@ -12,6 +12,11 @@
 #include <thread>
 #include <vector>
 
+struct SchedulerStatusSnapshot {
+    std::vector<std::shared_ptr<Process>> processes;
+    int numCpu = 1;
+};
+
 //   1. A First-Come-First-Serve (FCFS) scheduler — processes are run
 //      strictly in the order they arrive, no skipping the line.
 //   2. A real multi-threaded engine:
@@ -63,11 +68,8 @@ public:
     std::shared_ptr<Process> findProcess(const std::string& name);
     bool processExists(const std::string& name);
 
-    // Builds the text shown by the "screen -ls" command: CPU
-    // utilization, which cores are busy, and the Running/Finished
-    // process lists (matches the reference UI layout from the
-    // assignment).
-    std::string buildStatusReport();
+    // Live process/core data for Person 3 report generation (screen -ls / report-util).
+    SchedulerStatusSnapshot statusSnapshot() const;
 
     int numCpu() const { return config_.numCpu; }
 
@@ -112,7 +114,7 @@ private:
     // that let the scheduler thread and the core threads safely share
     // the queue and the "which core is doing what" list, and let
     // threads sleep efficiently instead of constantly spinning/checking.
-    std::mutex mutex_;
+    mutable std::mutex mutex_;
     std::condition_variable cv_;
 
     // The FCFS waiting line. New processes go in at the back

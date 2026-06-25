@@ -129,11 +129,10 @@ int main() {
         }
 
         if (command == "report-util") {
-            const std::string report = scheduler.buildStatusReport();
+            const std::string report = ReportManager::generateSystemReport(scheduler);
             std::string error;
-            if (ReportManager::saveReport(ReportManager::defaultReportPath(), report,
-                                          error)) {
-                ConsoleManager::printLine("Report generated at C:/csopesy-log.txt!");
+            if (ReportManager::saveReport(ReportManager::defaultReportPath(), report, error)) {
+                ConsoleManager::printLine(ReportManager::reportConfirmationMessage());
             } else {
                 ConsoleManager::printLine(error);
             }

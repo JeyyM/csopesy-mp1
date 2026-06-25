@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <iostream>
 
-// everything here is just draw and text on screen
 void ConsoleManager::clearScreen() {
 #if defined(_WIN32)
     std::system("cls");
@@ -35,7 +34,7 @@ void ConsoleManager::printHeader() {
         << "    Capote, Mary Grace\n"
         << "    Rojo, Von Matthew\n"
         << "\n"
-        << "Last updated: 06-20-2026\n"
+        << "Last updated: 06-25-2026\n"
         << "----------------------------------------------------\n"
         << "\n";
 }
@@ -52,4 +51,8 @@ void ConsoleManager::printLine(const std::string& text) {
 void ConsoleManager::printProcessScreenHint(const std::string& processName) {
     std::cout << "\n[Process screen: " << processName
               << " | Commands: process-smi, exit (return to main menu)]\n\n";
+}
+
+void ConsoleManager::printLsAttachHint() {
+    std::cout << "Tip: use screen -r <process name> to attach to a running process.\n";
 }
