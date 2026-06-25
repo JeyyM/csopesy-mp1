@@ -57,6 +57,9 @@ public:
     // at once (e.g. 10 processes x 100 prints each).
     int generateBatch(int count, int printInstructions);
 
+    // Person 4: adds p01-p05 on first scheduler-start (returns how many were added).
+    int generateSchedulerDummyProcesses();
+
     std::shared_ptr<Process> findProcess(const std::string& name);
     bool processExists(const std::string& name);
 
@@ -89,7 +92,15 @@ private:
     // builds a Process object, gives it `printInstructions` PRINT
     // commands, and pushes it onto the back of the ready queue.
     // Assumes the caller already holds mutex_.
-    std::shared_ptr<Process> createProcessLocked(const std::string& name, int printInstructions);
+    std::shared_ptr<Process> createProcessLocked(const std::string& name, int printInstructions,
+                                                 bool includeMockPreview);
+
+    void addMockInstructionPreview(const std::shared_ptr<Process>& process);
+    std::shared_ptr<Process> addSchedulerDummyProcessLocked(const std::string& name, int id,
+                                                            const std::string& timestamp,
+                                                            int totalLines);
+    void addSchedulerDummyProcessesLocked();
+    bool processExistsLocked(const std::string& name) const;
 
     Config config_{};
 
@@ -121,6 +132,7 @@ private:
     std::vector<std::thread> coreThreads_; // one thread per CPU core
 
     int nextId_ = 1;
+    bool schedulerDummyProcessesGenerated_ = false;
 
     // How many real milliseconds represent one simulated "CPU cycle".
     // This just slows the emulator down enough that a human can watch

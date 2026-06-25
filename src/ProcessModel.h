@@ -24,6 +24,8 @@
 
 
 // Instruction types the emulator is designed to support.
+// Only PRINT is executed by the FCFS scheduler; the rest are preview-only
+// (Person 4 mock instruction data for process-smi / future extensions).
 enum class InstructionType { Print, Declare, Add, Subtract, Sleep, For };
 
 struct Instruction {
@@ -40,6 +42,7 @@ public:
     Process(int id, std::string name, std::string creationTimestamp);
 
     void addPrintInstruction(const std::string& message = "");
+    void addInstruction(InstructionType type, const std::string& text);
 
     int id() const { return id_; }
     const std::string& name() const { return name_; }

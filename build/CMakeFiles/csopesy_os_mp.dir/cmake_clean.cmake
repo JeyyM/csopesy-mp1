@@ -9,6 +9,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/csopesy_os_mp.dir/src/ReportManager.cpp.obj.d"
   "CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.obj"
   "CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.obj.d"
+  "CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj"
+  "CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj.d"
   "CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.obj"
   "CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.obj.d"
   "CMakeFiles/csopesy_os_mp.dir/src/main.cpp.obj"

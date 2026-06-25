@@ -1,5 +1,6 @@
-CMakeFiles/csopesy_os_mp.dir/src/main.cpp.obj: \
- C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\main.cpp \
+CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj: \
+ C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\ScreenManager.cpp \
+ C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\ScreenManager.h \
  C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\Config.h \
  C:/winlibs/mingw64/include/c++/15.2.0/cstdint \
  C:/winlibs/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/c++config.h \
@@ -104,9 +105,6 @@ CMakeFiles/csopesy_os_mp.dir/src/main.cpp.obj: \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/uses_allocator.h \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/uses_allocator_args.h \
  C:/winlibs/mingw64/include/c++/15.2.0/tuple \
- C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\ConsoleManager.h \
- C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\ReportManager.h \
- C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\ScreenManager.h \
  C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\Scheduler.h \
  C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\ProcessModel.h \
  C:/winlibs/mingw64/include/c++/15.2.0/atomic \
@@ -170,6 +168,7 @@ CMakeFiles/csopesy_os_mp.dir/src/main.cpp.obj: \
  C:/winlibs/mingw64/include/c++/15.2.0/thread \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/std_thread.h \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/this_thread_sleep.h \
+ C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\ConsoleManager.h \
  C:/winlibs/mingw64/include/c++/15.2.0/iostream \
  C:/winlibs/mingw64/include/c++/15.2.0/ostream \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/ostream.h \

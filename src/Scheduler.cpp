@@ -1,4 +1,4 @@
-#include "Scheduler.h"
+﻿#include "Scheduler.h"
 
 #include "TimeUtil.h"
 
@@ -14,6 +14,14 @@ std::string padRight(const std::string& text, std::size_t width) {
         return text;
     }
     return text + std::string(width - text.size(), ' ');
+}
+
+std::string buildPrintLog(const std::string& timestamp, int core,
+                          const std::string& processName) {
+    std::ostringstream log;
+    log << "(" << timestamp << ") Core:" << core << " \"Hello world from " << processName
+        << "!\"";
+    return log.str();
 }
 
 }  // namespace
@@ -85,14 +93,27 @@ void Scheduler::stop() {
 // ever removing from the front, in schedulerLoop) is what guarantees
 // First-Come-First-Serve ordering.
 std::shared_ptr<Process> Scheduler::createProcessLocked(const std::string& name,
-                                                        int printInstructions) {
+                                                        int printInstructions,
+                                                        bool includeMockPreview) {
     auto process = std::make_shared<Process>(nextId_++, name, TimeUtil::formatNow());
-    for (int i = 0; i < printInstructions; ++i) {
+    if (includeMockPreview) {
+        addMockInstructionPreview(process);
+    }
+    while (process->totalLines() < printInstructions) {
         process->addPrintInstruction();
     }
     allProcesses_.push_back(process);
-    readyQueue_.push_back(process); // FCFS: newest process goes to the back of the line
+    readyQueue_.push_back(process);
     return process;
+}
+
+void Scheduler::addMockInstructionPreview(const std::shared_ptr<Process>& process) {
+    process->addPrintInstruction();
+    process->addInstruction(InstructionType::Declare, "DECLARE(counter, 0)");
+    process->addInstruction(InstructionType::Add, "ADD(counter, counter, 1)");
+    process->addInstruction(InstructionType::Subtract, "SUBTRACT(counter, counter, 1)");
+    process->addInstruction(InstructionType::Sleep, "SLEEP(1)");
+    process->addInstruction(InstructionType::For, "FOR([PRINT], 2)");
 }
 
 std::shared_ptr<Process> Scheduler::createProcess(const std::string& name,
@@ -100,9 +121,9 @@ std::shared_ptr<Process> Scheduler::createProcess(const std::string& name,
     std::shared_ptr<Process> process;
     {
         std::lock_guard<std::mutex> lock(mutex_);
-        process = createProcessLocked(name, printInstructions);
+        process = createProcessLocked(name, printInstructions, true);
     }
-    cv_.notify_all(); // wake the scheduler thread up in case it's waiting idle
+    cv_.notify_all();
     return process;
 }
 
@@ -114,11 +135,73 @@ int Scheduler::generateBatch(int count, int printInstructions) {
         for (int i = 0; i < count; ++i) {
             std::ostringstream name;
             name << "process" << std::setw(2) << std::setfill('0') << (i + 1);
-            createProcessLocked(name.str(), printInstructions);
+            createProcessLocked(name.str(), printInstructions, false);
         }
     }
     cv_.notify_all();
     return count;
+}
+
+bool Scheduler::processExistsLocked(const std::string& name) const {
+    for (const auto& process : allProcesses_) {
+        if (process->name() == name) {
+            return true;
+        }
+    }
+    return false;
+}
+
+std::shared_ptr<Process> Scheduler::addSchedulerDummyProcessLocked(const std::string& name,
+                                                                   int id,
+                                                                   const std::string& timestamp,
+                                                                   int totalLines) {
+    if (processExistsLocked(name)) {
+        return nullptr;
+    }
+
+    auto process = std::make_shared<Process>(id, name, timestamp);
+    addMockInstructionPreview(process);
+    while (process->totalLines() < totalLines) {
+        process->addPrintInstruction();
+    }
+
+    const int core = config_.numCpu > 0 ? (id % config_.numCpu) : 0;
+    process->appendLog(buildPrintLog(timestamp, core, name));
+    allProcesses_.push_back(process);
+    readyQueue_.push_back(process);
+
+    if (nextId_ <= id) {
+        nextId_ = id + 1;
+    }
+    return process;
+}
+
+void Scheduler::addSchedulerDummyProcessesLocked() {
+    if (schedulerDummyProcessesGenerated_) {
+        return;
+    }
+
+    addSchedulerDummyProcessLocked("p01", 101, "01/18/2024 09:20:00AM", 1000);
+    addSchedulerDummyProcessLocked("p02", 102, "01/18/2024 09:20:01AM", 1200);
+    addSchedulerDummyProcessLocked("p03", 103, "01/18/2024 09:20:02AM", 1400);
+    addSchedulerDummyProcessLocked("p04", 104, "01/18/2024 09:20:03AM", 1600);
+    addSchedulerDummyProcessLocked("p05", 105, "01/18/2024 09:20:04AM", 1800);
+
+    schedulerDummyProcessesGenerated_ = true;
+}
+
+int Scheduler::generateSchedulerDummyProcesses() {
+    int added = 0;
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        const std::size_t before = allProcesses_.size();
+        addSchedulerDummyProcessesLocked();
+        added = static_cast<int>(allProcesses_.size() - before);
+    }
+    if (added > 0) {
+        cv_.notify_all();
+    }
+    return added;
 }
 
 std::shared_ptr<Process> Scheduler::findProcess(const std::string& name) {
@@ -132,7 +215,8 @@ std::shared_ptr<Process> Scheduler::findProcess(const std::string& name) {
 }
 
 bool Scheduler::processExists(const std::string& name) {
-    return findProcess(name) != nullptr;
+    std::lock_guard<std::mutex> lock(mutex_);
+    return processExistsLocked(name);
 }
 
 // This is the ONE thread (from start()) whose only job is matchmaking:
@@ -295,6 +379,11 @@ void Scheduler::executeProcess(const std::shared_ptr<Process>& process, int core
 
         // STEP 3: figure out what text to print for this instruction.
         const Instruction& instruction = instructions[line];
+        if (instruction.type != InstructionType::Print) {
+            process->setCurrentLine(line + 1);
+            continue;
+        }
+
         std::string message = instruction.arg.empty() ? process->defaultPrintMessage()
                                                        : instruction.arg;
 

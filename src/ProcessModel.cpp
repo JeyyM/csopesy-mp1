@@ -15,6 +15,10 @@ void Process::addPrintInstruction(const std::string& message) {
     instructions_.push_back({InstructionType::Print, message});
 }
 
+void Process::addInstruction(InstructionType type, const std::string& text) {
+    instructions_.push_back({type, text});
+}
+
 void Process::appendLog(const std::string& line) {
     // 1. Lock the mutex so no other thread can read/write logs_ at the
     //    same time.

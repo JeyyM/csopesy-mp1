@@ -13,6 +13,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/ProcessModel.cpp" "CMakeFiles/csopesy_os_mp.dir/src/ProcessModel.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/ProcessModel.cpp.obj.d"
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/ReportManager.cpp" "CMakeFiles/csopesy_os_mp.dir/src/ReportManager.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/ReportManager.cpp.obj.d"
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/Scheduler.cpp" "CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.obj.d"
+  "C:/Users/asus/Desktop/CSOPESY OS MP/src/ScreenManager.cpp" "CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj.d"
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/TimeUtil.cpp" "CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/TimeUtil.cpp.obj.d"
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/main.cpp" "CMakeFiles/csopesy_os_mp.dir/src/main.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/main.cpp.obj.d"
   )

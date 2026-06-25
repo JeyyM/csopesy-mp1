@@ -248,6 +248,30 @@ src/Scheduler.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/Scheduler.cpp.s
 .PHONY : src/Scheduler.cpp.s
 
+src/ScreenManager.obj: src/ScreenManager.cpp.obj
+.PHONY : src/ScreenManager.obj
+
+# target to build an object file
+src/ScreenManager.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj
+.PHONY : src/ScreenManager.cpp.obj
+
+src/ScreenManager.i: src/ScreenManager.cpp.i
+.PHONY : src/ScreenManager.i
+
+# target to preprocess a source file
+src/ScreenManager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.i
+.PHONY : src/ScreenManager.cpp.i
+
+src/ScreenManager.s: src/ScreenManager.cpp.s
+.PHONY : src/ScreenManager.s
+
+# target to generate assembly for a file
+src/ScreenManager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.s
+.PHONY : src/ScreenManager.cpp.s
+
 src/TimeUtil.obj: src/TimeUtil.cpp.obj
 .PHONY : src/TimeUtil.obj
 
@@ -320,6 +344,9 @@ help:
 	@echo ... src/Scheduler.obj
 	@echo ... src/Scheduler.i
 	@echo ... src/Scheduler.s
+	@echo ... src/ScreenManager.obj
+	@echo ... src/ScreenManager.i
+	@echo ... src/ScreenManager.s
 	@echo ... src/TimeUtil.obj
 	@echo ... src/TimeUtil.i
 	@echo ... src/TimeUtil.s

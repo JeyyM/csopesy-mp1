@@ -1,17 +1,10 @@
-/*
-cd "c:\Users\asus\Desktop\CSOPESY OS MP"
-cmake --build build
-.\build\csopesy_os_mp.exe
-*/
-
 #include "Config.h"
 #include "ConsoleManager.h"
-#include "ProcessModel.h"
 #include "ReportManager.h"
+#include "ScreenManager.h"
 #include "Scheduler.h"
 
 #include <iostream>
-#include <memory>
 #include <random>
 #include <string>
 
@@ -24,10 +17,6 @@ std::string trim(const std::string& value) {
     }
     const auto end = value.find_last_not_of(" \t\r\n");
     return value.substr(start, end - start + 1);
-}
-
-bool startsWith(const std::string& text, const std::string& prefix) {
-    return text.size() >= prefix.size() && text.compare(0, prefix.size(), prefix) == 0;
 }
 
 void printNotInitialized() {
@@ -49,82 +38,6 @@ int printsPerProcessFromConfig(const Config& config) {
         return static_cast<int>(config.minIns);
     }
     return randomInstructionCount(config);
-}
-
-// Runs the process screen loop for a live process until the user types exit.
-void runProcessScreen(const std::shared_ptr<Process>& process) {
-    ConsoleManager::clearScreen();
-    std::cout << process->formatSmi();
-    ConsoleManager::printProcessScreenHint(process->name());
-
-    while (true) {
-        ConsoleManager::printPrompt();
-
-        std::string command;
-        if (!std::getline(std::cin, command)) {
-            return;
-        }
-        command = trim(command);
-        if (command.empty()) {
-            continue;
-        }
-
-        if (command == "process-smi") {
-            std::cout << process->formatSmi();
-            continue;
-        }
-
-        if (command == "exit") {
-            ConsoleManager::clearScreen();
-            ConsoleManager::printHeader();
-            return;
-        }
-
-        ConsoleManager::printLine("Unknown command inside process screen.");
-    }
-}
-
-bool handleScreenCommand(const std::string& command, Scheduler& scheduler,
-                         const Config& config) {
-    if (command == "screen -ls") {
-        std::cout << scheduler.buildStatusReport();
-        return true;
-    }
-
-    const std::string createPrefix = "screen -s ";
-    const std::string attachPrefix = "screen -r ";
-
-    if (startsWith(command, createPrefix)) {
-        const std::string name = trim(command.substr(createPrefix.size()));
-        if (name.empty()) {
-            ConsoleManager::printLine("Unknown command. Please try again.");
-            return true;
-        }
-        if (scheduler.processExists(name)) {
-            ConsoleManager::printLine("Process " + name + " already exists.");
-            return true;
-        }
-        auto process = scheduler.createProcess(name, randomInstructionCount(config));
-        runProcessScreen(process);
-        return true;
-    }
-
-    if (startsWith(command, attachPrefix)) {
-        const std::string name = trim(command.substr(attachPrefix.size()));
-        if (name.empty()) {
-            ConsoleManager::printLine("Unknown command. Please try again.");
-            return true;
-        }
-        auto process = scheduler.findProcess(name);
-        if (!process || process->status() == ProcessStatus::Finished) {
-            ConsoleManager::printLine("Process " + name + " not found.");
-            return true;
-        }
-        runProcessScreen(process);
-        return true;
-    }
-
-    return false;
 }
 
 }  // namespace
@@ -158,12 +71,6 @@ int main() {
             continue;
         }
 
-        if (command == "clear") {
-            ConsoleManager::clearScreen();
-            ConsoleManager::printHeader();
-            continue;
-        }
-
         if (command == "initialize") {
             if (initialized) {
                 ConsoleManager::printLine("System is already initialized.");
@@ -174,15 +81,17 @@ int main() {
                 ConsoleManager::printLine(error);
                 continue;
             }
+
+            const int printsPerProcess = printsPerProcessFromConfig(config);
             initialized = true;
             scheduler.start(config);
             scheduler.generateBatch(static_cast<int>(config.initialProcessCount),
-                                    printsPerProcessFromConfig(config));
+                                    printsPerProcess);
             ConsoleManager::printLine("System initialized successfully using config.txt.");
             ConsoleManager::printLine(
                 "Declared " + std::to_string(config.numCpu) + " CPU cores. Generated " +
                 std::to_string(config.initialProcessCount) + " processes (" +
-                std::to_string(printsPerProcessFromConfig(config)) +
+                std::to_string(printsPerProcess) +
                 " print commands each). FCFS scheduler is running.");
             continue;
         }
@@ -192,14 +101,19 @@ int main() {
             continue;
         }
 
+        if (command == "clear") {
+            ConsoleManager::clearScreen();
+            ConsoleManager::printHeader();
+            continue;
+        }
+
         if (command == "scheduler-start") {
             if (scheduler.isEngineRunning()) {
                 ConsoleManager::printLine("Scheduler is already running.");
             } else {
                 scheduler.start(config);
-                scheduler.generateBatch(static_cast<int>(config.initialProcessCount),
-                                        printsPerProcessFromConfig(config));
-                ConsoleManager::printLine("Scheduler started. Generating processes.");
+                scheduler.generateSchedulerDummyProcesses();
+                ConsoleManager::printLine("Scheduler started. Generating dummy processes.");
             }
             continue;
         }
@@ -226,11 +140,9 @@ int main() {
             continue;
         }
 
-        if (command == "screen -ls" || startsWith(command, "screen -s ") ||
-            startsWith(command, "screen -r ")) {
-            if (handleScreenCommand(command, scheduler, config)) {
-                continue;
-            }
+        if (ScreenManager::isScreenCommand(command)) {
+            ScreenManager::handleCommand(command, scheduler, config);
+            continue;
         }
 
         ConsoleManager::printLine("Unknown command. Please try again.");
