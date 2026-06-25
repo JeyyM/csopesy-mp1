@@ -24,8 +24,6 @@
 
 
 // Instruction types the emulator is designed to support.
-// For this homework only PRINT is actually executed; the rest are reserved
-// so the model can be extended later without changing the scheduler.
 enum class InstructionType { Print, Declare, Add, Subtract, Sleep, For };
 
 struct Instruction {

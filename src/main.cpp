@@ -1,3 +1,9 @@
+/*
+cd "c:\Users\asus\Desktop\CSOPESY OS MP"
+cmake --build build
+.\build\csopesy_os_mp.exe
+*/
+
 #include "Config.h"
 #include "ConsoleManager.h"
 #include "ProcessModel.h"
@@ -10,9 +16,6 @@
 #include <string>
 
 namespace {
-
-constexpr int kTestProcessCount = 10;
-constexpr int kTestPrintsPerProcess = 100;
 
 std::string trim(const std::string& value) {
     const auto start = value.find_first_not_of(" \t\r\n");
@@ -39,6 +42,13 @@ int randomInstructionCount(const Config& config) {
                                                                      : config.maxIns);
     std::uniform_int_distribution<int> dist(low, high);
     return dist(rng);
+}
+
+int printsPerProcessFromConfig(const Config& config) {
+    if (config.minIns == config.maxIns) {
+        return static_cast<int>(config.minIns);
+    }
+    return randomInstructionCount(config);
 }
 
 // Runs the process screen loop for a live process until the user types exit.
@@ -166,12 +176,13 @@ int main() {
             }
             initialized = true;
             scheduler.start(config);
-            scheduler.generateBatch(kTestProcessCount, kTestPrintsPerProcess);
+            scheduler.generateBatch(static_cast<int>(config.initialProcessCount),
+                                    printsPerProcessFromConfig(config));
             ConsoleManager::printLine("System initialized successfully using config.txt.");
             ConsoleManager::printLine(
                 "Declared " + std::to_string(config.numCpu) + " CPU cores. Generated " +
-                std::to_string(kTestProcessCount) + " processes (" +
-                std::to_string(kTestPrintsPerProcess) +
+                std::to_string(config.initialProcessCount) + " processes (" +
+                std::to_string(printsPerProcessFromConfig(config)) +
                 " print commands each). FCFS scheduler is running.");
             continue;
         }
@@ -186,7 +197,8 @@ int main() {
                 ConsoleManager::printLine("Scheduler is already running.");
             } else {
                 scheduler.start(config);
-                scheduler.generateBatch(kTestProcessCount, kTestPrintsPerProcess);
+                scheduler.generateBatch(static_cast<int>(config.initialProcessCount),
+                                        printsPerProcessFromConfig(config));
                 ConsoleManager::printLine("Scheduler started. Generating processes.");
             }
             continue;
