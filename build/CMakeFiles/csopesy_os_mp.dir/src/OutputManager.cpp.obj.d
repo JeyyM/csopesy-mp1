@@ -177,4 +177,8 @@ CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.obj: \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/unique_ptr.h \
  C:/winlibs/mingw64/include/c++/15.2.0/ext/aligned_buffer.h \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/fs_dir.h \
- C:/winlibs/mingw64/include/c++/15.2.0/bits/fs_ops.h
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/fs_ops.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/fstream \
+ C:/winlibs/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/basic_file.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/x86_64-w64-mingw32/bits/c++io.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/fstream.tcc

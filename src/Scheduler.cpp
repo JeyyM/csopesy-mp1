@@ -1,4 +1,41 @@
-﻿#include "Scheduler.h"
+﻿// Scheduler.cpp
+//
+// Multi-threaded scheduler: assigns processes to CPU cores and runs their programs.
+//
+// ========== WORKED EXAMPLES (read this first) ==========
+//
+// Thread model (num-cpu = 2 example):
+//
+//   tickThread:        cpuCycles++ every globalTickMs -> maybeSpawnBatchProcess
+//   schedulerLoop:     readyQueue_ -> coreCurrent_[0 or 1] when slot free
+//   coreLoop(0):       runProcessSlice on job in coreCurrent_[0]
+//   coreLoop(1):       runProcessSlice on job in coreCurrent_[1]
+//
+// 1) scheduler-start + batch-process-freq 1
+//      Every cpu cycle tick spawns process01, process02, ... into readyQueue_.
+//
+// 2) screen -s proc-01
+//      createUserProcess("proc-01") -> createProcessLocked -> readyQueue_
+//      OutputManager creates outputs/proc-01.txt immediately.
+//
+// 3) One RR time slice (quantum-cycles = 20)
+//      coreLoop runs up to 20 instruction-cycles via runProcessSlice.
+//      If process not done -> Preempted -> requeueProcess (back of readyQueue_).
+//
+// 4) FCFS vs RR quantum
+//      FCFS: quantumBudgetCycles() = max uint32 -> run until process finishes.
+//      RR:   quantumBudgetCycles() = config.quantumCycles -> preempt after budget.
+//
+// 5) scheduler-stop
+//      disableBatchGeneration + stop tick -> no new spawns.
+//      Existing readyQueue_ + running processes continue until all Finished.
+//
+// 6) screen -ls
+//      statusSnapshot() copies allProcesses_ for ReportManager.
+//
+// ========================================================
+
+#include "Scheduler.h"
 
 #include "InstructionEngine.h"
 #include "OutputManager.h"
@@ -14,18 +51,27 @@ Scheduler::~Scheduler() {
     stopImmediate();
 }
 
+// ---------------------------------------------------------------------------
+// Timing helpers (from config.txt)
+// ---------------------------------------------------------------------------
+
+// Real-time delay per instruction when delay-per-exec > 0.
 int Scheduler::instructionDelayMs() const {
     return config_.delayPerExec == 0 ? kFastCycleMs : kDefaultCycleMs;
 }
 
+// How often tickLoop wakes to increment cpuCycles_.
 int Scheduler::globalTickMs() const {
     return config_.delayPerExec == 0 ? kFastCycleMs : instructionDelayMs();
 }
 
+// CPU cycles consumed by one instruction (1 + delay-per-exec).
 uint32_t Scheduler::cyclesPerInstruction() const {
     return 1U + config_.delayPerExec;
 }
 
+// Max cycles one coreLoop slice may consume before RR preemption.
+// Example: RR quantum-cycles 20 -> maxCycles=20. FCFS -> unlimited.
 uint32_t Scheduler::quantumBudgetCycles() const {
     if (config_.scheduler == SchedulerType::FCFS) {
         return std::numeric_limits<uint32_t>::max();
@@ -33,6 +79,12 @@ uint32_t Scheduler::quantumBudgetCycles() const {
     return config_.quantumCycles;
 }
 
+// ---------------------------------------------------------------------------
+// Lifecycle: start / stop
+// ---------------------------------------------------------------------------
+
+// Step 1: Join any prior graceful-stop thread. Step 2: Load config, reset counters.
+// Step 3: Clear queues under mutex. Step 4: Set engineRunning, spawn threads.
 void Scheduler::start(const Config& config) {
     if (gracefulStopThread_.joinable()) {
         gracefulStopThread_.join();
@@ -75,6 +127,7 @@ void Scheduler::stop() {
     stopImmediate();
 }
 
+// Join tick, dispatcher, and all core worker threads (blocks until they exit).
 void Scheduler::joinWorkerThreads() {
     if (tickThread_.joinable()) {
         tickThread_.join();
@@ -90,6 +143,7 @@ void Scheduler::joinWorkerThreads() {
     coreThreads_.clear();
 }
 
+// Hard shutdown: stop batch, stop tick, engineRunning=false, join all threads.
 void Scheduler::stopImmediate() {
     disableBatchGeneration();
     stopTickThread_.store(true);
@@ -110,6 +164,8 @@ void Scheduler::stopImmediate() {
     }
 }
 
+// Soft shutdown (scheduler-stop): stop spawning, let processes finish in background.
+// Step 1: Disable batch + tick. Step 2: Wake sleepers. Step 3: Background finishGracefulStop.
 void Scheduler::stopGracefully() {
     if (!engineRunning_.load()) {
         return;
@@ -133,6 +189,7 @@ void Scheduler::stopGracefully() {
     gracefulStopThread_ = std::thread(&Scheduler::finishGracefulStop, this);
 }
 
+// Background thread body: wait until all Finished, then join workers and stop engine.
 void Scheduler::finishGracefulStop() {
     waitForAllProcessesFinished();
 
@@ -146,6 +203,7 @@ bool Scheduler::shouldExecuteWork() const {
     return engineRunning_.load();
 }
 
+// Poll every 10ms until every process in allProcesses_ has status Finished.
 void Scheduler::waitForAllProcessesFinished() {
     for (;;) {
         if (!engineRunning_.load()) {
@@ -169,6 +227,7 @@ void Scheduler::waitForAllProcessesFinished() {
     }
 }
 
+// Move all sleeping processes back to readyQueue_ (used during graceful stop).
 void Scheduler::wakeAllSleepingProcessesLocked() {
     for (const auto& entry : sleepingProcesses_) {
         entry.process->setSleepUntilCycle(0);
@@ -178,6 +237,7 @@ void Scheduler::wakeAllSleepingProcessesLocked() {
     sleepingProcesses_.clear();
 }
 
+// On hard stop: release cores and clear ready queue.
 void Scheduler::finalizeRunningProcessesLocked() {
     for (std::shared_ptr<Process>& slot : coreCurrent_) {
         if (slot && slot->status() == ProcessStatus::Running) {
@@ -198,6 +258,11 @@ void Scheduler::disableBatchGeneration() {
     batchGenerationActive_.store(false);
 }
 
+// ---------------------------------------------------------------------------
+// Global CPU tick (batch spawn + SLEEP wake)
+// ---------------------------------------------------------------------------
+
+// Step 1: Sleep globalTickMs. Step 2: If still running, advanceGlobalCpuCycles(1).
 void Scheduler::tickLoop() {
     while (engineRunning_.load() && !stopTickThread_.load()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(globalTickMs()));
@@ -208,6 +273,7 @@ void Scheduler::tickLoop() {
     }
 }
 
+// Step 1: Increment cpuCycles_. Step 2: Wake sleepers due. Step 3: Maybe spawn batch process.
 void Scheduler::advanceGlobalCpuCycles(uint32_t count) {
     if (count == 0) {
         return;
@@ -217,6 +283,7 @@ void Scheduler::advanceGlobalCpuCycles(uint32_t count) {
     maybeSpawnBatchProcess();
 }
 
+// Step 1: Compare wakeAtCycle to now. Step 2: Move due processes to readyQueue_.
 void Scheduler::wakeSleepingProcesses() {
     const uint64_t now = cpuCycles_.load();
     bool wokeAny = false;
@@ -239,6 +306,8 @@ void Scheduler::wakeSleepingProcesses() {
     }
 }
 
+// Example: batch-process-freq 1 -> spawn every tick at cycles 1,2,3,...
+// Example: batch-process-freq 2 -> spawn at cycles 2,4,6,...
 void Scheduler::maybeSpawnBatchProcess() {
     if (!batchGenerationActive_.load()) {
         return;
@@ -260,6 +329,11 @@ void Scheduler::maybeSpawnBatchProcess() {
     cv_.notify_all();
 }
 
+// ---------------------------------------------------------------------------
+// Process creation
+// ---------------------------------------------------------------------------
+
+// Grading spec program: 100 iterations of ADD/PRINT on x, y, z (600 instructions total).
 void Scheduler::addStandardProgram(const std::shared_ptr<Process>& process) {
     for (int iteration = 0; iteration < 100; ++iteration) {
         process->addInstruction(InstructionType::Add, "ADD(x, x, 1)");
@@ -271,15 +345,19 @@ void Scheduler::addStandardProgram(const std::shared_ptr<Process>& process) {
     }
 }
 
+// Auto name: process01, process02, ... then createProcessLocked.
 std::shared_ptr<Process> Scheduler::spawnAutoBatchProcessLocked() {
     std::ostringstream name;
     name << "process" << std::setw(2) << std::setfill('0') << nextProcessNumber_++;
     return createProcessLocked(name.str());
 }
 
+// Step 1: new Process. Step 2: addStandardProgram. Step 3: outputs/<name>.txt header.
+// Step 4: append to allProcesses_ and readyQueue_. Caller must hold mutex_.
 std::shared_ptr<Process> Scheduler::createProcessLocked(const std::string& name) {
     auto process = std::make_shared<Process>(nextId_++, name, TimeUtil::formatNow());
     addStandardProgram(process);
+    OutputManager::initializeProcessLog(name);
     allProcesses_.push_back(process);
     readyQueue_.push_back(process);
     return process;
@@ -291,6 +369,7 @@ void Scheduler::ensureEngineRunning(const Config& config) {
     }
 }
 
+// screen -s entry: lock, createProcessLocked, notify cores.
 std::shared_ptr<Process> Scheduler::createUserProcess(const std::string& name) {
     std::shared_ptr<Process> process;
     {
@@ -301,6 +380,7 @@ std::shared_ptr<Process> Scheduler::createUserProcess(const std::string& name) {
     return process;
 }
 
+// Create process01..process0N for initial-process-count in config.
 int Scheduler::generateBatch(int count) {
     {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -345,6 +425,7 @@ bool Scheduler::processExists(const std::string& name) {
     return processExistsLocked(name);
 }
 
+// RR preemption or abort: clear core assignment, push to back of readyQueue_.
 void Scheduler::requeueProcess(const std::shared_ptr<Process>& process) {
     std::lock_guard<std::mutex> lock(mutex_);
     process->setAssignedCore(-1);
@@ -352,8 +433,9 @@ void Scheduler::requeueProcess(const std::shared_ptr<Process>& process) {
     readyQueue_.push_back(process);
 }
 
+// SLEEP: park until cpuCycles_ reaches wakeAt = now + sleepTicks.
 void Scheduler::markProcessSleeping(const std::shared_ptr<Process>& process,
-                                      uint32_t sleepTicks) {
+                                    uint32_t sleepTicks) {
     const uint64_t wakeAt = cpuCycles_.load() + sleepTicks;
     std::lock_guard<std::mutex> lock(mutex_);
     process->setAssignedCore(-1);
@@ -362,11 +444,19 @@ void Scheduler::markProcessSleeping(const std::shared_ptr<Process>& process,
     sleepingProcesses_.push_back({process, wakeAt});
 }
 
+// ---------------------------------------------------------------------------
+// Instruction execution (one process on one core)
+// ---------------------------------------------------------------------------
+
+// Run one instruction (or expand FOR). Respects quantum via usedCycles vs maxCycles.
+//
+// Example: maxCycles=20, each instruction costs 1 -> up to 20 instructions then Preempted.
 ProcessSliceResult Scheduler::runInstructionTree(const std::shared_ptr<Process>& process,
                                                  const Instruction& instruction, int coreId,
                                                  std::ofstream& logFile, uint32_t& usedCycles,
                                                  uint32_t maxCycles, int forDepth) {
     if (instruction.type == InstructionType::For) {
+        // Step 1: Parse FOR body. Step 2: Run each iteration/instruction recursively.
         if (forDepth >= 3) {
             return ProcessSliceResult::Finished;
         }
@@ -388,11 +478,13 @@ ProcessSliceResult Scheduler::runInstructionTree(const std::shared_ptr<Process>&
         return ProcessSliceResult::Finished;
     }
 
+    // Step 3: Check quantum budget before running next leaf instruction.
     const uint32_t instructionCost = cyclesPerInstruction();
     if (usedCycles + instructionCost > maxCycles) {
         return ProcessSliceResult::Preempted;
     }
 
+    // Step 4: Execute via InstructionEngine; append log to process + file.
     InstructionEngine::ExecuteResult step =
         InstructionEngine::execute(*process, instruction, coreId);
 
@@ -410,6 +502,7 @@ ProcessSliceResult Scheduler::runInstructionTree(const std::shared_ptr<Process>&
         std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
     }
 
+    // Step 5: SLEEP relinquishes core until wakeSleepingProcesses moves it back.
     if (step.relinquishCpu) {
         markProcessSleeping(process, step.sleepTicks);
         return ProcessSliceResult::Sleeping;
@@ -418,26 +511,20 @@ ProcessSliceResult Scheduler::runInstructionTree(const std::shared_ptr<Process>&
     return ProcessSliceResult::Finished;
 }
 
+// Run one quantum slice: from currentLine until done, preempted, sleeping, or aborted.
+//
+// Example: process at line 40/600, quantum 20 -> runs lines 40-59, returns Preempted,
+//          currentLine stays 60 on next entry (or line+1 after full instruction).
 ProcessSliceResult Scheduler::runProcessSlice(const std::shared_ptr<Process>& process,
                                               int coreId, uint32_t maxCycles) {
     const std::string fileName = OutputManager::processLogPath(process->name());
-    const bool isNewRun = process->currentLine() == 0;
-    std::ofstream logFile;
-    if (isNewRun) {
-        OutputManager::ensureOutputsDirectory();
-        logFile.open(fileName, std::ios::trunc);
-        if (logFile.is_open()) {
-            logFile << "Process name: " << process->name() << "\n";
-            logFile << "Logs:\n\n";
-        }
-    } else {
-        logFile.open(fileName, std::ios::app);
-    }
+    std::ofstream logFile(fileName, std::ios::app);
 
     const int total = process->totalLines();
     const auto& instructions = process->instructions();
     uint32_t usedCycles = 0;
 
+    // Step 1: Loop program lines starting at currentLine.
     for (int line = process->currentLine(); line < total; ++line) {
         if (!engineRunning_.load()) {
             return ProcessSliceResult::Aborted;
@@ -446,6 +533,7 @@ ProcessSliceResult Scheduler::runProcessSlice(const std::shared_ptr<Process>& pr
         const Instruction& instruction = instructions[line];
         ProcessSliceResult outcome = runInstructionTree(process, instruction, coreId, logFile,
                                                           usedCycles, maxCycles, 0);
+
         if (outcome == ProcessSliceResult::Preempted) {
             return ProcessSliceResult::Preempted;
         }
@@ -460,15 +548,23 @@ ProcessSliceResult Scheduler::runProcessSlice(const std::shared_ptr<Process>& pr
         process->setCurrentLine(line + 1);
     }
 
+    // Step 2: All lines done — mark Finished for screen -ls / screen -r rules.
     process->setStatus(ProcessStatus::Finished);
     process->setFinishTimestamp(TimeUtil::formatNow());
     return ProcessSliceResult::Finished;
 }
 
+// ---------------------------------------------------------------------------
+// Dispatcher and core worker threads
+// ---------------------------------------------------------------------------
+
+// Assigns processes from readyQueue_ front to any nullptr slot in coreCurrent_.
 void Scheduler::schedulerLoop() {
     while (engineRunning_.load()) {
         {
             std::unique_lock<std::mutex> lock(mutex_);
+
+            // Step 1: Wait until shutdown OR (ready work AND free core).
             cv_.wait_for(lock, std::chrono::milliseconds(5), [this] {
                 if (!engineRunning_.load()) {
                     return true;
@@ -487,6 +583,7 @@ void Scheduler::schedulerLoop() {
                 break;
             }
 
+            // Step 2: Pop from readyQueue_ front onto each idle core.
             for (std::size_t core = 0; core < coreCurrent_.size() && !readyQueue_.empty();
                  ++core) {
                 if (coreCurrent_[core] == nullptr) {
@@ -502,11 +599,14 @@ void Scheduler::schedulerLoop() {
     }
 }
 
+// One thread per CPU core: wait for assignment, run slice, requeue if preempted, release core.
 void Scheduler::coreLoop(int coreId) {
     while (true) {
         std::shared_ptr<Process> job;
         {
             std::unique_lock<std::mutex> lock(mutex_);
+
+            // Step 1: Block until this core has a process or engine is shutting down.
             cv_.wait(lock, [this, coreId] {
                 return !engineRunning_.load() || coreCurrent_[coreId] != nullptr;
             });
@@ -521,15 +621,18 @@ void Scheduler::coreLoop(int coreId) {
             continue;
         }
 
+        // Step 2: Run up to quantumBudgetCycles() worth of instructions.
         const ProcessSliceResult result =
             runProcessSlice(job, coreId, quantumBudgetCycles());
 
+        // Step 3: Preempted/aborted -> back of ready queue for another turn.
         if (result == ProcessSliceResult::Preempted) {
             requeueProcess(job);
         } else if (result == ProcessSliceResult::Aborted) {
             requeueProcess(job);
         }
 
+        // Step 4: Clear core slot so schedulerLoop can assign next process.
         {
             std::lock_guard<std::mutex> lock(mutex_);
             coreCurrent_[coreId] = nullptr;
@@ -538,6 +641,7 @@ void Scheduler::coreLoop(int coreId) {
     }
 }
 
+// Copy all processes + stats for screen -ls (creation order preserved).
 SchedulerStatusSnapshot Scheduler::statusSnapshot() const {
     SchedulerStatusSnapshot snapshot;
     std::lock_guard<std::mutex> lock(mutex_);
