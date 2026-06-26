@@ -1,0 +1,437 @@
+======================================================================
+CSOPESY OS EMULATOR — TECHNICAL WRITEUP
+Pseudocode Explanations for Each System Component
+Read sequentially. Diagram codes in parentheses refer to .md files.
+======================================================================
+
+----------------------------------------------------------------------
+A. SYSTEM OVERVIEW
+----------------------------------------------------------------------
+
+A.1 Module Map
+  The project is split into small focused files. Each file owns one job:
+    - Config:           reads settings from config.txt
+    - ConsoleManager:   everything printed to the screen
+    - ProcessModel:     what a "process" is (its data and state)
+    - InstructionEngine: how instructions are parsed and run
+    - Scheduler:        manages CPU cores and process queues
+    - ScreenManager:    handles all "screen" commands
+    - ReportManager:    builds the screen -ls / report-util text
+    - OutputManager:    creates and deletes files in outputs/
+    - TimeUtil:         produces formatted timestamp strings
+    - main.cpp:         the shell loop that ties everything together
+
+A.2 Full Command Flow
+  When you run the program it:
+    1. Clears the screen and shows the CSOPESY header
+    2. Prints "root:\>" and waits for you to type something
+    3. Reads the line, strips spaces from the ends
+    4. Routes to the right handler based on what was typed
+    5. Prints the result and loops back to step 2
+    6. If you type "exit" it cleans up and quits
+
+----------------------------------------------------------------------
+B. COMMAND RECOGNITION
+----------------------------------------------------------------------
+
+B.1 Before-initialization gate
+  Only "exit" and "initialize" work before setup.
+  Every other command prints "Please initialize the system first."
+  (outputs-clear is also allowed before init as a convenience.)
+
+  PSEUDOCODE:
+    IF command == "exit" THEN
+        stop scheduler, clear outputs folder, end program
+    ELSE IF command == "initialize" THEN
+        load config.txt, set initialized = true
+    ELSE IF command == "outputs-clear" THEN
+        delete all files in outputs/
+    ELSE IF NOT initialized THEN
+        print "Please initialize the system first"
+
+B.2 Post-init routing
+  Once initialized, the shell checks each command in order:
+
+  PSEUDOCODE:
+    MATCH command WITH
+      "clear"           → clear screen, reprint header
+      "scheduler-start" → start background threads + batch spawning
+      "scheduler-stop"  → graceful shutdown (no new spawns, drain queue)
+      "report-util"     → build report + save csopesy-log.txt
+      "screen ..."      → hand off to ScreenManager
+      "outputs-clear"   → delete all files in outputs/
+      anything else     → print "Unknown command. Please try again."
+
+B.3 Screen command recognition
+  ScreenManager.isScreenCommand checks the string format first:
+
+  PSEUDOCODE:
+    IF command == "screen"     THEN print usage error
+    IF command == "screen -ls" THEN show process list
+    IF command STARTS WITH "screen -s " THEN create new process
+    IF command STARTS WITH "screen -r " THEN re-attach to process
+    ELSE return false (not a screen command)
+
+----------------------------------------------------------------------
+C. CONSOLE UI IMPLEMENTATION
+----------------------------------------------------------------------
+
+C.1 ConsoleManager
+  A stateless helper. All it does is print things.
+    clearScreen()         → runs "cls" on Windows
+    printHeader()         → ASCII art + developer names
+    printPrompt()         → prints "root:\>" without a newline
+    printLine(text)       → prints text + newline
+    printProcessScreenHint(name) → shows the process screen help bar
+    printLsAttachHint()   → prints tip after screen -ls
+
+C.2 Main shell loop
+  PSEUDOCODE:
+    clearScreen()
+    printHeader()
+    WHILE running == true
+        printPrompt()
+        line = read from keyboard
+        IF nothing read (EOF) THEN break
+        trim whitespace from line
+        IF empty THEN continue loop
+        handle command
+
+C.3 Process screen inner loop
+  When you enter a process screen, the outer loop pauses and an inner
+  loop takes over. Only two commands work here.
+
+  PSEUDOCODE:
+    clearScreen()
+    print process.formatSmi()          → name, logs, progress, variables
+    print process screen hint bar
+    WHILE true
+        printPrompt()
+        command = read from keyboard
+        IF command == "process-smi" THEN
+            print process.formatSmi()  → refreshes the view
+        ELSE IF command == "exit" THEN
+            clearScreen()
+            printHeader()
+            RETURN to outer loop
+        ELSE
+            print "Unknown command inside process screen."
+
+----------------------------------------------------------------------
+D. COMMAND INTERPRETER IMPLEMENTATION
+----------------------------------------------------------------------
+
+D.1 Config loading (initialize command)
+  ConfigLoader.loadFromFile reads config.txt line by line.
+
+  PSEUDOCODE:
+    open config.txt
+    IF cannot open THEN return error
+    FOR each line in file
+        split into key and value
+        MATCH key WITH
+          "num-cpu"           → validate 1..128, store in config.numCpu
+          "scheduler"         → "fcfs" or "rr", store in config.scheduler
+          "quantum-cycles"    → store in config.quantumCycles
+          "batch-process-freq"→ store in config.batchProcessFreq
+          "min-ins"           → store in config.minIns
+          "max-ins"           → store in config.maxIns
+          "delay-per-exec"    → store in config.delayPerExec
+    IF any required key is missing THEN return error
+    RETURN success
+
+D.2 ScreenManager.handleCommand
+  PSEUDOCODE:
+    IF command == "screen -ls" THEN
+        snapshot = scheduler.statusSnapshot()
+        report = ReportManager.generateSystemReport(snapshot)
+        print report
+        RETURN
+
+    IF command starts with "screen -s " THEN
+        name = extract name from command
+        IF name is empty THEN print error, RETURN
+        IF scheduler.processExists(name) THEN print "already exists", RETURN
+        scheduler.ensureEngineRunning(config)
+        process = scheduler.createUserProcess(name)
+        runProcessScreen(process)
+        RETURN
+
+    IF command starts with "screen -r " THEN
+        name = extract name from command
+        process = scheduler.findProcess(name)
+        IF process is null OR process is Finished THEN
+            print "Process not found", RETURN
+        runProcessScreen(process)
+        RETURN
+
+D.3 ReportManager.generateSystemReport
+  PSEUDOCODE:
+    snapshot = scheduler.statusSnapshot()   (thread-safe copy)
+    coresUsed = count processes with status == Running
+    coresAvailable = numCpu - coresUsed
+    utilization = (coresUsed / numCpu) * 100
+
+    BUILD report string:
+        "CPU utilization: X%"
+        "Cores used: N"
+        "Cores available: M"
+        "---"
+        "Running processes:"
+        FOR each process WHERE status == Running
+            print name, creation time, core number, currentLine / totalLines
+        "Finished processes:"
+        FOR each process WHERE status == Finished
+            print name, finish time, totalLines / totalLines
+        "---"
+    RETURN report string
+
+----------------------------------------------------------------------
+E. PROCESS REPRESENTATION
+----------------------------------------------------------------------
+
+E.1 Process Lifecycle
+  Ready → Running → (Ready or Sleeping or Finished)
+    Ready:    in readyQueue_, waiting for a CPU core
+    Running:  on a core, executing instructions
+    Sleeping: SLEEP instruction hit, parked until wakeAtCycle
+    Finished: all instructions done, visible in screen -ls
+
+E.2 Process Data
+  Each process stores:
+    id_               integer, unique across the session
+    name_             e.g. "process01" or "proc-test"
+    creationTimestamp_ time when created
+    instructions_     vector of 600 Instruction objects
+    currentLine_      atomic int, 0..599
+    assignedCore_     atomic int, -1 if not running
+    status_           atomic enum Ready/Running/Finished
+    sleepUntilCycle_  atomic uint64, 0 = not sleeping
+    variables_        map: "x"=0, "y"=0, "z"=0 at start
+    logs_             list of PRINT output lines
+    finishTimestamp_  time when all instructions finished
+
+  Note: fields used across threads are atomic (safe to read without locks).
+  Fields accessed less often (variables, logs) are protected by a mutex.
+
+E.3 Standard program (addStandardProgram)
+  PSEUDOCODE:
+    FOR i = 0 TO 99         (100 iterations = 600 instructions total)
+        ADD(x, x, 1)        x = x + 1
+        PRINT("Value from: " + x)
+        ADD(y, y, 1)
+        PRINT("Value from: " + y)
+        ADD(z, z, 1)
+        PRINT("Value from: " + z)
+
+  Result: x, y, z all end at 100. Logs show values 1..100 for each.
+
+E.4 formatSmi (process-smi output)
+  PSEUDOCODE:
+    logs = snapshotLogs()          (thread-safe copy)
+    line = currentLine_
+    status = status_
+    print "Process name: " + name
+    print "ID: " + id
+    print "Logs:" then each log line
+    IF status == Finished THEN
+        print "Finished!"
+        RETURN
+    print "Current instruction line: " + line
+    print "Lines of code: " + totalLines
+    print "Variables: x=" + x + " y=" + y + " z=" + z
+    print "Instruction: " + instructionTextAt(line)
+    IF sleeping THEN print "Status: sleeping until cycle N"
+
+----------------------------------------------------------------------
+F. SCHEDULER IMPLEMENTATION
+----------------------------------------------------------------------
+
+F.1 Thread Architecture
+  When scheduler.start(config) is called, it spawns:
+    tickThread:       one thread, increments global CPU cycle counter
+    schedulerThread:  one thread, moves processes from queue to cores
+    coreThreads[i]:   one thread per CPU core (numCpu threads total)
+
+  The main thread is NOT blocked — it stays at root:\> the whole time.
+
+F.2 Data Flow Between Queues
+  readyQueue_:        FIFO. New processes join here. Preempted processes
+                      go to the BACK (Round Robin fairness).
+  coreCurrent_[i]:    One slot per core. Non-null means that core is busy.
+  sleepingProcesses_: Holds processes in SLEEP with their wakeAtCycle.
+  allProcesses_:      Every process ever created, never removed.
+                      Used for screen -ls and findProcess.
+
+F.3 FCFS vs Round Robin
+  PSEUDOCODE:
+    IF scheduler == FCFS THEN
+        maxCycles = UINT32_MAX      (effectively unlimited)
+    ELSE IF scheduler == RR THEN
+        maxCycles = quantumCycles   (e.g. 20)
+
+  Both use the same runProcessSlice function.
+  The only difference: RR preempts when usedCycles > maxCycles,
+  FCFS never preempts (maxCycles is too big to ever reach).
+
+F.4 runProcessSlice (one quantum on one core)
+  PSEUDOCODE:
+    open outputs/name.txt in append mode
+    usedCycles = 0
+    FOR line = currentLine TO totalLines - 1
+        IF engine stopped THEN return Aborted
+        result = runInstructionTree(instruction at line)
+        IF result == Preempted  THEN return Preempted
+        IF result == Sleeping   THEN currentLine = line+1, return Sleeping
+        IF result == Aborted    THEN return Aborted
+        currentLine = line + 1
+    setStatus(Finished)
+    setFinishTimestamp(now)
+    RETURN Finished
+
+  runInstructionTree (handles FOR expansion):
+    IF instruction is FOR THEN
+        parse body instructions and repeat count
+        FOR each repeat
+            FOR each body instruction
+                result = runInstructionTree(body instruction, forDepth+1)
+                IF result != Finished THEN return early
+        RETURN Finished
+    ELSE (leaf instruction: ADD, PRINT, etc.)
+        IF usedCycles + cost > maxCycles THEN return Preempted
+        step = InstructionEngine.execute(instruction)
+        IF step produced log THEN appendLog + write to file
+        usedCycles += cost
+        IF step.relinquishCpu (SLEEP) THEN
+            markProcessSleeping(sleepTicks)
+            RETURN Sleeping
+        RETURN Finished
+
+F.5 scheduler-start and scheduler-stop
+  scheduler-start:
+    PSEUDOCODE:
+        store config, reset counters, clear queues
+        spawn tickThread, schedulerThread, coreThreads
+        set engineRunning = true
+        set batchGenerationActive = true
+
+  scheduler-stop (graceful):
+    PSEUDOCODE:
+        batchGenerationActive = false   (no new processes)
+        stopTickThread = true           (stop CPU tick)
+        wake all sleeping processes     (so they can finish)
+        launch background thread to wait for all Finished
+        RETURN to prompt immediately    (non-blocking)
+
+        background thread:
+            WHILE not all processes are Finished: sleep 10ms
+            engineRunning = false
+            join all worker threads
+
+F.6 Batch Spawning (maybeSpawnBatchProcess)
+  Called every tick after cpuCycles increments.
+
+  PSEUDOCODE:
+    IF batchGenerationActive == false THEN return
+    IF cpuCycles % batchProcessFreq != 0 THEN return
+    IF cpuCycles == lastBatchSpawnCycle THEN return   (guard against double spawn)
+    lastBatchSpawnCycle = cpuCycles
+    name = "process" + nextProcessNumber++ (zero-padded to 2 digits)
+    createProcessLocked(name)
+    notify schedulerLoop that there is new work
+
+----------------------------------------------------------------------
+G. INSTRUCTION ENGINE
+----------------------------------------------------------------------
+
+G.1 Parse → Execute Pipeline
+  Every instruction is a two-step process:
+    Step 1 PARSE:   text string → Instruction { type, arg }
+    Step 2 EXECUTE: Instruction + Process → change variables/logs/sleep
+
+G.2 parseSingleInstruction
+  PSEUDOCODE:
+    trim text
+    IF starts with "PRINT" THEN
+        type = Print
+        arg = everything inside the outer parentheses
+    ELSE IF starts with "ADD" THEN
+        type = Add, arg = full text
+    ELSE IF starts with "SUBTRACT" THEN
+        type = Subtract, arg = full text
+    ELSE IF starts with "DECLARE" THEN
+        type = Declare, arg = full text
+    ELSE IF starts with "SLEEP" THEN
+        type = Sleep, arg = full text
+    ELSE IF starts with "FOR" THEN
+        type = For, arg = full text
+    ELSE
+        treat as PRINT fallback
+
+G.3 execute() — what each opcode does
+  PRINT:
+    message = resolvePrintMessage(process, arg)
+      IF arg is empty THEN "Hello world from <name>!"
+      IF arg is "text" + variable THEN concatenate text with variable value
+    logLine = "(" + timestamp + ") Core:" + coreId + " \"" + message + "\""
+    mark result.producedLog = true
+
+  ADD / SUBTRACT:
+    split arg into dest, src1, src2
+    left = resolve src1 (literal number or variable value)
+    right = resolve src2
+    computed = left + right   (or left - right for SUBTRACT)
+    clamp to 0..65535
+    process.setVariable(dest, computed)
+
+  DECLARE:
+    split arg into name, value
+    process.setVariable(name, value)
+
+  SLEEP:
+    parse N from SLEEP(N)
+    result.relinquishCpu = true
+    result.sleepTicks = N
+    Scheduler parks process until cpuCycles + N
+
+  FOR:
+    No-op inside execute().
+    FOR is handled by Scheduler.runInstructionTree which expands
+    the loop and respects the RR quantum budget.
+
+G.4 resolveOperand (used inside ADD/SUBTRACT)
+  PSEUDOCODE:
+    IF token starts with a digit THEN
+        parse as integer literal
+    ELSE
+        look up in process.variables_
+        IF not found THEN return 0 (implicit zero per spec)
+
+G.5 splitTopLevelArgs (used to break ADD(x, y, 1) into parts)
+  PSEUDOCODE:
+    parts = []
+    current = ""
+    parenDepth = 0
+    bracketDepth = 0
+    inQuotes = false
+    FOR each character in input
+        IF char is '"' and depth == 0 THEN toggle inQuotes
+        ELSE IF not inQuotes
+            IF '(' THEN parenDepth++
+            IF ')' THEN parenDepth--
+            IF '[' THEN bracketDepth++
+            IF ']' THEN bracketDepth--
+            IF ',' AND both depths == 0 THEN
+                parts.add(trim(current))
+                current = ""
+                continue
+        current += char
+    IF current not empty THEN parts.add(trim(current))
+    RETURN parts
+
+  Reason for depth tracking: ADD(x, FOR([a,b],2), 1) must NOT split
+  on the comma inside FOR or inside quotes.
+
+======================================================================
+END OF WRITEUP
+======================================================================
