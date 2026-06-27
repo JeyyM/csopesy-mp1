@@ -10,7 +10,7 @@ Read these files in order. Each letter matches one of the five report topics.
 | `D_command_interpreter.md`    | D.1 Config loading · D.2 ScreenManager detail · D.3 Report build | Command interpreter |
 | `E_process_representation.md` | E.1 States · E.2 Data structure · E.3 Standard program · E.4 process-smi | Process representation |
 | `F_scheduler_implementation.md` | F.1 Threads · F.2 Queues · F.3 FCFS/RR · F.4 Time slice · F.5 Start/stop · F.6 Batch | Scheduler implementation |
-| `G_instruction_engine.md`     | G.1 Pipeline · G.2 Parse tree · G.3 Opcodes                    | (Instruction engine, used by scheduler) |
+| `G_instruction_engine.md`     | G.1 Pipeline · G.2 Parse tree · G.3 Process state changes · G.4 Opcode dispatch | (Instruction engine, used by scheduler) |
 | `WRITEUP_pseudocode.txt`      | Plain-text pseudocode for every section above (A through G)    | All topics — written explanation |
 
 ---

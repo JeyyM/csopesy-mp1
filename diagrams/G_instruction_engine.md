@@ -37,19 +37,43 @@ flowchart TD
 
 ---
 
-## G.3 execute() What Each Opcode Does
+## G.3 How Instructions Affect a Process
+
+Each instruction type modifies a different part of the process's data.
+This shows what changes inside the Process object after each opcode runs.
+
+```mermaid
+flowchart LR
+    subgraph PROCESS["Process State"]
+        direction TB
+        VARS["variables_\nkey-value map\nx, y, z, ..."]
+        LOGS["logs_\nlist of output lines"]
+        SLEEP_F["sleepUntilCycle_\nwake cycle number"]
+        LINE["currentLine_\nadvances after each instruction"]
+    end
+
+    ADD["ADD / SUBTRACT\nADD(dest, src1, src2)"] -->|"updates dest variable"| VARS
+    DECL["DECLARE\nDECLARE(name, value)"] -->|"creates / sets variable"| VARS
+    PRINT["PRINT\nPRINT('msg' + var)"] -->|"appends formatted log line"| LOGS
+    SLEEP["SLEEP\nSLEEP(N)"] -->|"sets wakeAtCycle = now + N\nrelinquishes core"| SLEEP_F
+    FOR["FOR\nFOR(body, N)"] -->|"expands to N × body instructions\nno direct state change"| LINE
+```
+
+---
+
+## G.4 execute() Dispatch — Which Handler Runs
 
 ```mermaid
 flowchart LR
     EXEC["execute\nInstruction + Process + coreId"] --> SW{type?}
 
-    subgraph OPCODES["What each opcode does"]
+    subgraph OPCODES["Handler for each opcode"]
         direction TB
-        PR["PRINT\nresolve message text\nbuild log line with timestamp + core\nmark producedLog = true"]
-        DE["DECLARE\nset variable to literal value\nprocess.setVariable(name, val)"]
-        AS["ADD / SUBTRACT\nresolve src1 and src2\n(literal or variable lookup)\ncompute result, clamp 0–65535\nstore in dest variable"]
-        SL["SLEEP\nmark relinquishCpu = true\nset sleepTicks = N\nscheduler parks process\nuntil cpuCycles + N"]
-        FO["FOR\nno-op here\nhandled by Scheduler\nrunInstructionTree\n(expands loop + checks quantum)"]
+        PR["PRINT('message' + variable)\nresolve message text\nbuild log line with timestamp + core\nmark producedLog = true"]
+        DE["DECLARE(name, value)\nset variable to literal value\nprocess.setVariable(name, val)"]
+        AS["ADD(dest, src1, src2)\nSUBTRACT(dest, src1, src2)\nresolve src1 and src2\n(literal or variable lookup)\ncompute result, clamp 0–65535\nstore in dest variable"]
+        SL["SLEEP(N)\nmark relinquishCpu = true\nset sleepTicks = N\nscheduler parks process\nuntil cpuCycles + N"]
+        FO["FOR(body, N)\nno-op here\nhandled by Scheduler\nrunInstructionTree\n(expands loop + checks quantum)"]
     end
 
     SW -->|Print| PR

@@ -1,62 +1,74 @@
 # B — Command Recognition
 
-## B.1 Before Initialization Gate
+## Background
 
-Only two commands work before `initialize` is called.
-All others are blocked with an error message.
+Command recognition is the first thing the system does when the user presses Enter.
+Before any logic runs, the input string is trimmed of leading and trailing whitespace.
+An empty string is silently ignored and the prompt is reprinted.
 
-```mermaid
-flowchart TD
-    INPUT[User types command] --> T1{== 'exit'?}
-    T1 -- yes --> DO_EXIT[Stop scheduler, clear outputs, quit]
-    T1 -- no --> T2{== 'initialize'?}
-    T2 -- yes --> DO_INIT[Load config.txt]
-    T2 -- no --> T3{== 'outputs-clear'?}
-    T3 -- yes --> DO_OUT[Clear outputs/ folder]
-    T3 -- no --> T4{initialized == true?}
-    T4 -- no --> BLOCK[Print: Please initialize first]
-    T4 -- yes --> POST_INIT_CMDS[Post-init command routing]
-```
+The system uses two recognition mechanisms:
+- **Exact string match** — for commands with no variable arguments (e.g. `scheduler-start`, `clear`)
+- **startsWith check** — for commands that carry a name argument after the flag (`screen -s <name>`, `screen -r <name>`)
+
+Any input that does not match a known pattern falls through to an "Unknown command" message.
 
 ---
 
-## B.2 Post-Initialization Command Routing
+## Initialization Gate
 
-After `initialize` succeeds, every recognized command has a dedicated handler.
+A session-wide boolean flag `initialized` blocks most commands until `config.txt`
+has been successfully loaded. Only three commands bypass this gate:
 
-```mermaid
-flowchart TD
-    CMD[Recognized command string] --> C1{== 'clear'?}
-    C1 -- yes --> H_CLEAR[ConsoleManager.clearScreen + printHeader]
-    C1 -- no --> C2{== 'scheduler-start'?}
-    C2 -- yes --> H_SS[Start scheduler threads + enable batch spawning]
-    C2 -- no --> C3{== 'scheduler-stop'?}
-    C3 -- yes --> H_ST[Graceful stop: drain, no new spawns]
-    C3 -- no --> C4{== 'report-util'?}
-    C4 -- yes --> H_REP[Generate report + save to csopesy-log.txt]
-    C4 -- no --> C5{ScreenManager.isScreenCommand?}
-    C5 -- yes --> H_SCR[ScreenManager.handleCommand]
-    C5 -- no --> C6{== 'outputs-clear'?}
-    C6 -- yes --> H_OUT[Delete all files in outputs/]
-    C6 -- no --> H_UNK[Print: Unknown command. Please try again.]
-```
+> `exit`, `initialize`, and `outputs-clear` work at any time.
+> All other commands print "Please initialize the system first" until `initialize` is called.
 
 ---
 
-## B.3 Screen Command Recognition Detail
+## Command Reference Table
 
-`ScreenManager.isScreenCommand()` checks for four specific patterns
-before `handleCommand()` dispatches to the right action.
+| Command | Match type | Requires initialize | Action |
+|---|---|---|---|
+| `exit` | exact | No | Stop scheduler, clear outputs/, quit |
+| `initialize` | exact | No | Load and validate config.txt |
+| `outputs-clear` | exact | No | Delete all files in outputs/ |
+| `clear` | exact | Yes | Clear screen, reprint header |
+| `scheduler-start` | exact | Yes | Start threads, enable batch spawning |
+| `scheduler-stop` | exact | Yes | Graceful stop — no new spawns, drain queue |
+| `report-util` | exact | Yes | Generate report, save to csopesy-log.txt |
+| `screen` | exact | Yes | Print usage error (no subcommand given) |
+| `screen -ls` | exact | Yes | Print CPU and process list to terminal |
+| `screen -s <name>` | startsWith | Yes | Create new process, enter process screen |
+| `screen -r <name>` | startsWith | Yes | Attach to existing running process |
+| anything else | no match | — | Print: Unknown command. Please try again. |
+
+---
+
+## B.1 Full Command Routing Flow
 
 ```mermaid
 flowchart TD
-    S[Command string] --> P1{"== 'screen'\n(no args)"}
-    P1 -- yes --> E1[Print: screen requires arguments]
-    P1 -- no --> P2{"== 'screen -ls'"}
-    P2 -- yes --> E2[Show CPU report + running/finished list]
-    P2 -- no --> P3{"starts with\n'screen -s '"}
-    P3 -- yes --> E3[Create new process with that name]
-    P3 -- no --> P4{"starts with\n'screen -r '"}
-    P4 -- yes --> E4[Re-attach to existing running process]
-    P4 -- no --> P5[Not a screen command → returns false]
+    INPUT[User types command] --> TRIM[Trim whitespace]
+    TRIM --> EMPTY{Empty?}
+    EMPTY -- yes --> REPROMPT[Reprint prompt]
+    EMPTY -- no --> G1{== 'exit'?}
+    G1 -- yes --> DO_EXIT[Stop scheduler + clear outputs + quit]
+    G1 -- no --> G2{== 'initialize'?}
+    G2 -- yes --> DO_INIT[Load config.txt]
+    G2 -- no --> G3{== 'outputs-clear'?}
+    G3 -- yes --> DO_OUT[Clear outputs/ folder]
+    G3 -- no --> GATE{initialized?}
+    GATE -- no --> BLOCK[Print: Please initialize first]
+    GATE -- yes --> ROUTE
+
+    subgraph ROUTE["Post-init routing"]
+        direction TB
+        R1["clear → clearScreen + printHeader"]
+        R2["scheduler-start → start threads + batch"]
+        R3["scheduler-stop → graceful drain"]
+        R4["report-util → generate + save log"]
+        R5["screen * → ScreenManager.handleCommand"]
+        R6["unknown → Unknown command message"]
+    end
+
+    ROUTE --> REPROMPT
 ```

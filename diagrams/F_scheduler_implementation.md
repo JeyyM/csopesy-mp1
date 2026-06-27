@@ -6,27 +6,22 @@ The scheduler runs three types of background threads simultaneously
 while the main thread stays at the `root:\>` prompt.
 
 ```mermaid
-flowchart TD
-    subgraph Main Thread
-        PROMPT["root:\\> prompt (waiting for input)"]
+flowchart LR
+    subgraph MAIN["Main Thread (1)"]
+        PROMPT["root:\\> prompt\n(waiting for input)"]
     end
 
-    subgraph Scheduler Background Threads
-        TICK["tickLoop\none thread\nwakes every ~1ms\nincrements cpuCycles_\nspawns batch / wakes SLEEP"]
-        DISP["schedulerLoop\none thread\nmoves readyQueue_ front\nto free coreCurrent_ slot"]
-        C0["coreLoop(0)\nruns one process slice\non core 0"]
-        C1["coreLoop(1)\nruns one process slice\non core 1"]
-        CN["coreLoop(N-1)\n... up to numCpu cores"]
+    subgraph BG["Scheduler Background Threads (2 + N)"]
+        direction TB
+        TICK["tickLoop\n— 1 thread —\nwakes every ~1ms\nincrements cpuCycles_\nspawns batch · wakes SLEEP"]
+        DISP["schedulerLoop\n— 1 thread —\nmoves readyQueue_ front\nto a free coreCurrent_ slot"]
+        CORE["coreLoop(i)\n— N threads, one per num-cpu —\nruns one process slice\nreturns Preempted or Finished"]
     end
 
-    TICK -->|cpuCycles++| DISP
-    TICK -->|wakes SLEEP| DISP
-    DISP -->|assigns job| C0
-    DISP -->|assigns job| C1
-    DISP -->|assigns job| CN
-    C0 -->|Preempted → back of queue| DISP
-    C1 -->|Preempted → back of queue| DISP
-    CN -->|Preempted → back of queue| DISP
+    TICK -->|"cpuCycles++"| DISP
+    TICK -->|"wakes SLEEP"| DISP
+    DISP -->|"assigns job to core i"| CORE
+    CORE -->|"Preempted: back of queue"| DISP
 ```
 
 ---
