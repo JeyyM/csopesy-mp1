@@ -27,6 +27,7 @@
 #include <deque>
 #include <memory>
 #include <mutex>
+#include <random>
 #include <string>
 #include <thread>
 #include <vector>
@@ -151,6 +152,8 @@ private:
     int nextId_ = 1;
     int nextProcessNumber_ = 1;
     uint64_t lastBatchSpawnCycle_ = 0;
+
+    std::mt19937 rng_{std::random_device{}()};
 
     static constexpr int kDefaultCycleMs = 30;
     static constexpr int kFastCycleMs = 1;

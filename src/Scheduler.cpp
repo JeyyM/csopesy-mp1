@@ -43,7 +43,9 @@
 
 #include <fstream>
 #include <iomanip>
+#include <algorithm>
 #include <limits>
+#include <random>
 #include <sstream>
 #include <thread>
 
@@ -333,9 +335,24 @@ void Scheduler::maybeSpawnBatchProcess() {
 // Process creation
 // ---------------------------------------------------------------------------
 
-// Grading spec program: 100 iterations of ADD/PRINT on x, y, z (600 instructions total).
+// Grading spec program: random number of iterations of ADD/PRINT on x, y, z.
+// Total instruction count is drawn uniformly from [config_.minIns, config_.maxIns].
+// Each iteration = 6 instructions (ADD+PRINT × 3), so iterations = totalIns / 6.
+// Called under mutex_ so rng_ access is safe.
 void Scheduler::addStandardProgram(const std::shared_ptr<Process>& process) {
-    for (int iteration = 0; iteration < 100; ++iteration) {
+    uint32_t minIns = std::max(6u, config_.minIns);
+    uint32_t maxIns = std::max(minIns, config_.maxIns);
+
+    uint32_t totalInstructions = minIns;
+    if (maxIns > minIns) {
+        std::uniform_int_distribution<uint32_t> dist(minIns, maxIns);
+        totalInstructions = dist(rng_);
+    }
+
+    // Each group is 6 instructions; ensure at least 1 iteration.
+    const int iterations = std::max(1, static_cast<int>(totalInstructions / 6));
+
+    for (int iteration = 0; iteration < iterations; ++iteration) {
         process->addInstruction(InstructionType::Add, "ADD(x, x, 1)");
         process->addInstruction(InstructionType::Print, "\"Value from: \" + x");
         process->addInstruction(InstructionType::Add, "ADD(y, y, 1)");

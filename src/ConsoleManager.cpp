@@ -59,7 +59,7 @@ void ConsoleManager::printHeader() {
         << "    Capote, Mary Grace\n"
         << "    Rojo, Von Matthew\n"
         << "\n"
-        << "Last updated: 06-25-2026\n"
+        << "Last updated: 06-27-2026\n"
         << "----------------------------------------------------\n"
         << "\n";
 }

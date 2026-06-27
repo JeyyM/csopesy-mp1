@@ -284,14 +284,17 @@ int main() {
         //   3. Enable automatic process generation (batch mode).
         //   4. If config says to pre-load processes, create them immediately.
         if (command == "scheduler-start") {
-            if (scheduler.isEngineRunning()) {
-                // typing "scheduler-start" twice is harmless. Just warn.
+            if (scheduler.isBatchGenerationActive()) {
+                // Batch generation is already on — truly already started.
                 ConsoleManager::printLine("Scheduler is already running.");
                 continue;
             }
 
-            // Start all background threads with the settings from config.
-            scheduler.start(config);
+            // Engine may already be running (auto-started by "screen -s").
+            // Only call start() if the threads aren't up yet.
+            if (!scheduler.isEngineRunning()) {
+                scheduler.start(config);
+            }
 
             // Turn on automatic process spawning (every batch-process-freq cycles).
             scheduler.enableBatchGeneration();
