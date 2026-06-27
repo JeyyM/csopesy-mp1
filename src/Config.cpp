@@ -1,4 +1,54 @@
-// Config.cpp is for general utility functions and initialization from config.txt
+// Implements ConfigLoader::loadFromFile — the parser behind the "initialize" command.
+
+//   When the user types "initialize", main.cpp calls loadFromFile("config.txt", ...).
+//   This file is entirely responsible for turning that text file into a filled
+//   Config struct that the rest of the program can use.
+//
+//   Nothing else in this file is public. All the helper functions (trim,
+//   stripQuotes, parseUint32, etc.) are private utilities that only
+//   loadFromFile calls.
+
+// how loadFromFile works:
+//
+//   1. Open config.txt — if missing, return error immediately
+//   2. Loop: read one KEY, then read its VALUE
+//        match KEY against every known config parameter
+//        validate VALUE for that parameter (range, format)
+//        store result in a temporary Config object
+//        if KEY is unknown -> return error
+//   3. Cross-field check: min-ins must be <= max-ins
+//   4. Presence check: every required key must have been seen
+//        (if a key was never read, its field is still 0 -> return "missing X" error)
+//   5. Success: copy the temporary Config into the output, set loaded = true
+
+// EXAMPLE — parsing this config.txt:
+//
+//   num-cpu 4
+//   scheduler "rr"
+//   quantum-cycles 5
+//   batch-process-freq 1
+//   min-ins 100
+//   max-ins 2000
+//   delay-per-exec 0
+//   initial-process-count 10
+//
+//   Step 1: file opens fine
+//   Step 2: reads "num-cpu" -> "4"  -> parsed.numCpu = 4
+//           reads "scheduler" -> "\"rr\"" -> parsed.scheduler = RR
+//           reads "quantum-cycles" -> "5" -> parsed.quantumCycles = 5
+//           ... and so on for every line
+//   Step 3: minIns(100) <= maxIns(2000) -> OK
+//   Step 4: all required fields > 0 -> OK
+//   Step 5: out = parsed; loaded = true; return true
+//
+// EXAMPLE — what happens with a bad config.txt:
+//
+//   num-cpu 200          <- out of range (max is 128)
+//
+//   Step 2: reads "num-cpu" -> "200"
+//           200 > 128 -> errorMessage = "num-cpu must be in range [1, 128]."
+//           return false
+//   main.cpp prints the error; "initialize" fails; system stays uninitialized.
 
 #include "Config.h"
 
@@ -9,7 +59,11 @@
 // General utility functions
 namespace {
 
-// removes leading and trailing whitespace from a string
+// Removes leading and trailing whitespace (spaces, tabs, newlines) from a string.
+// Used to clean up both keys and values read from config.txt.
+//
+// Example: IN "  num-cpu  " -> OUT "num-cpu"
+// Example: IN "\t4\r\n"     -> OUT "4"
 std::string trim(const std::string& value) {
     const auto start = value.find_first_not_of(" \t\r\n");
     if (start == std::string::npos) {
@@ -19,7 +73,12 @@ std::string trim(const std::string& value) {
     return value.substr(start, end - start + 1);
 }
 
-// removes surrounding double quotes from a token
+// Removes surrounding double-quote characters from a string.
+// config.txt uses quotes for the scheduler value: scheduler "rr"
+// After reading the token "rr" (with quotes), this strips them to get rr.
+//
+// Example: IN "\"rr\""  -> OUT "rr"
+// Example: IN "rr"      -> OUT "rr"  (no quotes, returns as-is)
 std::string stripQuotes(const std::string& value) {
     if (value.size() >= 2 && value.front() == '"' && value.back() == '"') {
         return value.substr(1, value.size() - 2);
@@ -27,7 +86,14 @@ std::string stripQuotes(const std::string& value) {
     return value;
 }
 
-// converts a text number into an unsigned 32-bit integer
+// Converts a text token into an unsigned 32-bit integer (0 to 4,294,967,295).
+// Returns true and writes the result into `out` on success.
+// Returns false if the text is not a valid number or is too large.
+//
+// Example: IN "100"        -> out=100, true
+// Example: IN "0"          -> out=0,   true
+// Example: IN "abc"        -> out=0,   false  (not a number)
+// Example: IN "9999999999" -> out=0,   false  (too large for uint32)
 bool parseUint32(const std::string& text, uint32_t& out) {
     try {
         const unsigned long long value = std::stoull(text);
@@ -41,7 +107,13 @@ bool parseUint32(const std::string& text, uint32_t& out) {
     }
 }
 
-// maps config.txt scheduler string to SchedulerType enum
+// Converts the scheduler string from config.txt into a SchedulerType enum value.
+// Strips quotes and normalizes case so both "fcfs" and "rr" are accepted.
+// Returns false if the value is anything else.
+//
+// Example: IN "\"fcfs\""  -> out=FCFS, true
+// Example: IN "\"rr\""    -> out=RR,   true
+// Example: IN "\"sjf\""   -> out=?,    false  (not a supported algorithm)
 bool parseSchedulerValue(const std::string& text, SchedulerType& out) {
     const std::string normalized = stripQuotes(trim(text));
     if (normalized == "fcfs") {
@@ -55,8 +127,17 @@ bool parseSchedulerValue(const std::string& text, SchedulerType& out) {
     return false;
 }
 
-// reads the value half of a key value pair from the file like 
-// num-cpu 4
+// Reads the VALUE token that follows a KEY in config.txt.
+// Normally one whitespace-delimited word (e.g. "4", "0").
+// For quoted strings (e.g. "rr"), keeps reading until the closing quote is found.
+//
+// This handles the case where a quoted value has spaces inside it,
+// e.g.  scheduler "round robin"  would be read as one token "round robin".
+// (No current config key uses spaces in its value, but the parser supports it.)
+//
+// Example: stream contains '4\n'        -> out="4",    true
+// Example: stream contains '"rr"\n'     -> out="\"rr\"", true
+// Example: stream is at end-of-file     -> out unchanged, false
 bool readValueToken(std::istream& in, std::string& out) {
     std::string raw;
     if (!(in >> raw)) {
@@ -81,27 +162,45 @@ bool readValueToken(std::istream& in, std::string& out) {
 
 } 
 
+// ConfigLoader::loadFromFile
 //
-//   1. Open config.txt
-//   2. Loop: read KEY, then read VALUE, dispatch to the matching handler
-//   3. After the loop, run cross-field validation (min-ins <= max-ins, etc.)
-//   4. Verify every required key was actually present in the file
-//   5. On success: copy parsed Config into `out`, set loaded = true
+// The only public function in this file. Called directly by the "initialize"
+// command handler in main.cpp:
 //
+//   if (!ConfigLoader::loadFromFile("config.txt", config, error)) {
+//       ConsoleManager::printLine(error);   // show what went wrong
+//       continue;                           // stay uninitialized
+//   }
+//   initialized = true;                    // unlock other commands
+//
+// Parameters:
+//   path         — always "config.txt" (relative to the working directory)
+//   out          — filled with parsed settings on success; untouched on failure
+//   errorMessage — human-readable failure reason on error; cleared on success
+//
+// Returns true on success, false on any error.
 bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::string& errorMessage) {
-    // --- Step 1: open the file ---
+    
+    // Step 1: Open the file
+    // If config.txt doesn't exist or can't be read, fail immediately.
     std::ifstream file(path);
     if (!file.is_open()) {
         errorMessage = "Could not open config file: " + path;
         return false;
     }
 
-    // Fresh Config object; fields start at 0/false until each key sets them.
+    // Use a temporary Config so we only overwrite `out` on full success.
+    // If anything fails partway through, `out` stays untouched.
     Config parsed;
     std::string key;
 
-    // --- Step 2: read KEY VALUE pairs until end of file ---
-    // operator>> skips whitespace, so "num-cpu 4\nscheduler \"fcfs\"" works.
+    // Step 2: Read KEY VALUE pairs until end of file
+    //
+    // operator>> skips all whitespace between tokens, so blank lines and
+    // extra spaces between key and value are handled automatically.
+    //
+    // Each iteration: read one key word, then read its value token,
+    // then dispatch to the matching validation block below.
     while (file >> key) {
         std::string value;
         if (!readValueToken(file, value)) {
@@ -109,9 +208,11 @@ bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::strin
             return false;
         }
 
-        // --- Dispatch each known config key ---
+        // Dispatch: match key to its config field, validate, and store.
+        // Any key not in this list is rejected — no silent ignoring of typos.
         if (key == "num-cpu") {
-            // How many CPU cores / threads the scheduler will use.
+            // Number of CPU cores to simulate. Must be between 1 and 128.
+            // Stored as int because Scheduler uses it in signed arithmetic.
             int num = 0;
             try {
                 num = std::stoi(value);
@@ -126,50 +227,63 @@ bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::strin
             parsed.numCpu = num;
 
         } else if (key == "scheduler") {
-            // Scheduling algorithm: "fcfs" or "rr"
+            // Scheduling algorithm: must be "fcfs" (First-Come First-Served)
+            // or "rr" (Round Robin). Any other string is rejected.
             if (!parseSchedulerValue(value, parsed.scheduler)) {
                 errorMessage = "Scheduler must be \"fcfs\" or \"rr\".";
                 return false;
             }
 
         } else if (key == "quantum-cycles") {
+            // Time slice size for Round Robin: how many CPU ticks a process
+            // gets before being preempted. Must be at least 1.
+            // (This field is required even when using FCFS, for simplicity.)
             if (!parseUint32(value, parsed.quantumCycles) || parsed.quantumCycles < 1) {
                 errorMessage = "Invalid quantum-cycles value.";
                 return false;
             }
 
         } else if (key == "batch-process-freq") {
-            // How often (in CPU cycles) scheduler-start auto-generates processes.
+            // How many global CPU ticks pass between auto-spawning a new process
+            // once "scheduler-start" is running. Must be at least 1.
+            // Example: 5 means one new process every 5 ticks.
             if (!parseUint32(value, parsed.batchProcessFreq) || parsed.batchProcessFreq < 1) {
                 errorMessage = "Invalid batch-process-freq value.";
                 return false;
             }
 
         } else if (key == "min-ins") {
-            // Minimum PRINT instructions per process.
-            // Used by screen -s (random range) and by initialize when min == max.
+            // Minimum number of PRINT instructions assigned to each generated process.
+            // The actual count is a random number between min-ins and max-ins.
+            // Must be at least 1 (a process with 0 instructions would finish instantly).
             if (!parseUint32(value, parsed.minIns) || parsed.minIns < 1) {
                 errorMessage = "Invalid min-ins value.";
                 return false;
             }
 
         } else if (key == "max-ins") {
-            // Maximum PRINT instructions per process. Must be >= min-ins.
+            // Maximum number of PRINT instructions assigned to each generated process.
+            // Must be at least 1. Cross-field check (min <= max) happens after the loop.
             if (!parseUint32(value, parsed.maxIns) || parsed.maxIns < 1) {
                 errorMessage = "Invalid max-ins value.";
                 return false;
             }
 
         } else if (key == "delay-per-exec") {
-            // Extra CPU cycles to sleep between executing consecutive instructions.
-            // 0 means one instruction per cycle (fastest)
+            // Extra CPU ticks to idle between executing consecutive instructions.
+            // 0 is valid and means no artificial delay (run as fast as possible).
+            // Higher values slow execution and make timing easier to observe.
             if (!parseUint32(value, parsed.delayPerExec)) {
                 errorMessage = "Invalid delay-per-exec value.";
                 return false;
             }
 
         } else if (key == "initial-process-count") {
-            // Optional batch created immediately on scheduler-start (0 = batch-only).
+            // OPTIONAL: number of processes to spawn immediately when
+            // "scheduler-start" is typed, before batch generation kicks in.
+            // If this key is absent, the scheduler starts with an empty queue
+            // and relies on batch-process-freq to populate it over time.
+            // Range 1-128 if present.
             if (!parseUint32(value, parsed.initialProcessCount) ||
                 parsed.initialProcessCount < 1 || parsed.initialProcessCount > 128) {
                 errorMessage = "initial-process-count must be in range [1, 128].";
@@ -177,22 +291,25 @@ bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::strin
             }
 
         } else {
-            // Any key not in the list above is rejected immediately.
+            // Unknown key — reject immediately so the user knows about typos.
+            // Example: "nmu-cpu 4" would trigger this with "Unknown config parameter: nmu-cpu".
             errorMessage = "Unknown config parameter: " + key;
             return false;
         }
     }
 
-    // --- Step 3: cross-field validation ---
-    // min-ins cannot be larger than max-ins (would break random instruction count).
+    // Step 3: Cross-field validation
+    // Rules that involve two fields and can only be checked after both are read.
     if (parsed.minIns > parsed.maxIns) {
         errorMessage = "min-ins cannot be greater than max-ins.";
         return false;
     }
 
-    // --- Step 4: ensure every required key appeared in config.txt ---
-    // If a key was never read, its field is still 0 and we fail with a
-    // specific "missing" message so the user knows what to add to the file.
+    // Step 4: Presence check — every required key must have appeared in the file
+    //
+    // If a required key was never read, its field is still 0 (the default).
+    // We detect this and report the specific missing key so the user knows
+    // exactly what to add rather than getting a cryptic error later.
     if (parsed.numCpu < 1) {
         errorMessage = "config.txt is missing num-cpu.";
         return false;
@@ -213,9 +330,10 @@ bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::strin
         errorMessage = "config.txt is missing max-ins.";
         return false;
     }
-    // initial-process-count is optional (0 = rely on batch-process-freq only).
+    // Note: initial-process-count is intentionally NOT checked here because
+    // it is optional. A value of 0 simply means "no initial burst of processes".
 
-    // --- Step 5: success — hand the parsed config back to main.cpp ---
+    // Step 5: Success — hand the fully validated Config back to main.cpp
     parsed.loaded = true;
     out = parsed;
     errorMessage.clear();
