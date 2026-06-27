@@ -352,8 +352,9 @@ void Scheduler::maybeSpawnBatchProcess() {
 // ---------------------------------------------------------------------------
 
 // Builds a program with exactly totalInstructions instructions, drawn uniformly
-// from [config_.minIns, config_.maxIns]. Cycles through the standard
-// ADD/PRINT pattern for x, y, z so the remainder is handled naturally.
+// from [config_.minIns, config_.maxIns]. Pattern: PRINT, ADD, PRINT, ADD, ...
+// The ADD amount is randomised between 1 and 10 for each ADD instruction.
+// Only variable x is used (initialised to 0 at process creation).
 // Called under mutex_ so rng_ access is safe.
 void Scheduler::addStandardProgram(const std::shared_ptr<Process>& process) {
     const uint32_t minIns = std::max(1u, config_.minIns);
@@ -365,21 +366,17 @@ void Scheduler::addStandardProgram(const std::shared_ptr<Process>& process) {
         totalInstructions = dist(rng_);
     }
 
-    // Six-instruction repeating pattern: ADD+PRINT for x, y, z.
-    // Cycling through it and stopping at totalInstructions gives an exact count
-    // with no rounding loss (e.g. 1000 % 6 == 4 extra instructions are included).
-    static const std::pair<InstructionType, const char*> kPattern[6] = {
-        {InstructionType::Add,   "ADD(x, x, 1)"},
-        {InstructionType::Print, "\"Value from: \" + x"},
-        {InstructionType::Add,   "ADD(y, y, 1)"},
-        {InstructionType::Print, "\"Value from: \" + y"},
-        {InstructionType::Add,   "ADD(z, z, 1)"},
-        {InstructionType::Print, "\"Value from: \" + z"},
-    };
+    std::uniform_int_distribution<int> addAmountDist(1, 10);
 
+    // Alternating: PRINT("Value from: " +x), ADD(x, x, N), PRINT, ADD, ...
     for (uint32_t i = 0; i < totalInstructions; ++i) {
-        const auto& [type, arg] = kPattern[i % 6];
-        process->addInstruction(type, arg);
+        if (i % 2 == 0) {
+            process->addInstruction(InstructionType::Print, "\"Value from: \" + x");
+        } else {
+            const int amount = addAmountDist(rng_);
+            process->addInstruction(InstructionType::Add,
+                                    "ADD(x, x, " + std::to_string(amount) + ")");
+        }
     }
 }
 

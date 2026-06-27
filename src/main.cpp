@@ -145,18 +145,12 @@ int main() {
 
 
         // exit command:
-        // Stops the scheduler, deletes leftover output files, and quits.
+        // Stops the scheduler and quits.
         // This is checked first so it always works, even before "initialize".
         if (command == "exit") {
 
             // Stop all background worker threads immediately.
             scheduler.stop();
-
-            // Delete all per-process output files from the outputs/ directory.
-            // These are the text files written by each process as it runs.
-            std::size_t removedCount = 0;
-            std::string clearError;
-            OutputManager::clearAllProcessOutputs(removedCount, clearError);
 
             ConsoleManager::printLine("Exiting CSOPESY Emulator.");
             running = false; // breaks the while loop

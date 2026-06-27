@@ -48,12 +48,10 @@ Process::Process(int id, std::string name, std::string creationTimestamp)
     initializeStandardVariables();
 }
 
-// Puts x, y, z into variables_ at 0. Required by the grading / demo spec.
+// Puts x into variables_ at 0. Required by the grading / demo spec.
 // Uses setVariable so the mutex is locked correctly.
 void Process::initializeStandardVariables() {
     setVariable("x", 0);
-    setVariable("y", 0);
-    setVariable("z", 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -218,8 +216,7 @@ std::string Process::formatSmi() {
 
     output << "\nCurrent instruction line: " << line << "\n";
     output << "Lines of code: " << totalLines() << "\n";
-    output << "Variables: x=" << getVariable("x") << " y=" << getVariable("y")
-           << " z=" << getVariable("z") << "\n";
+    output << "Variables: x=" << getVariable("x") << "\n";
 
     if (line >= 0 && line < totalLines()) {
         output << "Instruction: " << instructionTextAt(line) << "\n";
