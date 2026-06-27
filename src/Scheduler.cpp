@@ -310,6 +310,8 @@ void Scheduler::wakeSleepingProcesses() {
 
 // Example: batch-process-freq 1 -> spawn every tick at cycles 1,2,3,...
 // Example: batch-process-freq 2 -> spawn at cycles 2,4,6,...
+// Backpressure: skip spawning when unfinished processes already exceed the cap,
+// so a single CPU is not buried under thousands of queued 1000-instruction jobs.
 void Scheduler::maybeSpawnBatchProcess() {
     if (!batchGenerationActive_.load()) {
         return;
@@ -325,6 +327,20 @@ void Scheduler::maybeSpawnBatchProcess() {
 
     {
         std::lock_guard<std::mutex> lock(mutex_);
+
+        // Cap unfinished processes at 64× the number of cores (minimum 64).
+        // This prevents the ready queue from growing unboundedly when spawn rate
+        // exceeds execution rate (e.g. 1 CPU, 1000-instruction processes, freq=1).
+        const size_t maxActive = std::max(64, config_.numCpu * 64);
+        const size_t unfinished = std::count_if(
+            allProcesses_.begin(), allProcesses_.end(),
+            [](const std::shared_ptr<Process>& p) {
+                return p->status() != ProcessStatus::Finished;
+            });
+        if (unfinished >= maxActive) {
+            return;  // wait for existing work to progress before adding more
+        }
+
         lastBatchSpawnCycle_ = cycles;
         spawnAutoBatchProcessLocked();
     }
@@ -335,13 +351,13 @@ void Scheduler::maybeSpawnBatchProcess() {
 // Process creation
 // ---------------------------------------------------------------------------
 
-// Grading spec program: random number of iterations of ADD/PRINT on x, y, z.
-// Total instruction count is drawn uniformly from [config_.minIns, config_.maxIns].
-// Each iteration = 6 instructions (ADD+PRINT × 3), so iterations = totalIns / 6.
+// Builds a program with exactly totalInstructions instructions, drawn uniformly
+// from [config_.minIns, config_.maxIns]. Cycles through the standard
+// ADD/PRINT pattern for x, y, z so the remainder is handled naturally.
 // Called under mutex_ so rng_ access is safe.
 void Scheduler::addStandardProgram(const std::shared_ptr<Process>& process) {
-    uint32_t minIns = std::max(6u, config_.minIns);
-    uint32_t maxIns = std::max(minIns, config_.maxIns);
+    const uint32_t minIns = std::max(1u, config_.minIns);
+    const uint32_t maxIns = std::max(minIns, config_.maxIns);
 
     uint32_t totalInstructions = minIns;
     if (maxIns > minIns) {
@@ -349,16 +365,21 @@ void Scheduler::addStandardProgram(const std::shared_ptr<Process>& process) {
         totalInstructions = dist(rng_);
     }
 
-    // Each group is 6 instructions; ensure at least 1 iteration.
-    const int iterations = std::max(1, static_cast<int>(totalInstructions / 6));
+    // Six-instruction repeating pattern: ADD+PRINT for x, y, z.
+    // Cycling through it and stopping at totalInstructions gives an exact count
+    // with no rounding loss (e.g. 1000 % 6 == 4 extra instructions are included).
+    static const std::pair<InstructionType, const char*> kPattern[6] = {
+        {InstructionType::Add,   "ADD(x, x, 1)"},
+        {InstructionType::Print, "\"Value from: \" + x"},
+        {InstructionType::Add,   "ADD(y, y, 1)"},
+        {InstructionType::Print, "\"Value from: \" + y"},
+        {InstructionType::Add,   "ADD(z, z, 1)"},
+        {InstructionType::Print, "\"Value from: \" + z"},
+    };
 
-    for (int iteration = 0; iteration < iterations; ++iteration) {
-        process->addInstruction(InstructionType::Add, "ADD(x, x, 1)");
-        process->addInstruction(InstructionType::Print, "\"Value from: \" + x");
-        process->addInstruction(InstructionType::Add, "ADD(y, y, 1)");
-        process->addInstruction(InstructionType::Print, "\"Value from: \" + y");
-        process->addInstruction(InstructionType::Add, "ADD(z, z, 1)");
-        process->addInstruction(InstructionType::Print, "\"Value from: \" + z");
+    for (uint32_t i = 0; i < totalInstructions; ++i) {
+        const auto& [type, arg] = kPattern[i % 6];
+        process->addInstruction(type, arg);
     }
 }
 
