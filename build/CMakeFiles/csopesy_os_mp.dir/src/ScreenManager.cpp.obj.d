@@ -106,6 +106,12 @@ CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj: \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/uses_allocator_args.h \
  C:/winlibs/mingw64/include/c++/15.2.0/tuple \
  C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\Scheduler.h \
+ C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\MemoryManager.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/vector \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/stl_uninitialized.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/stl_vector.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/stl_bvector.h \
+ C:/winlibs/mingw64/include/c++/15.2.0/bits/vector.tcc \
  C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\ProcessModel.h \
  C:/winlibs/mingw64/include/c++/15.2.0/atomic \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/atomic_base.h \
@@ -145,11 +151,6 @@ CMakeFiles/csopesy_os_mp.dir/src/ScreenManager.cpp.obj: \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/enable_special_members.h \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/node_handle.h \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/erase_if.h \
- C:/winlibs/mingw64/include/c++/15.2.0/vector \
- C:/winlibs/mingw64/include/c++/15.2.0/bits/stl_uninitialized.h \
- C:/winlibs/mingw64/include/c++/15.2.0/bits/stl_vector.h \
- C:/winlibs/mingw64/include/c++/15.2.0/bits/stl_bvector.h \
- C:/winlibs/mingw64/include/c++/15.2.0/bits/vector.tcc \
  C:/winlibs/mingw64/include/c++/15.2.0/condition_variable \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/shared_ptr.h \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/shared_ptr_base.h \

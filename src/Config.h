@@ -81,6 +81,22 @@ struct Config {
     // Range: 1-128 if specified.
     uint32_t initialProcessCount = 0;
 
+    // ── Memory manager parameters (MCO2) ─────────────────────────────────────
+    // All three are optional.  When all three are nonzero the MemoryManager is
+    // configured; otherwise the scheduler runs without memory management.
+
+    // Total physical memory in bytes (e.g. 16384).
+    uint32_t maxOverallMem = 0;
+
+    // Size of one memory frame in bytes (e.g. 16).
+    // Used only for display / fragmentation reporting; allocation granularity
+    // is memPerProc, not memPerFrame.
+    uint32_t memPerFrame = 0;
+
+    // Fixed amount of memory (bytes) each process needs to run (e.g. 4096).
+    // A process is not scheduled onto a core until this many bytes are free.
+    uint32_t memPerProc = 0;
+
     // Set to true only after loadFromFile succeeds. Lets other code check
     // whether a Config object is in its default-zero state or actually loaded.
     bool loaded = false;

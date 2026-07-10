@@ -11,6 +11,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/Config.cpp" "CMakeFiles/csopesy_os_mp.dir/src/Config.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/Config.cpp.obj.d"
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/ConsoleManager.cpp" "CMakeFiles/csopesy_os_mp.dir/src/ConsoleManager.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/ConsoleManager.cpp.obj.d"
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/InstructionEngine.cpp" "CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.obj.d"
+  "C:/Users/asus/Desktop/CSOPESY OS MP/src/MemoryManager.cpp" "CMakeFiles/csopesy_os_mp.dir/src/MemoryManager.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/MemoryManager.cpp.obj.d"
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/OutputManager.cpp" "CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.obj.d"
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/ProcessModel.cpp" "CMakeFiles/csopesy_os_mp.dir/src/ProcessModel.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/ProcessModel.cpp.obj.d"
   "C:/Users/asus/Desktop/CSOPESY OS MP/src/ReportManager.cpp" "CMakeFiles/csopesy_os_mp.dir/src/ReportManager.cpp.obj" "gcc" "CMakeFiles/csopesy_os_mp.dir/src/ReportManager.cpp.obj.d"

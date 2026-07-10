@@ -14,6 +14,7 @@ add_executable(csopesy_os_mp
     src/ScreenManager.cpp
     src/Scheduler.cpp
     src/InstructionEngine.cpp
+    src/MemoryManager.cpp
     src/TimeUtil.cpp
 )
 

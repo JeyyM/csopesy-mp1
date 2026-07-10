@@ -150,6 +150,7 @@ CMakeFiles/csopesy_os_mp.dir/src/ReportManager.cpp.obj: \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/vector.tcc \
  C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\Scheduler.h \
  C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\Config.h \
+ C:\Users\asus\Desktop\CSOPESY\ OS\ MP\src\MemoryManager.h \
  C:/winlibs/mingw64/include/c++/15.2.0/condition_variable \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/shared_ptr.h \
  C:/winlibs/mingw64/include/c++/15.2.0/bits/shared_ptr_base.h \

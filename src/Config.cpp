@@ -290,6 +290,27 @@ bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::strin
                 return false;
             }
 
+        } else if (key == "max-overall-mem") {
+            // Total physical memory in bytes. Optional (MCO2 feature).
+            if (!parseUint32(value, parsed.maxOverallMem) || parsed.maxOverallMem < 1) {
+                errorMessage = "Invalid max-overall-mem value.";
+                return false;
+            }
+
+        } else if (key == "mem-per-frame") {
+            // Frame size in bytes. Optional (MCO2 feature).
+            if (!parseUint32(value, parsed.memPerFrame) || parsed.memPerFrame < 1) {
+                errorMessage = "Invalid mem-per-frame value.";
+                return false;
+            }
+
+        } else if (key == "mem-per-proc") {
+            // Memory required per process in bytes. Optional (MCO2 feature).
+            if (!parseUint32(value, parsed.memPerProc) || parsed.memPerProc < 1) {
+                errorMessage = "Invalid mem-per-proc value.";
+                return false;
+            }
+
         } else {
             // Unknown key — reject immediately so the user knows about typos.
             // Example: "nmu-cpu 4" would trigger this with "Unknown config parameter: nmu-cpu".

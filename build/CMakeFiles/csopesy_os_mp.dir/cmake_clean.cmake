@@ -5,6 +5,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/csopesy_os_mp.dir/src/ConsoleManager.cpp.obj.d"
   "CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.obj"
   "CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.obj.d"
+  "CMakeFiles/csopesy_os_mp.dir/src/MemoryManager.cpp.obj"
+  "CMakeFiles/csopesy_os_mp.dir/src/MemoryManager.cpp.obj.d"
   "CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.obj"
   "CMakeFiles/csopesy_os_mp.dir/src/OutputManager.cpp.obj.d"
   "CMakeFiles/csopesy_os_mp.dir/src/ProcessModel.cpp.obj"

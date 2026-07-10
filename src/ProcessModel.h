@@ -99,6 +99,10 @@ public:
     uint64_t sleepUntilCycle() const;
     bool isSleeping() const;
 
+    // Memory base address assigned by MemoryManager (-1 = not allocated).
+    int  memoryBase() const  { return memoryBase_.load(); }
+    void setMemoryBase(int base) { memoryBase_.store(base); }
+
     // Builds the full process-smi screen text (name, id, logs, progress, vars).
     std::string formatSmi();
 
@@ -117,6 +121,7 @@ private:
     std::atomic<int> assignedCore_{-1};
     std::atomic<ProcessStatus> status_{ProcessStatus::Ready};
     std::atomic<uint64_t> sleepUntilCycle_{0};  // 0 = not sleeping
+    std::atomic<int> memoryBase_{-1};            // -1 = not in memory
 
     // --- Protected by stateMutex_ (logs + variables + finish time) ---
     mutable std::mutex stateMutex_;

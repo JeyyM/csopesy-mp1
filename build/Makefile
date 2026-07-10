@@ -200,6 +200,30 @@ src/InstructionEngine.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/InstructionEngine.cpp.s
 .PHONY : src/InstructionEngine.cpp.s
 
+src/MemoryManager.obj: src/MemoryManager.cpp.obj
+.PHONY : src/MemoryManager.obj
+
+# target to build an object file
+src/MemoryManager.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/MemoryManager.cpp.obj
+.PHONY : src/MemoryManager.cpp.obj
+
+src/MemoryManager.i: src/MemoryManager.cpp.i
+.PHONY : src/MemoryManager.i
+
+# target to preprocess a source file
+src/MemoryManager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/MemoryManager.cpp.i
+.PHONY : src/MemoryManager.cpp.i
+
+src/MemoryManager.s: src/MemoryManager.cpp.s
+.PHONY : src/MemoryManager.s
+
+# target to generate assembly for a file
+src/MemoryManager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\csopesy_os_mp.dir\build.make CMakeFiles/csopesy_os_mp.dir/src/MemoryManager.cpp.s
+.PHONY : src/MemoryManager.cpp.s
+
 src/OutputManager.obj: src/OutputManager.cpp.obj
 .PHONY : src/OutputManager.obj
 
@@ -386,6 +410,9 @@ help:
 	@echo ... src/InstructionEngine.obj
 	@echo ... src/InstructionEngine.i
 	@echo ... src/InstructionEngine.s
+	@echo ... src/MemoryManager.obj
+	@echo ... src/MemoryManager.i
+	@echo ... src/MemoryManager.s
 	@echo ... src/OutputManager.obj
 	@echo ... src/OutputManager.i
 	@echo ... src/OutputManager.s

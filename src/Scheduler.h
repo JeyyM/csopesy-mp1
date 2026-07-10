@@ -19,6 +19,7 @@
 // Called from: main.cpp, ScreenManager.cpp, ReportManager.cpp
 
 #include "Config.h"
+#include "MemoryManager.h"
 #include "ProcessModel.h"
 
 #include <atomic>
@@ -128,7 +129,11 @@ private:
     int instructionDelayMs() const;
     int globalTickMs() const;
 
+    // Writes memory_stamp_<cycle>.txt when cpuCycles_ is a multiple of quantumCycles.
+    void maybeWriteMemoryStamp();
+
     Config config_{};
+    MemoryManager memoryManager_{};
 
     std::atomic<bool> engineRunning_{false};
     std::atomic<bool> batchGenerationActive_{false};
@@ -152,6 +157,7 @@ private:
     int nextId_ = 1;
     int nextProcessNumber_ = 1;
     uint64_t lastBatchSpawnCycle_ = 0;
+    uint64_t lastStampCycle_ = 0;      // last cycle at which a memory stamp was written
 
     std::mt19937 rng_{std::random_device{}()};
 
