@@ -31,13 +31,17 @@ bool MemoryManager::isConfigured() const {
     return totalMemory_ > 0 && memPerProc_ > 0;
 }
 
+// Every process that calls this always asks for the same amount of memory. 
+//To find it a spot, we walk through memory starting at address 0 
+// and stop at the first empty gap that's big enough.
 int MemoryManager::allocate(const std::string& processName) {
     if (!isConfigured()) {
         return -1;
     }
 
-    // Linear scan: track the current "cursor" (next candidate start address).
-    // For each existing block, check if the gap before it fits memPerProc_.
+    // Walk through memory left to right. "cursor" is where we currently
+    // are; for each process already in memory, check if there's enough
+    // empty space between the cursor and that process to fit a new one.
     int cursor = 0;
     for (auto it = allocations_.begin(); it != allocations_.end(); ++it) {
         const int gapSize = it->base - cursor;
@@ -56,9 +60,19 @@ int MemoryManager::allocate(const std::string& processName) {
         return cursor;
     }
 
+    // There's genuinely no room anywhere for this process right
+    // now. We never kick another process out or save anything 
+    // to disk to free up room. Whoever
+    // called this function (the Scheduler) will see the -1 and simply
+    // make the process wait its turn again.
     return -1;  // memory is full
 }
 
+//This is the only place a process's memory ever gets freed.
+// It only ever gets called once a process has completely finished
+// running — never while it's just paused waiting for another turn. So a
+// process holds onto the exact same spot in memory for its whole
+// lifetime, from the moment it starts until the moment it's done.
 void MemoryManager::release(const std::string& processName) {
     allocations_.erase(
         std::remove_if(allocations_.begin(), allocations_.end(),
@@ -66,6 +80,8 @@ void MemoryManager::release(const std::string& processName) {
         allocations_.end());
 }
 
+// Returns everything currently in memory, ordered from the highest
+// address down to the lowest
 std::vector<MemoryManager::Allocation> MemoryManager::snapshotDescending() const {
     auto sorted = allocations_;
     std::sort(sorted.begin(), sorted.end(),
@@ -73,6 +89,11 @@ std::vector<MemoryManager::Allocation> MemoryManager::snapshotDescending() const
     return sorted;
 }
 
+// Works out the "Total external fragmentation" number for the
+// memory snapshot file. Figuring out how much is "used" is just
+// multiply (number of processes) by (size of each one). Whatever's left
+// over out of the total is unused wasted space which is the
+// fragmentation number.
 uint32_t MemoryManager::externalFragmentationBytes() const {
     const uint32_t used =
         static_cast<uint32_t>(allocations_.size()) * memPerProc_;
