@@ -2,7 +2,7 @@
 setlocal
 
 set "ROOT=%~dp0"
-set "OUT_DIR=%ROOT%build"
+set "OUT_DIR=%ROOT%"
 set "OUT_EXE=%OUT_DIR%\csopesy_os_mp.exe"
 
 if not exist "%OUT_DIR%" (

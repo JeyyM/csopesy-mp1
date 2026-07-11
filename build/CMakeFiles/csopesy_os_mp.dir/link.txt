@@ -1,3 +1,0 @@
-C:\winlibs\mingw64\bin\cmake.exe -E rm -f CMakeFiles\csopesy_os_mp.dir/objects.a
-C:\winlibs\mingw64\bin\ar.exe qc CMakeFiles\csopesy_os_mp.dir/objects.a @CMakeFiles\csopesy_os_mp.dir\objects1.rsp
-C:\winlibs\mingw64\bin\c++.exe -static -Wl,--whole-archive CMakeFiles\csopesy_os_mp.dir/objects.a -Wl,--no-whole-archive -o csopesy_os_mp.exe -Wl,--out-implib,libcsopesy_os_mp.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\csopesy_os_mp.dir\linkLibs.rsp
