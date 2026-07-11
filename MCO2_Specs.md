@@ -86,7 +86,7 @@ Write one memory stamp file **every `quantum-cycles` CPU ticks**.
 - At CPU cycle 12: write `memory_stamp_12.txt`
 - And so on...
 
-File naming: `memory_stamp_<qq>.txt` where `qq` = the current quantum cycle number (zero-padded as needed).
+File naming: `memory_stamp_<qq>.txt` where `qq` = the current CPU cycle number, zero-padded to at least 2 digits (e.g. `04`, `08`, `12`, `100`, `492`).
 
 ### File Format
 
@@ -214,12 +214,14 @@ A background task (or hook in the tick loop) that:
 
 ## File Output Location
 
-Memory stamp files should be written to the **current working directory** (same folder as the executable), named:
+Memory stamp files are written to the **`memory-stamps/`** subfolder (created automatically on `scheduler-start`), named with zero-padded cycle numbers (minimum 2 digits):
 ```
-memory_stamp_4.txt
-memory_stamp_8.txt
-memory_stamp_12.txt
+memory-stamps/memory_stamp_04.txt
+memory-stamps/memory_stamp_08.txt
+memory-stamps/memory_stamp_12.txt
 ...
 ```
+
+Use the `memory-clear` command to delete all files in the `memory-stamps/` folder before a new test run.
 
 Submit all generated stamp files in a single ZIP file for grading.

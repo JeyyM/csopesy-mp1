@@ -407,7 +407,9 @@ void Scheduler::maybeWriteMemoryStamp() {
     }
 
     // Write the file outside the mutex so I/O latency doesn't stall the scheduler.
-    const std::string filename = "memory-stamps/memory_stamp_" + std::to_string(cycles) + ".txt";
+    std::ostringstream oss;
+    oss << "memory-stamps/memory_stamp_" << std::setfill('0') << std::setw(2) << cycles << ".txt";
+    const std::string filename = oss.str();
     std::ofstream file(filename);
     if (!file.is_open()) {
         return;
