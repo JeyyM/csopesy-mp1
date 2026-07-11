@@ -13,7 +13,8 @@ cmake --build build
 // FILES THIS TOUCHES:
 //   - config.txt          (read by "initialize")
 //   - csopesy-log.txt     (written by "report-util")
-//   - outputs/ folder     (cleared by "outputs-clear" and "exit")
+//   - outputs/ folder     (process logs; cleared by "outputs-clear")
+//   - memory-stamps/      (memory pictures; cleared by "memory-clear")
 
 // Most commands require the system to have been initialized first.
 // "initialize" and "outputs-clear" are the only commands that work
@@ -237,9 +238,11 @@ int main() {
             continue;
         }
 
-        // memory-clear command:
-        // Deletes all memory_stamp_*.txt files from the memory-stamps/ folder.
-        // Available before and after "initialize".
+        // MEMORY-CLEAR COMMAND
+        // A memory stamp is a text-file picture of which process owns each
+        // address range. Delete old pictures before a new demo so files from
+        // separate runs do not get mixed together. This command works even
+        // before initialize because it does not need scheduler settings.
         if (command == "memory-clear") {
             namespace fs = std::filesystem;
             std::size_t removed = 0;

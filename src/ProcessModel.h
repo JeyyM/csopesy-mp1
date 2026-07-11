@@ -99,7 +99,9 @@ public:
     uint64_t sleepUntilCycle() const;
     bool isSleeping() const;
 
-    // Memory base address assigned by MemoryManager (-1 = not allocated).
+    // The first byte owned by this process.
+    // Example: base 4096 and size 4096 means the range [4096, 8192).
+    // -1 is a special value meaning "not in memory yet."
     int  memoryBase() const  { return memoryBase_.load(); }
     void setMemoryBase(int base) { memoryBase_.store(base); }
 
@@ -121,7 +123,8 @@ private:
     std::atomic<int> assignedCore_{-1};
     std::atomic<ProcessStatus> status_{ProcessStatus::Ready};
     std::atomic<uint64_t> sleepUntilCycle_{0};  // 0 = not sleeping
-    std::atomic<int> memoryBase_{-1};            // -1 = not in memory
+    // Atomic because scheduler threads write it while screens may read it.
+    std::atomic<int> memoryBase_{-1};  // starting address; -1 = no allocation
 
     // --- Protected by stateMutex_ (logs + variables + finish time) ---
     mutable std::mutex stateMutex_;

@@ -22,8 +22,11 @@ g++ -std=c++17 -I "%ROOT%src" ^
     "%ROOT%src\ConsoleManager.cpp" ^
     "%ROOT%src\ProcessModel.cpp" ^
     "%ROOT%src\ReportManager.cpp" ^
+    "%ROOT%src\OutputManager.cpp" ^
     "%ROOT%src\ScreenManager.cpp" ^
     "%ROOT%src\Scheduler.cpp" ^
+    "%ROOT%src\InstructionEngine.cpp" ^
+    "%ROOT%src\MemoryManager.cpp" ^
     "%ROOT%src\TimeUtil.cpp" ^
     -o "%OUT_EXE%"
 

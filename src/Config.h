@@ -1,16 +1,14 @@
-// Defines the settings the emulator needs to run, and the loader that reads
-// them from config.txt when the user types "initialize".
-
+// This file describes every setting that can appear in config.txt.
 //   There are two things in here:
 //     1. Config struct  — a plain container holding every setting value
 //                         (number of CPUs, scheduler type, timing values, etc.)
 //     2. ConfigLoader   — a class with one job: open config.txt, read it line
 //                         by line, validate every value, and fill in a Config
 //
-//   Together they are the implementation of the "initialize" command.
-//   When the user types "initialize", main.cpp calls ConfigLoader::loadFromFile,
-//   which either fills in the Config and returns true, or returns false with
-//   a human-readable error message explaining exactly what went wrong.
+//  Implementation of the "initialize" command.
+//  When the user types "initialize", main.cpp calls ConfigLoader::loadFromFile,
+//  which either fills in the Config and returns true, or returns false with 
+//  error message 
 
 // How "initialize" uses this file:
 //
@@ -85,38 +83,24 @@ struct Config {
     // All three are optional.  When all three are nonzero the MemoryManager is
     // configured; otherwise the scheduler runs without memory management.
 
-    // Total physical memory in bytes (e.g. 16384).
+    // Size of the whole memory area. In the activity, it contains 16384 bytes.
     uint32_t maxOverallMem = 0;
 
-    // Size of one memory frame in bytes (e.g. 16).
-    // Used only for display / fragmentation reporting; allocation granularity
-    // is memPerProc, not memPerFrame.
+    // Size of one frame. For this flat allocator, this describes the memory
+    // setup but does not decide how much space a process receives.
     uint32_t memPerFrame = 0;
 
-    // Fixed amount of memory (bytes) each process needs to run (e.g. 4096).
-    // A process is not scheduled onto a core until this many bytes are free.
+    // Space reserved for EACH process. Example: 16384 / 4096 = 4, so only
+    // four processes can stay in memory at the same time.
     uint32_t memPerProc = 0;
 
-    // Set to true only after loadFromFile succeeds. Lets other code check
+    // Sets true only after loadFromFile succeeds. Lets other code check
     // whether a Config object is in its default-zero state or actually loaded.
     bool loaded = false;
 };
 
-// Reads config.txt and fills a Config struct. Used exclusively by the
-// "initialize" command handler in main.cpp.
 class ConfigLoader {
 public:
-    // Opens `path` (always "config.txt"), parses every key-value pair,
-    // validates all values, and writes the result into `out`.
-    //
-    // Returns true  + filled `out`          on success.
-    // Returns false + message in `errorMessage` on any failure.
-    //
-    // Failure reasons (examples):
-    //   "Could not open config file: config.txt"   — file missing
-    //   "config.txt is missing num-cpu"            — required key absent
-    //   "num-cpu must be in range [1, 128]."       — value out of range
-    //   "min-ins cannot be greater than max-ins."  — cross-field rule violated
-    //   "Unknown config parameter: badkey"         — unrecognized key in file
+    // Opens config.txt, parses, validates then writes the result.
     static bool loadFromFile(const std::string& path, Config& out, std::string& errorMessage);
 };
