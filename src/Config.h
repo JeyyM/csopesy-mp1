@@ -63,11 +63,11 @@ struct Config {
     // Example: batchProcessFreq=5 means one new process every 5 ticks.
     uint32_t batchProcessFreq = 0;
 
-    // The minimum number of PRINT instructions a generated process will have.
+    // The minimum number of instructions a generated process will have.
     // Actual count is chosen randomly between minIns and maxIns.
     uint32_t minIns = 0;
 
-    // The maximum number of PRINT instructions a generated process will have.
+    // The maximum number of instructions a generated process will have.
     // Must be >= minIns. If minIns == maxIns, every process has the same count.
     uint32_t maxIns = 0;
 

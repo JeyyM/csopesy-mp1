@@ -48,7 +48,7 @@ public:
     // creationTimestamp : formatted time string for screen -ls
     Process(int id, std::string name, std::string creationTimestamp);
 
-    // Sets x, y, z to 0 per test-case spec. Called from constructor.
+    // Adds the required x variable with an initial value of 0.
     void initializeStandardVariables();
 
     // Convenience wrapper: adds a PRINT instruction to the program.

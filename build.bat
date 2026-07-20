@@ -16,14 +16,16 @@ if errorlevel 1 (
     exit /b 1
 )
 
-g++ -std=c++17 -I "%ROOT%src" ^
+g++ -std=c++17 -static -I "%ROOT%src" ^
     "%ROOT%src\main.cpp" ^
     "%ROOT%src\Config.cpp" ^
     "%ROOT%src\ConsoleManager.cpp" ^
     "%ROOT%src\ProcessModel.cpp" ^
     "%ROOT%src\ReportManager.cpp" ^
+    "%ROOT%src\OutputManager.cpp" ^
     "%ROOT%src\ScreenManager.cpp" ^
     "%ROOT%src\Scheduler.cpp" ^
+    "%ROOT%src\InstructionEngine.cpp" ^
     "%ROOT%src\TimeUtil.cpp" ^
     -o "%OUT_EXE%"
 
