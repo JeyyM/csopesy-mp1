@@ -290,6 +290,27 @@ bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::strin
                 return false;
             }
 
+        } else if (key == "max-overall-mem") {
+            // Save the total number of bytes available to all processes.
+            if (!parseUint32(value, parsed.maxOverallMem) || parsed.maxOverallMem < 1) {
+                errorMessage = "Invalid max-overall-mem value.";
+                return false;
+            }
+
+        } else if (key == "mem-per-frame") {
+            // Save the frame size. Process blocks still use mem-per-proc.
+            if (!parseUint32(value, parsed.memPerFrame) || parsed.memPerFrame < 1) {
+                errorMessage = "Invalid mem-per-frame value.";
+                return false;
+            }
+
+        } else if (key == "mem-per-proc") {
+            // Save how many bytes one process must reserve before it can run.
+            if (!parseUint32(value, parsed.memPerProc) || parsed.memPerProc < 1) {
+                errorMessage = "Invalid mem-per-proc value.";
+                return false;
+            }
+
         } else {
             // Unknown key — reject immediately so the user knows about typos.
             // Example: "nmu-cpu 4" would trigger this with "Unknown config parameter: nmu-cpu".

@@ -2,7 +2,7 @@
 setlocal
 
 set "ROOT=%~dp0"
-set "OUT_DIR=%ROOT%build"
+set "OUT_DIR=%ROOT%"
 set "OUT_EXE=%OUT_DIR%\csopesy_os_mp.exe"
 
 if not exist "%OUT_DIR%" (
@@ -26,6 +26,7 @@ g++ -std=c++17 -static -I "%ROOT%src" ^
     "%ROOT%src\ScreenManager.cpp" ^
     "%ROOT%src\Scheduler.cpp" ^
     "%ROOT%src\InstructionEngine.cpp" ^
+    "%ROOT%src\MemoryManager.cpp" ^
     "%ROOT%src\TimeUtil.cpp" ^
     -o "%OUT_EXE%"
 

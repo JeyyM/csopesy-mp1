@@ -41,6 +41,7 @@
 #include "OutputManager.h"
 #include "TimeUtil.h"
 
+#include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
@@ -103,9 +104,19 @@ void Scheduler::start(const Config& config) {
 
     cpuCycles_.store(0);
     lastBatchSpawnCycle_ = 0;
+    lastStampCycle_ = 0;
     stopTickThread_.store(false);
     nextProcessNumber_ = 1;
     nextId_ = 1;
+
+    // Configure memory manager if the new MCO2 parameters are present.
+    if (config_.maxOverallMem > 0 && config_.memPerProc > 0) {
+        memoryManager_.configure(config_.maxOverallMem, config_.memPerProc);
+        // Ensure the output directory for memory stamps exists.
+        std::filesystem::create_directories("memory-stamps");
+    } else {
+        memoryManager_.configure(0, 0);  // disabled
+    }
 
     {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -276,6 +287,7 @@ void Scheduler::tickLoop() {
 }
 
 // Step 1: Increment cpuCycles_. Step 2: Wake sleepers due. Step 3: Maybe spawn batch process.
+// Step 4: Maybe write memory stamp file.
 void Scheduler::advanceGlobalCpuCycles(uint32_t count) {
     if (count == 0) {
         return;
@@ -283,6 +295,7 @@ void Scheduler::advanceGlobalCpuCycles(uint32_t count) {
     cpuCycles_.fetch_add(count);
     wakeSleepingProcesses();
     maybeSpawnBatchProcess();
+    maybeWriteMemoryStamp();
 }
 
 // Step 1: Compare wakeAtCycle to now. Step 2: Move due processes to readyQueue_.
@@ -348,12 +361,84 @@ void Scheduler::maybeSpawnBatchProcess() {
 }
 
 // ---------------------------------------------------------------------------
+// Memory stamp writer
+// ---------------------------------------------------------------------------
+
+// Fires every quantum-cycles CPU ticks (when cpuCycles_ is a multiple of quantumCycles).
+// Writes memory_stamp_<cycle>.txt with a snapshot of the current memory layout.
+// Format (top-down, highest address first):
+//
+//   Timestamp: (MM/DD/YYYY HH:MM:SSAM)
+//   Number of processes in memory: N
+//   Total external fragmentation in KB: F
+//
+//   ----end---- = 16384
+//
+//   <upper addr>
+//   <name>
+//   <lower addr>
+//   ...
+//   ----start---- = 0
+void Scheduler::maybeWriteMemoryStamp() {
+    if (!memoryManager_.isConfigured()) {
+        return;
+    }
+
+    const uint64_t cycles = cpuCycles_.load();
+    if (cycles == 0 || cycles % config_.quantumCycles != 0) {
+        return;
+    }
+    if (cycles == lastStampCycle_) {
+        return;
+    }
+    lastStampCycle_ = cycles;
+
+    // Take a snapshot under the scheduler mutex so the printout is consistent.
+    std::vector<MemoryManager::Allocation> snapshot;
+    int count = 0;
+    uint32_t fragBytes = 0;
+    uint32_t totalMem = 0;
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        snapshot   = memoryManager_.snapshotDescending();
+        count      = memoryManager_.allocatedCount();
+        fragBytes  = memoryManager_.externalFragmentationBytes();
+        totalMem   = memoryManager_.totalMemory();
+    }
+
+    // Write the file outside the mutex so I/O latency doesn't stall the scheduler.
+    std::ostringstream oss;
+    oss << "memory-stamps/memory_stamp_" << std::setfill('0') << std::setw(2) << cycles << ".txt";
+    const std::string filename = oss.str();
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        return;
+    }
+
+    file << "Timestamp: (" << TimeUtil::formatNow() << ")\n";
+    file << "Number of processes in memory: " << count << "\n";
+    file << "Total external fragmentation in KB: " << fragBytes << "\n";
+    file << "\n";
+    file << "----end---- = " << totalMem << "\n";
+
+    for (const auto& alloc : snapshot) {
+        file << "\n";
+        file << (alloc.base + alloc.size) << "\n";  // upper limit (exclusive)
+        file << alloc.processName << "\n";
+        file << alloc.base << "\n";                  // lower limit (inclusive)
+    }
+
+    file << "\n----start---- = 0\n";
+}
+
+// ---------------------------------------------------------------------------
 // Process creation
 // ---------------------------------------------------------------------------
 
 // Builds a program with exactly totalInstructions instructions, drawn uniformly
-// from [config_.minIns, config_.maxIns]. Instructions alternate between
-// PRINT("Value from: " + x) and ADD(x, x, N), where N is random from 1 to 10.
+// from [config_.minIns, config_.maxIns]. Pattern: PRINT, ADD, PRINT, ADD, ...
+// The ADD amount is randomised between 1 and 10 for each ADD instruction.
+// Only variable x is used (initialised to 0 at process creation).
 // Called under mutex_ so rng_ access is safe.
 void Scheduler::addStandardProgram(const std::shared_ptr<Process>& process) {
     const uint32_t minIns = std::max(1u, config_.minIns);
@@ -365,14 +450,16 @@ void Scheduler::addStandardProgram(const std::shared_ptr<Process>& process) {
         totalInstructions = dist(rng_);
     }
 
-    std::uniform_int_distribution<int> addOperand(1, 10);
+    std::uniform_int_distribution<int> addAmountDist(1, 10);
+
+    // Alternating: PRINT("Value from: " +x), ADD(x, x, N), PRINT, ADD, ...
     for (uint32_t i = 0; i < totalInstructions; ++i) {
         if (i % 2 == 0) {
             process->addInstruction(InstructionType::Print, "\"Value from: \" + x");
         } else {
-            process->addInstruction(
-                InstructionType::Add,
-                "ADD(x, x, " + std::to_string(addOperand(rng_)) + ")");
+            const int amount = addAmountDist(rng_);
+            process->addInstruction(InstructionType::Add,
+                                    "ADD(x, x, " + std::to_string(amount) + ")");
         }
     }
 }
@@ -616,11 +703,25 @@ void Scheduler::schedulerLoop() {
             }
 
             // Step 2: Pop from readyQueue_ front onto each idle core.
+            // Memory admission gate: if MemoryManager is active, a process must
+            // receive a memory allocation before it may run.  If memory is full,
+            // the process is moved to the tail and the core stays idle this round.
             for (std::size_t core = 0; core < coreCurrent_.size() && !readyQueue_.empty();
                  ++core) {
                 if (coreCurrent_[core] == nullptr) {
                     std::shared_ptr<Process> next = readyQueue_.front();
                     readyQueue_.pop_front();
+
+                    if (memoryManager_.isConfigured() && next->memoryBase() == -1) {
+                        const int base = memoryManager_.allocate(next->name());
+                        if (base == -1) {
+                            // Memory full — return process to tail of ready queue.
+                            readyQueue_.push_back(next);
+                            continue;
+                        }
+                        next->setMemoryBase(base);
+                    }
+
                     next->setAssignedCore(static_cast<int>(core));
                     next->setStatus(ProcessStatus::Running);
                     coreCurrent_[core] = next;
@@ -664,9 +765,14 @@ void Scheduler::coreLoop(int coreId) {
             requeueProcess(job);
         }
 
-        // Step 4: Clear core slot so schedulerLoop can assign next process.
+        // Step 4: Clear core slot. If the process just finished, also release
+        // its memory so the MemoryManager can reuse that address range.
         {
             std::lock_guard<std::mutex> lock(mutex_);
+            if (result == ProcessSliceResult::Finished && memoryManager_.isConfigured()) {
+                memoryManager_.release(job->name());
+                job->setMemoryBase(-1);
+            }
             coreCurrent_[coreId] = nullptr;
         }
         cv_.notify_all();

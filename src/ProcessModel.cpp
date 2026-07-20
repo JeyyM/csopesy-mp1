@@ -11,6 +11,8 @@
 //   - variables_                      : symbol table (x, y, z, etc.) -> uint16
 //   - logs_                           : output lines from PRINT instructions
 //   - finishTimestamp_                : time when process completed
+//   - memoryBase_                     : first byte owned by this process;
+//                                       -1 means it is waiting for memory
 //   - sleepUntilCycle_                : for SLEEP — wake at this global CPU cycle
 //
 // Instruction struct (defined in ProcessModel.h):
@@ -48,7 +50,7 @@ Process::Process(int id, std::string name, std::string creationTimestamp)
     initializeStandardVariables();
 }
 
-// Puts the required x variable into variables_ at 0.
+// Puts x into variables_ at 0. Required by the grading / demo spec.
 // Uses setVariable so the mutex is locked correctly.
 void Process::initializeStandardVariables() {
     setVariable("x", 0);
