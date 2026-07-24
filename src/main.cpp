@@ -13,7 +13,7 @@ cmake --build build
 // FILES THIS TOUCHES:
 //   - config.txt          (read by "initialize")
 //   - csopesy-log.txt     (written by "report-util")
-//   - outputs/ folder     (cleared by "outputs-clear" and "exit")
+//   - outputs/ folder     (process logs; cleared by "outputs-clear")
 
 // Most commands require the system to have been initialized first.
 // "initialize" and "outputs-clear" are the only commands that work

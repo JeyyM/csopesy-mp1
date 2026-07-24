@@ -14,6 +14,11 @@ BUILDING AND RUNNING
   cmake --build build
   .\build\csopesy_os_mp.exe
 
+  or
+  project root (example: C:\Users\Admin\CSOPESY_MP)
+  open cmd
+  .\build.bat
+
 The program displays the CSOPESY header and a root:\> prompt on startup.
 
 ----------------------------------------------------------------------

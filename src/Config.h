@@ -1,16 +1,14 @@
-// Defines the settings the emulator needs to run, and the loader that reads
-// them from config.txt when the user types "initialize".
-
+// This file describes every setting that can appear in config.txt.
 //   There are two things in here:
 //     1. Config struct  — a plain container holding every setting value
 //                         (number of CPUs, scheduler type, timing values, etc.)
 //     2. ConfigLoader   — a class with one job: open config.txt, read it line
 //                         by line, validate every value, and fill in a Config
 //
-//   Together they are the implementation of the "initialize" command.
-//   When the user types "initialize", main.cpp calls ConfigLoader::loadFromFile,
-//   which either fills in the Config and returns true, or returns false with
-//   a human-readable error message explaining exactly what went wrong.
+//  Implementation of the "initialize" command.
+//  When the user types "initialize", main.cpp calls ConfigLoader::loadFromFile,
+//  which either fills in the Config and returns true, or returns false with 
+//  error message 
 
 // How "initialize" uses this file:
 //
@@ -63,11 +61,11 @@ struct Config {
     // Example: batchProcessFreq=5 means one new process every 5 ticks.
     uint32_t batchProcessFreq = 0;
 
-    // The minimum number of PRINT instructions a generated process will have.
+    // The minimum number of instructions a generated process will have.
     // Actual count is chosen randomly between minIns and maxIns.
     uint32_t minIns = 0;
 
-    // The maximum number of PRINT instructions a generated process will have.
+    // The maximum number of instructions a generated process will have.
     // Must be >= minIns. If minIns == maxIns, every process has the same count.
     uint32_t maxIns = 0;
 
@@ -99,7 +97,7 @@ struct Config {
     // Upper bound of the per-process memory requirement. Power of two, >= min.
     uint32_t maxMemPerProc = 0;
 
-    // Set to true only after loadFromFile succeeds. Lets other code check
+    // Sets true only after loadFromFile succeeds. Lets other code check
     // whether a Config object is in its default-zero state or actually loaded.
     bool loaded = false;
 };
@@ -111,21 +109,8 @@ bool isPowerOfTwo(uint32_t value);
 // the inclusive range [2^6, 2^16] = [64, 65536] bytes. Used by screen -s / -c.
 bool isValidProcessMemorySize(uint32_t bytes);
 
-// Reads config.txt and fills a Config struct. Used exclusively by the
-// "initialize" command handler in main.cpp.
 class ConfigLoader {
 public:
-    // Opens `path` (always "config.txt"), parses every key-value pair,
-    // validates all values, and writes the result into `out`.
-    //
-    // Returns true  + filled `out`          on success.
-    // Returns false + message in `errorMessage` on any failure.
-    //
-    // Failure reasons (examples):
-    //   "Could not open config file: config.txt"   — file missing
-    //   "config.txt is missing num-cpu"            — required key absent
-    //   "num-cpu must be in range [1, 128]."       — value out of range
-    //   "min-ins cannot be greater than max-ins."  — cross-field rule violated
-    //   "Unknown config parameter: badkey"         — unrecognized key in file
+    // Opens config.txt, parses, validates then writes the result.
     static bool loadFromFile(const std::string& path, Config& out, std::string& errorMessage);
 };

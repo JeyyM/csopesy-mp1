@@ -258,7 +258,7 @@ bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::strin
             }
 
         } else if (key == "min-ins") {
-            // Minimum number of PRINT instructions assigned to each generated process.
+            // Minimum number of instructions assigned to each generated process.
             // The actual count is a random number between min-ins and max-ins.
             // Must be at least 1 (a process with 0 instructions would finish instantly).
             if (!parseUint32(value, parsed.minIns) || parsed.minIns < 1) {
@@ -267,7 +267,7 @@ bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::strin
             }
 
         } else if (key == "max-ins") {
-            // Maximum number of PRINT instructions assigned to each generated process.
+            // Maximum number of instructions assigned to each generated process.
             // Must be at least 1. Cross-field check (min <= max) happens after the loop.
             if (!parseUint32(value, parsed.maxIns) || parsed.maxIns < 1) {
                 errorMessage = "Invalid max-ins value.";

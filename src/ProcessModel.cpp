@@ -12,6 +12,7 @@
 //   - logs_                           : output lines from PRINT instructions
 //   - finishTimestamp_                : time when process completed
 //   - sleepUntilCycle_                : for SLEEP — wake at this global CPU cycle
+//   - memoryBytes_ / memory_          : emulated virtual memory for READ/WRITE
 //
 // Instruction struct (defined in ProcessModel.h):
 //   - type : Print | Declare | Add | Subtract | Sleep | For
@@ -40,7 +41,7 @@
 // ---------------------------------------------------------------------------
 
 // Creates a new process. Scheduler assigns id and picks name/timestamp.
-// Immediately seeds x, y, z = 0 via initializeStandardVariables().
+// Immediately seeds x = 0 via initializeStandardVariables().
 Process::Process(int id, std::string name, std::string creationTimestamp)
     : id_(id),
       name_(std::move(name)),
