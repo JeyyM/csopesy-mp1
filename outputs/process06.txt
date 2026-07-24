@@ -1,0 +1,14 @@
+Process name: process06
+Logs:
+
+(07/24/2026 06:48:44PM) Core:1 "Value from: 0"
+(07/24/2026 06:48:44PM) Core:1 "Value from: 5"
+(07/24/2026 06:48:44PM) Core:1 "Value from: 8"
+(07/24/2026 06:48:44PM) Core:2 "Value from: 11"
+(07/24/2026 06:48:45PM) Core:1 "Value from: 20"
+(07/24/2026 06:48:45PM) Core:3 "Value from: 30"
+(07/24/2026 06:48:45PM) Core:2 "Value from: 31"
+(07/24/2026 06:48:46PM) Core:1 "Value from: 32"
+(07/24/2026 06:48:46PM) Core:3 "Value from: 38"
+(07/24/2026 06:48:47PM) Core:0 "Value from: 41"
+(07/24/2026 06:48:47PM) Core:1 "Value from: 45"

@@ -2,68 +2,85 @@
 
 // MemoryManager.h
 //
-// First-fit flat memory allocator for the CSOPESY OS emulator.
+// Demand-paging memory manager for the CSOPESY OS emulator (MCO2).
 //
-// Manages a single contiguous physical address space of `totalMemory_` bytes.
-// Every allocation is exactly `memPerProc_` bytes (fixed-size).
+// Physical memory is divided into fixed-size frames (memPerFrame bytes each);
+// total frames = maxOverallMem / memPerFrame. Each process has its own page
+// table. Pages are loaded into frames ON DEMAND: the first time a process
+// touches a page, a page fault brings it in. When no frame is free, a FIFO
+// page-replacement policy evicts a victim page to the backing store
+// (csopesy-backing-store.txt) and reuses its frame.
 //
-// NOT internally thread-safe — all public methods must be called while the
-// caller holds Scheduler::mutex_.  This avoids a second mutex and the
-// associated lock-ordering hazards.
+// Pages belonging to a process need NOT occupy contiguous frames.
 //
-// Address layout (example: totalMemory=16384, memPerProc=4096):
-//
-//   0         4096       8192       12288      16384
-//   |--P1-----|--P3------|  (free)  |--P7------|
-//
-// First-fit: scan from address 0 and return the first gap >= memPerProc_.
-//
-// External fragmentation: for this fixed-size scheme we report the total
-// free bytes (= totalMemory - usedBytes), which matches the spec sample.
+// NOT internally thread-safe — every public method must be called while the
+// caller (Scheduler) holds Scheduler::mutex_. This avoids a second lock and
+// the associated lock-ordering hazards.
 
 #include <cstdint>
+#include <deque>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 class MemoryManager {
 public:
-    // One contiguous block currently held by a process.
-    struct Allocation {
-        std::string processName;
-        int base;    // inclusive start address
-        int size;    // always == memPerProc_
-    };
+    // (Re)configure the physical memory layout. Clears all state.
+    // memPerFrame doubles as the page size. Pass zeros to disable.
+    void configure(uint32_t maxOverallMem, uint32_t memPerFrame);
 
-    // Call once (or on scheduler restart) to set the memory layout.
-    // Clears any previous allocations.
-    void configure(uint32_t totalMemory, uint32_t memPerProc);
-
-    // True after configure() was called with nonzero values.
+    // True once configured with nonzero sizes.
     bool isConfigured() const;
 
-    // First-fit allocation.
-    // Returns the base address on success, or -1 if no contiguous block
-    // of memPerProc_ bytes is available.
-    int allocate(const std::string& processName);
+    uint32_t frameSize() const { return memPerFrame_; }
+    uint32_t totalFrames() const;
+    uint32_t totalMemory() const { return maxOverallMem_; }
 
-    // Frees the allocation owned by processName.  No-op if not found.
-    void release(const std::string& processName);
+    // Demand-paging access: ensure (proc, page) is resident and return its
+    // frame index. On a page fault, loads the page — evicting a FIFO victim
+    // to the backing store first if every frame is occupied. Updates the
+    // paged-in / paged-out counters. Returns -1 only when not configured.
+    int accessPage(const std::string& proc, int page);
 
-    // Snapshot sorted by base address descending (for top-down printout).
-    std::vector<Allocation> snapshotDescending() const;
+    // Release every frame, page-table entry, and backing entry owned by proc.
+    // Called when a process finishes or is terminated by a violation.
+    void releaseProcess(const std::string& proc);
 
-    // Total free bytes that are not currently allocated.
-    // Matches the "Total external fragmentation in KB" field in the spec sample.
-    uint32_t externalFragmentationBytes() const;
+    // ── Statistics for process-smi / vmstat ─────────────────────────────────
+    uint64_t numPagedIn() const { return pagedIn_; }
+    uint64_t numPagedOut() const { return pagedOut_; }
+    uint32_t usedFrames() const;
+    uint32_t usedMemoryBytes() const;
+    uint32_t freeMemoryBytes() const;
 
-    int      allocatedCount() const;
-    uint32_t totalMemory()   const { return totalMemory_; }
-    uint32_t memPerProc()    const { return memPerProc_; }
+    // Resident bytes held by one process (its occupied frames * frameSize).
+    uint32_t residentBytes(const std::string& proc) const;
+
+    // Overwrites csopesy-backing-store.txt with the pages currently swapped out.
+    void writeBackingStoreFile() const;
 
 private:
-    uint32_t totalMemory_ = 0;
-    uint32_t memPerProc_  = 0;
+    struct Frame {
+        bool occupied = false;
+        std::string proc;
+        int page = -1;
+    };
+    struct PageEntry {
+        bool present = false;   // currently in a physical frame
+        int frame = -1;         // frame index when present
+        bool inBacking = false; // has been evicted to the backing store
+    };
 
-    // Kept sorted ascending by base address at all times.
-    std::vector<Allocation> allocations_;
+    int findFreeFrame() const;
+    int evictOneFrame();  // FIFO victim; returns the freed frame index
+
+    uint32_t maxOverallMem_ = 0;
+    uint32_t memPerFrame_ = 0;
+
+    std::vector<Frame> frames_;
+    std::deque<int> fifo_;  // occupied frame indices in load order (oldest front)
+    std::unordered_map<std::string, std::unordered_map<int, PageEntry>> pageTables_;
+
+    uint64_t pagedIn_ = 0;
+    uint64_t pagedOut_ = 0;
 };

@@ -1,0 +1,484 @@
+================================================================================
+ CSOPESY MCO2 — VERIFICATION / EXPECTED-BEHAVIOR GUIDE
+ Demand-Paging OS Emulator
+================================================================================
+Purpose: A complete, self-contained checklist for verifying correctness against
+the MCO2 specification (see "MCO2 Specs.md"). For every requirement it lists:
+  - WHAT is new
+  - WHERE it lives (command / trigger)
+  - FILES involved (with the key functions)
+  - HOW to test it
+  - EXPECTED behavior / output
+
+Source of truth: "MCO2 Specs.md" (demand paging). The old first-fit docs
+("MCO2_Specs.md" underscore, "MCO2_implementation.md") are OUTDATED — delete them.
+
+
+================================================================================
+ MASTER CHECKLIST  (tick each during your run-through)
+================================================================================
+[ ]  1. initialize gate ....... no command works before `initialize`
+[ ]  2. config.txt parsing .... new memory keys + power-of-2 validation
+[ ]  3. Demand-paging manager . frames, page table, page faults, FIFO eviction
+[ ]  4. Backing store ......... csopesy-backing-store.txt, page-out / page-in
+[ ]  5. Per-process memory .... screen -s <name> <size>, [2^6..2^16] power of 2
+[ ]  6. READ / WRITE .......... uint16 memory access, hex addresses
+[ ]  7. Symbol table cap ...... 64-byte segment, max 32 variables
+[ ]  8. Access violation ...... invalid address shuts the process down
+[ ]  9. screen -c ............. user-defined 1–50 instructions + memory size
+[ ] 10. screen -r update ...... violation report message
+[ ] 11. screen -ls ............ running / finished process listing (MCO1)
+[ ] 12. process-smi ........... summarized memory + CPU utilization view
+[ ] 13. vmstat ................ detailed memory + CPU ticks + paging counters
+[ ] 14. scheduler-start ....... auto processes include READ/WRITE, rolled memory
+[ ] 15. scheduler-stop ........ stop spawning, drain remaining processes
+[ ] 16. Memory release ........ frames/pages freed on finish OR violation
+[ ] 17. MCO1 carryover ........ PRINT/DECLARE/ADD/SUBTRACT/SLEEP/FOR, FCFS/RR
+[ ] 18. exit .................. stops scheduler, quits cleanly
+
+
+================================================================================
+ HOW TO BUILD & RUN
+================================================================================
+Build:
+    cd "C:\Users\asus\Desktop\CSOPESY OS MP"
+    cmake --build build
+Run:
+    .\build\csopesy_os_mp.exe
+Entry point: src/main.cpp  (int main()).
+
+IMPORTANT TESTING NOTE:
+  Type commands interactively (or with real delays between them). If you pipe a
+  whole script into the exe at once, the input is consumed instantly and the
+  background tick/scheduler threads get almost no wall-clock time, so batch
+  processes may not spawn and CPU ticks stay ~0. For batch/paging tests, give
+  the scheduler a couple of seconds of real time before reading process-smi /
+  vmstat / screen -ls.
+
+Reference config.txt currently in the repo:
+    num-cpu 4
+    scheduler "rr"
+    quantum-cycles 4
+    batch-process-freq 4
+    min-ins 100
+    max-ins 100
+    delays-per-exec 0
+    max-overall-mem 16384
+    mem-per-frame 256
+    min-mem-per-proc 512
+    max-mem-per-proc 4096
+  => 16384/256 = 64 physical frames; processes roll 512..4096 bytes (2..16 pages).
+
+
+================================================================================
+ ITEM 1 — initialize gate
+================================================================================
+WHAT: Nothing works before `initialize`; it loads and validates config.txt.
+WHERE: main-menu command `initialize`.
+FILES: src/main.cpp (command loop, `initialized` gate),
+       src/Config.cpp / Config.h (ConfigLoader::loadFromFile).
+TEST:
+  a) Launch, then type `vmstat` (or any command) BEFORE initialize.
+  b) Type `initialize`.
+  c) Type `initialize` again.
+EXPECTED:
+  a) "Please initialize the system first by typing \"initialize\"."
+  b) "System initialized successfully using config.txt."
+     "Declared 4 CPU cores. Scheduler: Round Robin."
+     "Quantum cycles: 4." (RR only)
+     "Type \"scheduler-start\" to start process generation and execution."
+  c) "System is already initialized."
+
+
+================================================================================
+ ITEM 2 — config.txt parsing & validation  (NEW memory keys)
+================================================================================
+WHAT (new): keys max-overall-mem, mem-per-frame, min-mem-per-proc,
+     max-mem-per-proc. `mem-per-proc` (old first-fit key) is REMOVED. Both
+     `delays-per-exec` and `delay-per-exec` spellings are accepted.
+WHERE: read by `initialize`.
+FILES: src/Config.h (Config struct: minMemPerProc, maxMemPerProc, maxOverallMem,
+       memPerFrame; helpers isPowerOfTwo / isValidProcessMemorySize),
+       src/Config.cpp (loadFromFile + isPowerOfTwoInRange).
+RULES:
+  - All four memory values must be a POWER OF TWO within [64, 65536].
+  - min-mem-per-proc <= max-mem-per-proc.
+  - mem-per-frame <= max-overall-mem.
+  - All four are REQUIRED (missing -> specific error).
+TEST: temporarily edit config.txt to bad values and run `initialize`:
+  - mem-per-frame 100 (not power of 2)
+  - min-mem-per-proc 4096, max-mem-per-proc 512 (min > max)
+  - remove max-overall-mem entirely
+EXPECTED error messages (one per bad case):
+  - "mem-per-frame must be a power of two in [64, 65536]."
+  - "min-mem-per-proc cannot be greater than max-mem-per-proc."
+  - "config.txt is missing max-overall-mem."
+  (Unknown keys -> "Unknown config parameter: <key>".)
+
+
+================================================================================
+ ITEM 3 — Demand-paging memory manager  (CORE, NEW)
+================================================================================
+WHAT (new): replaces first-fit. Physical memory split into frames; each process
+     has a page table; pages are loaded ON DEMAND on page fault; FIFO page
+     replacement evicts a victim when no frame is free.
+WHERE: engaged automatically whenever any instruction touches memory.
+FILES: src/MemoryManager.h / MemoryManager.cpp
+         - configure(maxOverallMem, memPerFrame)  (frame size == page size)
+         - accessPage(proc, page)  -> fault-in, FIFO evict, counters
+         - evictOneFrame()         -> FIFO victim -> backing store
+         - releaseProcess(proc)    -> free all frames/pages
+         - usedFrames/usedMemoryBytes/freeMemoryBytes/residentBytes
+         - numPagedIn / numPagedOut
+       src/Scheduler.cpp
+         - applyMemoryAccesses(process, addresses): converts touched byte
+           addresses -> page numbers -> accessPage (dedup, under mutex).
+         - start(): memoryManager_.configure(maxOverallMem, memPerFrame).
+DERIVED VALUES:
+  - Frames = max-overall-mem / mem-per-frame  (e.g. 16384/256 = 64).
+  - Pages per process = ceil(process_memory_size / mem-per-frame).
+PAGE-REPLACEMENT ALGORITHM USED: FIFO (oldest-loaded frame is evicted first).
+TEST (force eviction): set a tiny config, e.g.
+    max-overall-mem 512, mem-per-frame 256  (=> only 2 frames)
+    min-mem-per-proc 256, max-mem-per-proc 2048
+  Then:  initialize
+         screen -c spanner 2048 "WRITE 0x0 1; WRITE 0x100 2; WRITE 0x200 3;
+             WRITE 0x300 4; WRITE 0x400 5; WRITE 0x500 6; WRITE 0x600 7;
+             WRITE 0x700 8"
+         exit   (leave the process screen; let it run)
+         vmstat
+EXPECTED:
+  - The 8 distinct pages cannot all fit in 2 frames -> page faults + evictions.
+  - vmstat shows "num paged in" = 8 and "num paged out" = 6 (2 stay resident).
+  - After the process finishes, used memory returns to 0 (memory released).
+
+
+================================================================================
+ ITEM 4 — Backing store file
+================================================================================
+WHAT (new): pages evicted from frames are recorded in a text file that can be
+     inspected at any time.
+WHERE: file `csopesy-backing-store.txt` in the working directory.
+FILES: src/MemoryManager.cpp (writeBackingStoreFile), called on eviction, on a
+       page returning to memory, and on releaseProcess.
+TEST: during the eviction test above, open csopesy-backing-store.txt while the
+      process is mid-run.
+EXPECTED: a header plus a list of (process, page) pairs currently swapped out:
+    CSOPESY Backing Store
+    Frame size (bytes): 256
+    ----------------------------------------
+    Process            Page
+    <proc>             <page#>
+    ...
+    ----------------------------------------
+    Pages in backing store: <N>
+  After the owning process finishes, its entries are gone (N returns to 0).
+
+
+================================================================================
+ ITEM 5 — Required memory per process  (screen -s <name> <size>)
+================================================================================
+WHAT (new): screen -s now REQUIRES a memory size argument, validated as a power
+     of two in [64, 65536].
+WHERE: main-menu command `screen -s <process_name> <process_memory_size>`.
+FILES: src/ScreenManager.cpp (createPrefix branch: splitWhitespace, parseMemorySize,
+       isValidProcessMemorySize), src/Scheduler.cpp (createUserProcess(name,mem)),
+       src/ProcessModel.* (memoryBytes_).
+TEST:
+  a) screen -s p1 256      (valid)         -> then type `exit` to leave screen
+  b) screen -s p2 300      (not power of 2)
+  c) screen -s p3 32       (below 64)
+  d) screen -s p1 256      (duplicate name)
+  e) screen -s p4          (missing size)
+EXPECTED:
+  a) Opens the process screen for p1 (Memory: 256 bytes shown in the panel).
+  b/c) "Invalid memory allocation. Size must be a power of two in [64, 65536] bytes."
+  d) "Process p1 already exists."
+  e) "Usage: screen -s <process name> <process memory size>."
+
+
+================================================================================
+ ITEM 6 — READ / WRITE memory-access instructions  (NEW)
+================================================================================
+WHAT (new): READ <var> <hexAddr> and WRITE <hexAddr> <value|var>, operating on
+     uint16 values (2 bytes, little-endian). Uninitialized reads return 0.
+WHERE: inside any process program (screen -c, or auto-generated by scheduler-start).
+FILES: src/InstructionEngine.h/.cpp
+         - InstructionType Read/Write
+         - parseSingleInstruction (keyword detection, both syntaxes)
+         - extractOperands (accepts "OP a b c" AND "OP(a, b, c)")
+         - parseAddressToken (hex 0x.. or decimal)
+         - execute(): performs read/write, reports accessedAddresses + violation
+       src/ProcessModel.cpp (readMemory / writeMemory with bounds checks)
+       src/Scheduler.cpp (applyMemoryAccesses faults the touched pages in)
+TEST:
+    screen -c rw 512 "WRITE 0x100 42; READ v 0x100; PRINT(\"v=\" + v)"
+    process-smi        (inside the screen; or exit then screen -r rw)
+Then open outputs/rw.txt.
+EXPECTED:
+  - outputs/rw.txt contains a PRINT log line: (timestamp) Core:N "v=42".
+  - Reading an address never written returns 0 (e.g. READ w 0x120 -> w=0).
+
+
+================================================================================
+ ITEM 7 — Symbol table (64 bytes, max 32 variables)
+================================================================================
+WHAT (new): variables live in a fixed 64-byte symbol-table segment; at most 32
+     uint16 variables. Beyond 32 distinct names, further declarations are ignored.
+     Any variable access requires page 0 (the symbol-table page) to be resident,
+     so it too participates in demand paging.
+FILES: src/ProcessModel.* (trySetVariable enforces kMaxVariables=32; variableCount).
+       src/InstructionEngine.cpp (DECLARE/ADD/SUBTRACT/READ use trySetVariable;
+       variable access reported as address 0 => page 0).
+TEST:
+    screen -c cap 256 "DECLARE a0 1; DECLARE a1 1; ... (declare 33 distinct vars)"
+  (or a FOR-free explicit list). Inspect that only 32 take effect.
+EXPECTED: the 33rd (and later) DECLARE is silently ignored (no crash); existing
+  names keep updating normally.
+
+
+================================================================================
+ ITEM 8 — Memory access violation
+================================================================================
+WHAT (new): READ/WRITE to an address outside [0, process_memory_size) (a uint16
+     needs 2 bytes, so addr+2 must fit) terminates the process immediately.
+WHERE: any offending READ/WRITE.
+FILES: src/ProcessModel.cpp (readMemory/writeMemory return false out of range),
+       src/InstructionEngine.cpp (sets memoryViolation + violationAddress),
+       src/Scheduler.cpp (runInstructionTree -> Terminated; coreLoop marks
+       Finished, records reason, releases memory),
+       src/ProcessModel.cpp (recordMemoryViolation stores addr + timestamp).
+TEST:
+    screen -c bad 64 "DECLARE a 5; WRITE 0x400 a"
+    process-smi     (inside the screen, after it runs)
+EXPECTED:
+  - Inside the process screen, process-smi shows:
+      "Process bad shut down due to memory access violation."
+  - The process appears among Finished processes in screen -ls.
+  - Its memory is released (does not linger in vmstat used memory).
+  (0x400 = 1024 which is >= 64, so it is out of range for a 64-byte process.)
+
+
+================================================================================
+ ITEM 9 — User-defined instructions  (screen -c)
+================================================================================
+WHAT (new): screen -c <name> <size> "<instructions>" runs a caller-supplied,
+     semicolon-separated program of 1–50 instructions.
+WHERE: main-menu command.
+FILES: src/ScreenManager.cpp (customPrefix branch: locate quotes, split header
+       into name+size, validate size, count check 1..50),
+       src/InstructionEngine.cpp (parseUserProgram splits on ';' respecting quotes),
+       src/Scheduler.cpp (createCustomProcess).
+SUPPORTED INSTRUCTIONS: DECLARE, PRINT, ADD, SUBTRACT, SLEEP, FOR, READ, WRITE
+       (space-style e.g. "ADD varA varA varB" and function-style both work).
+TEST (spec example):
+    screen -c process2 4096 "DECLARE varA 10; DECLARE varB 5; ADD varA varA varB;
+        WRITE 0x500 varA; READ varC 0x500; PRINT(\"Result: \" + varC)"
+    exit
+Then open outputs/process2.txt.
+EXPECTED:
+  - outputs/process2.txt logs a PRINT line: (timestamp) Core:N "Result: 15".
+  - Empty program or >50 instructions:
+      "Invalid command. A custom process must have 1 to 50 instructions."
+  - Missing quotes / missing size:
+      "Usage: screen -c <process name> <process memory size> \"<instructions>\"."
+  - Bad size: "Invalid memory allocation. ..." (same as screen -s).
+
+
+================================================================================
+ ITEM 10 — screen -r update (violation report)
+================================================================================
+WHAT (new): screen -r reports a process that was shut down by a memory violation.
+WHERE: main-menu command `screen -r <name>`.
+FILES: src/ScreenManager.cpp (attachPrefix branch: TerminationReason check first,
+       toHex address formatting).
+TEST: after ITEM 8 (process "bad" has terminated):
+    screen -r bad
+EXPECTED:
+    "Process bad shut down due to memory access violation error that occurred at
+     <timestamp>. 0x400 invalid."
+  - A normal running process: opens its screen as usual.
+  - Unknown / normally-finished process: "Process <name> not found."
+  NOTE: our timestamp is the full MM/DD/YYYY HH:MM:SSAM/PM string (the spec
+        example shows only HH:MM:SS); the required address+"invalid" is present.
+
+
+================================================================================
+ ITEM 11 — screen -ls  (MCO1 listing, still required)
+================================================================================
+WHAT: lists CPU utilization, cores used/available, running and finished processes.
+FILES: src/ReportManager.cpp (generateSystemReport), src/ScreenManager.cpp.
+TEST: scheduler-start, wait ~2s, then `screen -ls`.
+EXPECTED: header with "CPU utilization: X%", "Cores used", "Cores available",
+  a "Running processes:" section (name, timestamp, Core, current/total lines),
+  and a "Finished processes:" section.
+
+
+================================================================================
+ ITEM 12 — process-smi  (NEW summarized view)
+================================================================================
+WHAT (new): nvidia-smi-style summary of CPU + physical memory utilization plus a
+     per-process resident-memory listing.
+WHERE: main-menu command `process-smi`.
+FILES: src/main.cpp (routes command), src/ReportManager.cpp (generateProcessSmi),
+       src/Scheduler.cpp (memoryStatsSnapshot).
+TEST: scheduler-start, wait ~2s, then `process-smi`.
+EXPECTED (units are BYTES, shown as "B", not MiB):
+    --------------------------------------------
+    | PROCESS-SMI V01.00  Driver Version: 01.00 |
+    --------------------------------------------
+    CPU-Util: <cores_used/num_cpu %>
+    Memory Usage: <usedB> / <totalB>
+    Memory Util: <used/total %>
+
+    ============================================
+    Running processes and memory usage:
+    --------------------------------------------
+    <name>       <residentB> / <totalB>
+    ...
+    --------------------------------------------
+  - resident = frames currently held * mem-per-frame (a process paged fully out
+    won't be listed). If none hold memory: "(no processes currently hold
+    physical memory)".
+
+
+================================================================================
+ ITEM 13 — vmstat  (NEW detailed view)
+================================================================================
+WHAT (new): fine-grained memory + CPU-tick + paging statistics.
+WHERE: main-menu command `vmstat`.
+FILES: src/main.cpp (routes), src/ReportManager.cpp (generateVmstat),
+       src/Scheduler.cpp (memoryStatsSnapshot; activeCpuTicks_/idleCpuTicks_
+       accumulated per-core each tick in advanceGlobalCpuCycles).
+TEST: scheduler-start, wait ~2s, then `vmstat`.
+EXPECTED (eight lines):
+    <total>  B   total memory
+    <used>   B   used memory
+    <free>   B   free memory
+    <idle>       idle cpu ticks
+    <active>     active cpu ticks
+    <total>      total cpu ticks     (= active + idle)
+    <n>          num paged in
+    <n>          num paged out
+  - used + free == total memory.
+  - active + idle == total cpu ticks.
+  - num paged in grows as processes touch new pages; num paged out grows only
+    under memory pressure (frames exhausted).
+
+
+================================================================================
+ ITEM 14 — scheduler-start  (auto processes use memory)
+================================================================================
+WHAT (new): auto-generated processes roll a power-of-two memory size in
+     [min-mem-per-proc, max-mem-per-proc] and their generated programs now
+     include READ and WRITE (in addition to PRINT and ADD).
+WHERE: main-menu command `scheduler-start`.
+FILES: src/main.cpp (command), src/Scheduler.cpp (enableBatchGeneration,
+       spawnAutoBatchProcessLocked, rollProcessMemory, addStandardProgram:
+       PRINT / ADD / WRITE / READ cycle over addresses >= 64).
+TEST: initialize; scheduler-start; wait ~2s; process-smi; vmstat; screen -ls.
+EXPECTED:
+  - Processes appear (process01, process02, ...) with varying total memory sizes.
+  - process-smi shows resident memory per process; vmstat "num paged in" > 0.
+  - "Scheduler started. Generating processes." on start;
+    "Scheduler is already running." if started twice.
+
+
+================================================================================
+ ITEM 15 — scheduler-stop  (graceful drain)
+================================================================================
+WHAT: stops spawning new processes; already-queued/running ones finish.
+FILES: src/main.cpp, src/Scheduler.cpp (stopGracefully / finishGracefulStop).
+TEST: after scheduler-start + ~2s, type `scheduler-stop`, then repeatedly
+      `screen -ls` until the running list empties.
+EXPECTED:
+  - "Scheduler stopped. Remaining processes will finish in the background."
+  - No new processNN appear; existing ones progress to Finished.
+  - "Scheduler is not running." if stopped when never started.
+
+
+================================================================================
+ ITEM 16 — Memory release on finish OR violation
+================================================================================
+WHAT (new): when a process ends (normally or via violation), all its frames,
+     page-table entries, and backing-store entries are freed.
+FILES: src/Scheduler.cpp (coreLoop: releaseProcess on Finished/Terminated),
+       src/MemoryManager.cpp (releaseProcess).
+TEST: run the eviction test (ITEM 3) or any batch; after all processes finish,
+      type `vmstat`.
+EXPECTED: used memory returns toward 0; csopesy-backing-store.txt shows
+  "Pages in backing store: 0" once owners are gone.
+
+
+================================================================================
+ ITEM 17 — MCO1 features still work (carryover)
+================================================================================
+WHAT: PRINT, DECLARE, ADD, SUBTRACT, SLEEP, FOR; FCFS and RR scheduling;
+      report-util; outputs/<name>.txt logs.
+FILES: src/InstructionEngine.cpp (execute/parse), src/Scheduler.cpp (FCFS vs RR
+       via quantumBudgetCycles), src/ReportManager.cpp, src/OutputManager.cpp.
+TEST:
+  - report-util after some activity -> writes csopesy-log.txt.
+  - screen -c t 256 "DECLARE a 3; ADD a a 4; PRINT(\"a=\" + a)" -> outputs/t.txt
+    logs "a=7".
+  - Set scheduler "fcfs" in config to confirm run-to-completion vs RR preemption.
+EXPECTED:
+  - report-util: "Report generated at C:/csopesy-log.txt!" and csopesy-log.txt
+    matches the screen -ls format.
+  - Instruction semantics unchanged from MCO1.
+
+
+================================================================================
+ ITEM 18 — exit
+================================================================================
+WHAT: stops the scheduler and quits.
+FILES: src/main.cpp (exit branch), src/Scheduler.cpp (stop()).
+TEST: type `exit` at the main menu.
+EXPECTED: "Exiting CSOPESY Emulator." and the program terminates; output/log
+  files are preserved on disk for inspection.
+
+
+================================================================================
+ FILE MAP  (what changed for MCO2)
+================================================================================
+CHANGED (review these for correctness):
+  src/Config.h / Config.cpp .......... new memory keys, power-of-2 validation
+  src/ProcessModel.h / .cpp .......... memory bytes, byte-addressed RAM,
+                                       32-var cap, violation bookkeeping
+  src/MemoryManager.h / .cpp ......... demand paging (frames, page tables,
+                                       FIFO eviction, backing store, counters)
+  src/InstructionEngine.h / .cpp ..... READ/WRITE, dual-syntax parsing,
+                                       accessed-address + violation reporting
+  src/Scheduler.h / .cpp ............. per-instruction paging, violation
+                                       termination, release-on-end, CPU ticks,
+                                       memory-size rolling, custom process
+  src/ScreenManager.cpp .............. screen -s <name> <size>, screen -c,
+                                       screen -r violation message
+  src/ReportManager.h / .cpp ......... process-smi + vmstat formatting
+  src/main.cpp ....................... process-smi / vmstat routing
+  config.txt ......................... demand-paging parameters
+
+UNCHANGED (low concern):
+  src/ConsoleManager.*, src/OutputManager.*, src/TimeUtil.*
+
+GENERATED AT RUNTIME (safe to delete before a clean run):
+  outputs/ , csopesy-log.txt , csopesy-backing-store.txt , build/
+
+OUTDATED DOCS TO DELETE:
+  MCO2_Specs.md (underscore)  — old first-fit spec
+  MCO2_implementation.md      — old first-fit implementation notes
+  (KEEP: "MCO2 Specs.md" with a space — the current demand-paging spec.)
+
+
+================================================================================
+ KNOWN CAVEATS / DESIGN CHOICES  (call these out if asked)
+================================================================================
+- Page replacement algorithm: FIFO (spec allows "a page replacement algorithm").
+- process-smi / vmstat memory units are BYTES ("B"); the spec mockup shows MiB.
+- screen -r violation message includes the full date-time string (spec sample
+  shows only HH:MM:SS); the invalid hex address is included as required.
+- Both `delays-per-exec` and `delay-per-exec` config spellings are accepted.
+- READ/WRITE accept both "READ v 0x10" and "READ(v, 0x10)" styles.
+- Symbol table = first 64 bytes = page 0; every variable access faults page 0 in.
+- Piped/scripted input runs too fast for batch spawning — test interactively.
+================================================================================

@@ -25,7 +25,8 @@
 #include <vector>              // ordered instruction list and log history
 
 // All instruction kinds the emulator supports (matches CSOPESY spec).
-enum class InstructionType { Print, Declare, Add, Subtract, Sleep, For };
+// Read/Write added for MCO2 demand-paging memory access.
+enum class InstructionType { Print, Declare, Add, Subtract, Sleep, For, Read, Write };
 
 // One row in a process's program. type selects the opcode; arg holds the
 // raw source text, e.g. ADD(x, x, 1) or "Value from: " + x for PRINT.
@@ -39,6 +40,14 @@ enum class ProcessStatus {
     Ready,     // in ready queue, waiting for a CPU core
     Running,   // assigned to a core and executing
     Finished   // all instructions done; screen -r will reject
+};
+
+// Why a process left the Running/Ready lifecycle. Used by screen -r to decide
+// whether to print the normal "finished" info or a memory-violation message.
+enum class TerminationReason {
+    None,             // still running or completed normally
+    Completed,        // ran all instructions successfully
+    MemoryViolation   // shut down after accessing an invalid address
 };
 
 class Process {
@@ -99,9 +108,33 @@ public:
     uint64_t sleepUntilCycle() const;
     bool isSleeping() const;
 
-    // Memory base address assigned by MemoryManager (-1 = not allocated).
-    int  memoryBase() const  { return memoryBase_.load(); }
-    void setMemoryBase(int base) { memoryBase_.store(base); }
+    // ── MCO2 memory model ────────────────────────────────────────────────────
+
+    // Total virtual memory size (bytes) this process was created with.
+    uint32_t memoryBytes() const { return memoryBytes_; }
+    void setMemoryBytes(uint32_t bytes) { memoryBytes_ = bytes; }
+
+    // Number of pages this process spans given a frame size (rounded up).
+    int pageCount(uint32_t frameSize) const;
+
+    // DECLARE / implicit variable creation, capped at 32 symbol-table entries.
+    // Returns false (and ignores the write) when the cap is reached for a new
+    // variable name. Existing names always update successfully.
+    bool trySetVariable(const std::string& name, uint16_t value);
+    int variableCount() const;
+
+    // READ/WRITE emulated memory (byte-addressed, uint16 little-endian).
+    // Returns false when [address, address+2) is outside [0, memoryBytes_):
+    // the caller treats this as a memory access violation.
+    bool readMemory(uint32_t address, uint16_t& valueOut) const;
+    bool writeMemory(uint32_t address, uint16_t value);
+
+    // Memory-access-violation bookkeeping (for screen -r message).
+    void recordMemoryViolation(uint32_t address, const std::string& timestamp);
+    TerminationReason terminationReason() const { return terminationReason_.load(); }
+    void setTerminationReason(TerminationReason reason) { terminationReason_.store(reason); }
+    uint32_t violationAddress() const { return violationAddress_.load(); }
+    std::string violationTime();
 
     // Builds the full process-smi screen text (name, id, logs, progress, vars).
     std::string formatSmi();
@@ -121,11 +154,20 @@ private:
     std::atomic<int> assignedCore_{-1};
     std::atomic<ProcessStatus> status_{ProcessStatus::Ready};
     std::atomic<uint64_t> sleepUntilCycle_{0};  // 0 = not sleeping
-    std::atomic<int> memoryBase_{-1};            // -1 = not in memory
 
-    // --- Protected by stateMutex_ (logs + variables + finish time) ---
+    // --- MCO2 memory model ---
+    uint32_t memoryBytes_ = 0;                                  // total virtual size
+    std::atomic<TerminationReason> terminationReason_{TerminationReason::None};
+    std::atomic<uint32_t> violationAddress_{0};
+
+    // Symbol-table cap per CSOPESY spec: 64-byte segment / 2 bytes = 32 variables.
+    static constexpr int kMaxVariables = 32;
+
+    // --- Protected by stateMutex_ (logs + variables + finish time + memory) ---
     mutable std::mutex stateMutex_;
     std::unordered_map<std::string, uint16_t> variables_;
+    std::unordered_map<uint32_t, uint8_t> memory_;  // byte-addressed emulated RAM
     std::vector<std::string> logs_;
     std::string finishTimestamp_;
+    std::string violationTime_;
 };

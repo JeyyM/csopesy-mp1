@@ -103,20 +103,15 @@ void Scheduler::start(const Config& config) {
     }
 
     cpuCycles_.store(0);
+    activeCpuTicks_.store(0);
+    idleCpuTicks_.store(0);
     lastBatchSpawnCycle_ = 0;
-    lastStampCycle_ = 0;
     stopTickThread_.store(false);
     nextProcessNumber_ = 1;
     nextId_ = 1;
 
-    // Configure memory manager if the new MCO2 parameters are present.
-    if (config_.maxOverallMem > 0 && config_.memPerProc > 0) {
-        memoryManager_.configure(config_.maxOverallMem, config_.memPerProc);
-        // Ensure the output directory for memory stamps exists.
-        std::filesystem::create_directories("memory-stamps");
-    } else {
-        memoryManager_.configure(0, 0);  // disabled
-    }
+    // Configure the demand-paging memory manager. Frame size doubles as page size.
+    memoryManager_.configure(config_.maxOverallMem, config_.memPerFrame);
 
     {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -286,16 +281,30 @@ void Scheduler::tickLoop() {
     }
 }
 
-// Step 1: Increment cpuCycles_. Step 2: Wake sleepers due. Step 3: Maybe spawn batch process.
-// Step 4: Maybe write memory stamp file.
+// Step 1: Increment cpuCycles_. Step 2: Account per-core active/idle ticks.
+// Step 3: Wake sleepers due. Step 4: Maybe spawn batch process.
 void Scheduler::advanceGlobalCpuCycles(uint32_t count) {
     if (count == 0) {
         return;
     }
     cpuCycles_.fetch_add(count);
+
+    // CPU-tick accounting for vmstat: count busy vs idle cores this tick.
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        int busy = 0;
+        for (const auto& slot : coreCurrent_) {
+            if (slot != nullptr) {
+                ++busy;
+            }
+        }
+        const int idle = config_.numCpu - busy;
+        activeCpuTicks_.fetch_add(static_cast<uint64_t>(busy) * count);
+        idleCpuTicks_.fetch_add(static_cast<uint64_t>(idle < 0 ? 0 : idle) * count);
+    }
+
     wakeSleepingProcesses();
     maybeSpawnBatchProcess();
-    maybeWriteMemoryStamp();
 }
 
 // Step 1: Compare wakeAtCycle to now. Step 2: Move due processes to readyQueue_.
@@ -361,85 +370,70 @@ void Scheduler::maybeSpawnBatchProcess() {
 }
 
 // ---------------------------------------------------------------------------
-// Memory stamp writer
-// ---------------------------------------------------------------------------
-
-// Fires every quantum-cycles CPU ticks (when cpuCycles_ is a multiple of quantumCycles).
-// Writes memory_stamp_<cycle>.txt with a snapshot of the current memory layout.
-// Format (top-down, highest address first):
-//
-//   Timestamp: (MM/DD/YYYY HH:MM:SSAM)
-//   Number of processes in memory: N
-//   Total external fragmentation in KB: F
-//
-//   ----end---- = 16384
-//
-//   <upper addr>
-//   <name>
-//   <lower addr>
-//   ...
-//   ----start---- = 0
-void Scheduler::maybeWriteMemoryStamp() {
-    if (!memoryManager_.isConfigured()) {
-        return;
-    }
-
-    const uint64_t cycles = cpuCycles_.load();
-    if (cycles == 0 || cycles % config_.quantumCycles != 0) {
-        return;
-    }
-    if (cycles == lastStampCycle_) {
-        return;
-    }
-    lastStampCycle_ = cycles;
-
-    // Take a snapshot under the scheduler mutex so the printout is consistent.
-    std::vector<MemoryManager::Allocation> snapshot;
-    int count = 0;
-    uint32_t fragBytes = 0;
-    uint32_t totalMem = 0;
-    {
-        std::lock_guard<std::mutex> lock(mutex_);
-        snapshot   = memoryManager_.snapshotDescending();
-        count      = memoryManager_.allocatedCount();
-        fragBytes  = memoryManager_.externalFragmentationBytes();
-        totalMem   = memoryManager_.totalMemory();
-    }
-
-    // Write the file outside the mutex so I/O latency doesn't stall the scheduler.
-    std::ostringstream oss;
-    oss << "memory-stamps/memory_stamp_" << std::setfill('0') << std::setw(2) << cycles << ".txt";
-    const std::string filename = oss.str();
-    std::ofstream file(filename);
-    if (!file.is_open()) {
-        return;
-    }
-
-    file << "Timestamp: (" << TimeUtil::formatNow() << ")\n";
-    file << "Number of processes in memory: " << count << "\n";
-    file << "Total external fragmentation in KB: " << fragBytes << "\n";
-    file << "\n";
-    file << "----end---- = " << totalMem << "\n";
-
-    for (const auto& alloc : snapshot) {
-        file << "\n";
-        file << (alloc.base + alloc.size) << "\n";  // upper limit (exclusive)
-        file << alloc.processName << "\n";
-        file << alloc.base << "\n";                  // lower limit (inclusive)
-    }
-
-    file << "\n----start---- = 0\n";
-}
-
-// ---------------------------------------------------------------------------
 // Process creation
 // ---------------------------------------------------------------------------
 
-// Builds a program with exactly totalInstructions instructions, drawn uniformly
-// from [config_.minIns, config_.maxIns]. Pattern: PRINT, ADD, PRINT, ADD, ...
-// The ADD amount is randomised between 1 and 10 for each ADD instruction.
-// Only variable x is used (initialised to 0 at process creation).
+// Rolls a power-of-two memory size in [minMemPerProc, maxMemPerProc].
 // Called under mutex_ so rng_ access is safe.
+uint32_t Scheduler::rollProcessMemory() {
+    uint32_t minMem = config_.minMemPerProc == 0 ? 64 : config_.minMemPerProc;
+    uint32_t maxMem = config_.maxMemPerProc < minMem ? minMem : config_.maxMemPerProc;
+
+    int minExp = 6;
+    int maxExp = 6;
+    for (int exp = 0; exp <= 31; ++exp) {
+        const uint32_t value = 1u << exp;
+        if (value == minMem) {
+            minExp = exp;
+        }
+        if (value == maxMem) {
+            maxExp = exp;
+        }
+    }
+    if (maxExp < minExp) {
+        maxExp = minExp;
+    }
+    std::uniform_int_distribution<int> dist(minExp, maxExp);
+    return 1u << dist(rng_);
+}
+
+// Demand-paging bridge: convert the byte addresses an instruction touched into
+// page numbers and fault each one into a frame (deduplicated). Locks mutex_
+// because the MemoryManager is not internally synchronised.
+void Scheduler::applyMemoryAccesses(const std::shared_ptr<Process>& process,
+                                    const std::vector<uint32_t>& addresses) {
+    if (addresses.empty() || !memoryManager_.isConfigured()) {
+        return;
+    }
+    const uint32_t frameSize = memoryManager_.frameSize();
+    if (frameSize == 0) {
+        return;
+    }
+
+    std::lock_guard<std::mutex> lock(mutex_);
+    std::vector<int> touchedPages;
+    for (uint32_t address : addresses) {
+        const int page = static_cast<int>(address / frameSize);
+        if (std::find(touchedPages.begin(), touchedPages.end(), page) != touchedPages.end()) {
+            continue;
+        }
+        touchedPages.push_back(page);
+        memoryManager_.accessPage(process->name(), page);
+    }
+}
+
+// Builds a program with exactly totalInstructions instructions, drawn uniformly
+// from [config_.minIns, config_.maxIns]. The pattern cycles through PRINT, ADD,
+// WRITE, and READ so scheduler-generated processes exercise demand paging:
+//
+//   PRINT("Value from: " + x)
+//   ADD(x, x, N)                 (N random 1..10)
+//   WRITE <addr> x               (addr within the process data region)
+//   READ  y <addr>
+//
+// WRITE/READ use data addresses at or above 64 so they never clobber the
+// 64-byte symbol-table segment. When memory is too small for a data region,
+// only PRINT/ADD are generated. Called under mutex_ so rng_ access is safe.
 void Scheduler::addStandardProgram(const std::shared_ptr<Process>& process) {
     const uint32_t minIns = std::max(1u, config_.minIns);
     const uint32_t maxIns = std::max(minIns, config_.maxIns);
@@ -452,29 +446,69 @@ void Scheduler::addStandardProgram(const std::shared_ptr<Process>& process) {
 
     std::uniform_int_distribution<int> addAmountDist(1, 10);
 
-    // Alternating: PRINT("Value from: " +x), ADD(x, x, N), PRINT, ADD, ...
+    // Determine the usable data region [64, memoryBytes - 2] for READ/WRITE.
+    const uint32_t memBytes = process->memoryBytes();
+    const bool hasDataRegion = memBytes >= 66;  // room for at least one uint16 >= 64
+    const uint32_t dataLow = 64;
+    const uint32_t dataHigh = hasDataRegion ? (memBytes - 2) : dataLow;  // inclusive
+
+    uint32_t nextAddr = dataLow;
+    auto rollAddress = [&]() -> uint32_t {
+        if (!hasDataRegion || dataHigh <= dataLow) {
+            return dataLow;
+        }
+        const uint32_t addr = nextAddr;
+        nextAddr += 2;
+        if (nextAddr > dataHigh) {
+            nextAddr = dataLow;
+        }
+        return addr;
+    };
+
     for (uint32_t i = 0; i < totalInstructions; ++i) {
-        if (i % 2 == 0) {
-            process->addInstruction(InstructionType::Print, "\"Value from: \" + x");
-        } else {
-            const int amount = addAmountDist(rng_);
-            process->addInstruction(InstructionType::Add,
-                                    "ADD(x, x, " + std::to_string(amount) + ")");
+        const int phase = hasDataRegion ? static_cast<int>(i % 4) : static_cast<int>(i % 2);
+        switch (phase) {
+            case 0:
+                process->addInstruction(InstructionType::Print, "\"Value from: \" + x");
+                break;
+            case 1: {
+                const int amount = addAmountDist(rng_);
+                process->addInstruction(InstructionType::Add,
+                                        "ADD(x, x, " + std::to_string(amount) + ")");
+                break;
+            }
+            case 2: {
+                const uint32_t addr = rollAddress();
+                process->addInstruction(InstructionType::Write,
+                                        "WRITE " + std::to_string(addr) + " x");
+                break;
+            }
+            case 3: {
+                const uint32_t addr = rollAddress();
+                process->addInstruction(InstructionType::Read,
+                                        "READ y " + std::to_string(addr));
+                break;
+            }
+            default:
+                break;
         }
     }
 }
 
-// Auto name: process01, process02, ... then createProcessLocked.
+// Auto name: process01, process02, ... with a rolled memory size.
 std::shared_ptr<Process> Scheduler::spawnAutoBatchProcessLocked() {
     std::ostringstream name;
     name << "process" << std::setw(2) << std::setfill('0') << nextProcessNumber_++;
-    return createProcessLocked(name.str());
+    return createProcessLocked(name.str(), rollProcessMemory());
 }
 
-// Step 1: new Process. Step 2: addStandardProgram. Step 3: outputs/<name>.txt header.
-// Step 4: append to allProcesses_ and readyQueue_. Caller must hold mutex_.
-std::shared_ptr<Process> Scheduler::createProcessLocked(const std::string& name) {
+// Step 1: new Process + memory size. Step 2: addStandardProgram.
+// Step 3: outputs/<name>.txt header. Step 4: append to allProcesses_ and
+// readyQueue_. Caller must hold mutex_.
+std::shared_ptr<Process> Scheduler::createProcessLocked(const std::string& name,
+                                                        uint32_t memoryBytes) {
     auto process = std::make_shared<Process>(nextId_++, name, TimeUtil::formatNow());
+    process->setMemoryBytes(memoryBytes);
     addStandardProgram(process);
     OutputManager::initializeProcessLog(name);
     allProcesses_.push_back(process);
@@ -488,12 +522,33 @@ void Scheduler::ensureEngineRunning(const Config& config) {
     }
 }
 
-// screen -s entry: lock, createProcessLocked, notify cores.
-std::shared_ptr<Process> Scheduler::createUserProcess(const std::string& name) {
+// screen -s entry: lock, createProcessLocked with the given memory size, notify.
+std::shared_ptr<Process> Scheduler::createUserProcess(const std::string& name,
+                                                      uint32_t memoryBytes) {
     std::shared_ptr<Process> process;
     {
         std::lock_guard<std::mutex> lock(mutex_);
-        process = createProcessLocked(name);
+        process = createProcessLocked(name, memoryBytes);
+    }
+    cv_.notify_all();
+    return process;
+}
+
+// screen -c entry: create a process with a caller-supplied program + memory.
+std::shared_ptr<Process> Scheduler::createCustomProcess(
+    const std::string& name, uint32_t memoryBytes,
+    const std::vector<Instruction>& program) {
+    std::shared_ptr<Process> process;
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        process = std::make_shared<Process>(nextId_++, name, TimeUtil::formatNow());
+        process->setMemoryBytes(memoryBytes);
+        for (const Instruction& instruction : program) {
+            process->addInstruction(instruction.type, instruction.arg);
+        }
+        OutputManager::initializeProcessLog(name);
+        allProcesses_.push_back(process);
+        readyQueue_.push_back(process);
     }
     cv_.notify_all();
     return process;
@@ -507,7 +562,7 @@ int Scheduler::generateBatch(int count) {
             std::ostringstream name;
             name << "process" << std::setw(2) << std::setfill('0') << (i + 1);
             if (!processExistsLocked(name.str())) {
-                createProcessLocked(name.str());
+                createProcessLocked(name.str(), rollProcessMemory());
             }
         }
         nextProcessNumber_ = count + 1;
@@ -607,6 +662,15 @@ ProcessSliceResult Scheduler::runInstructionTree(const std::shared_ptr<Process>&
     InstructionEngine::ExecuteResult step =
         InstructionEngine::execute(*process, instruction, coreId);
 
+    // Step 4a: A READ/WRITE to an invalid address shuts the process down.
+    if (step.memoryViolation) {
+        process->recordMemoryViolation(step.violationAddress, TimeUtil::formatNow());
+        return ProcessSliceResult::Terminated;
+    }
+
+    // Step 4b: Demand-paging — fault in every page this instruction touched.
+    applyMemoryAccesses(process, step.accessedAddresses);
+
     if (step.producedLog) {
         process->appendLog(step.logLine);
         if (logFile.is_open()) {
@@ -663,11 +727,16 @@ ProcessSliceResult Scheduler::runProcessSlice(const std::shared_ptr<Process>& pr
         if (outcome == ProcessSliceResult::Aborted) {
             return ProcessSliceResult::Aborted;
         }
+        if (outcome == ProcessSliceResult::Terminated) {
+            // Memory access violation — stop immediately without advancing.
+            return ProcessSliceResult::Terminated;
+        }
 
         process->setCurrentLine(line + 1);
     }
 
     // Step 2: All lines done — mark Finished for screen -ls / screen -r rules.
+    process->setTerminationReason(TerminationReason::Completed);
     process->setStatus(ProcessStatus::Finished);
     process->setFinishTimestamp(TimeUtil::formatNow());
     return ProcessSliceResult::Finished;
@@ -703,24 +772,13 @@ void Scheduler::schedulerLoop() {
             }
 
             // Step 2: Pop from readyQueue_ front onto each idle core.
-            // Memory admission gate: if MemoryManager is active, a process must
-            // receive a memory allocation before it may run.  If memory is full,
-            // the process is moved to the tail and the core stays idle this round.
+            // Under demand paging there is no whole-process admission gate:
+            // pages are faulted in on demand as instructions execute.
             for (std::size_t core = 0; core < coreCurrent_.size() && !readyQueue_.empty();
                  ++core) {
                 if (coreCurrent_[core] == nullptr) {
                     std::shared_ptr<Process> next = readyQueue_.front();
                     readyQueue_.pop_front();
-
-                    if (memoryManager_.isConfigured() && next->memoryBase() == -1) {
-                        const int base = memoryManager_.allocate(next->name());
-                        if (base == -1) {
-                            // Memory full — return process to tail of ready queue.
-                            readyQueue_.push_back(next);
-                            continue;
-                        }
-                        next->setMemoryBase(base);
-                    }
 
                     next->setAssignedCore(static_cast<int>(core));
                     next->setStatus(ProcessStatus::Running);
@@ -765,13 +823,22 @@ void Scheduler::coreLoop(int coreId) {
             requeueProcess(job);
         }
 
-        // Step 4: Clear core slot. If the process just finished, also release
-        // its memory so the MemoryManager can reuse that address range.
+        // Step 4: Clear core slot. If the process finished normally OR was
+        // terminated by a memory violation, release all of its frames/pages so
+        // the demand-paging allocator can reuse them.
         {
             std::lock_guard<std::mutex> lock(mutex_);
-            if (result == ProcessSliceResult::Finished && memoryManager_.isConfigured()) {
-                memoryManager_.release(job->name());
-                job->setMemoryBase(-1);
+            if (result == ProcessSliceResult::Terminated) {
+                // Violation path: mark finished so screen -ls / graceful stop
+                // see it as done (terminationReason is already MemoryViolation).
+                job->setAssignedCore(-1);
+                job->setStatus(ProcessStatus::Finished);
+                job->setFinishTimestamp(TimeUtil::formatNow());
+            }
+            if ((result == ProcessSliceResult::Finished ||
+                 result == ProcessSliceResult::Terminated) &&
+                memoryManager_.isConfigured()) {
+                memoryManager_.releaseProcess(job->name());
             }
             coreCurrent_[coreId] = nullptr;
         }
@@ -786,5 +853,47 @@ SchedulerStatusSnapshot Scheduler::statusSnapshot() const {
     snapshot.processes = allProcesses_;
     snapshot.numCpu = config_.numCpu < 1 ? 1 : config_.numCpu;
     snapshot.cpuCycles = cpuCycles_.load();
+    return snapshot;
+}
+
+// Copy memory + CPU-tick stats for process-smi / vmstat (thread-safe).
+MemoryStatsSnapshot Scheduler::memoryStatsSnapshot() const {
+    MemoryStatsSnapshot snapshot;
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    snapshot.numCpu = config_.numCpu < 1 ? 1 : config_.numCpu;
+    snapshot.activeCpuTicks = activeCpuTicks_.load();
+    snapshot.idleCpuTicks = idleCpuTicks_.load();
+    snapshot.totalCpuTicks = snapshot.activeCpuTicks + snapshot.idleCpuTicks;
+
+    int coresUsed = 0;
+    for (const auto& slot : coreCurrent_) {
+        if (slot != nullptr) {
+            ++coresUsed;
+        }
+    }
+    snapshot.coresUsed = coresUsed;
+
+    snapshot.configured = memoryManager_.isConfigured();
+    if (snapshot.configured) {
+        snapshot.totalMemory = memoryManager_.totalMemory();
+        snapshot.usedMemory = memoryManager_.usedMemoryBytes();
+        snapshot.freeMemory = memoryManager_.freeMemoryBytes();
+        snapshot.totalFrames = memoryManager_.totalFrames();
+        snapshot.usedFrames = memoryManager_.usedFrames();
+        snapshot.pagedIn = memoryManager_.numPagedIn();
+        snapshot.pagedOut = memoryManager_.numPagedOut();
+
+        for (const auto& process : allProcesses_) {
+            if (process->status() == ProcessStatus::Finished) {
+                continue;
+            }
+            MemoryStatsSnapshot::ProcMem entry;
+            entry.name = process->name();
+            entry.residentBytes = memoryManager_.residentBytes(process->name());
+            entry.totalBytes = process->memoryBytes();
+            snapshot.processes.push_back(entry);
+        }
+    }
     return snapshot;
 }

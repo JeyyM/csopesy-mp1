@@ -277,63 +277,140 @@ Instruction InstructionEngine::parseSingleInstruction(const std::string& text) {
         return instruction;
     }
 
-    // Step 2: Normalize "ADD (x, ...)" -> "ADD(x, ...)" (remove space before '(').
-    const auto parenPos = trimmed.find('(');
-    if (parenPos != std::string::npos && parenPos > 0) {
-        const std::string keyword = trim(trimmed.substr(0, parenPos));
-        const std::string rest = trimmed.substr(parenPos);
-        if (keyword == "ADD" || keyword == "SUBTRACT" || keyword == "DECLARE" ||
-            keyword == "SLEEP" || keyword == "FOR" || keyword == "PRINT") {
-            trimmed = keyword + rest;
-        }
+    // Step 2: Extract the leading keyword (letters only), case-insensitive.
+    // This handles BOTH function-style "ADD(x, x, 1)" and space-style
+    // "ADD x x 1" / "WRITE 0x500 varA" used by screen -c user programs.
+    std::size_t k = 0;
+    while (k < trimmed.size() && std::isalpha(static_cast<unsigned char>(trimmed[k]))) {
+        ++k;
+    }
+    std::string keyword = trimmed.substr(0, k);
+    for (char& ch : keyword) {
+        ch = static_cast<char>(std::toupper(static_cast<unsigned char>(ch)));
     }
 
-    // Step 3: Detect instruction type by prefix and fill { type, arg }.
-    if (trimmed == "PRINT" || trimmed.rfind("PRINT(", 0) == 0) {
+    // Step 3: PRINT stores only the text inside its parentheses (if any).
+    if (keyword == "PRINT") {
         instruction.type = InstructionType::Print;
-        if (trimmed == "PRINT") {
-            instruction.arg.clear();
+        const auto open = trimmed.find('(');
+        const auto close = trimmed.rfind(')');
+        if (open != std::string::npos && close != std::string::npos && close > open) {
+            instruction.arg = trimmed.substr(open + 1, close - open - 1);
         } else {
-            // Store only inside parentheses for PRINT.
-            const auto open = trimmed.find('(');
-            const auto close = trimmed.rfind(')');
-            if (open != std::string::npos && close > open) {
-                instruction.arg = trimmed.substr(open + 1, close - open - 1);
-            }
+            instruction.arg.clear();
         }
         return instruction;
     }
 
-    if (trimmed.rfind("DECLARE(", 0) == 0) {
+    // Step 4: Other opcodes keep the full source text in arg; execute() and
+    // extractOperands() re-parse the operands on demand.
+    if (keyword == "DECLARE") {
         instruction.type = InstructionType::Declare;
-        instruction.arg = trimmed;
-        return instruction;
-    }
-    if (trimmed.rfind("ADD(", 0) == 0) {
+    } else if (keyword == "ADD") {
         instruction.type = InstructionType::Add;
-        instruction.arg = trimmed;
-        return instruction;
-    }
-    if (trimmed.rfind("SUBTRACT(", 0) == 0) {
+    } else if (keyword == "SUBTRACT") {
         instruction.type = InstructionType::Subtract;
-        instruction.arg = trimmed;
-        return instruction;
-    }
-    if (trimmed.rfind("SLEEP(", 0) == 0) {
+    } else if (keyword == "SLEEP") {
         instruction.type = InstructionType::Sleep;
-        instruction.arg = trimmed;
-        return instruction;
-    }
-    if (trimmed.rfind("FOR(", 0) == 0) {
+    } else if (keyword == "FOR") {
         instruction.type = InstructionType::For;
-        instruction.arg = trimmed;
-        return instruction;
+    } else if (keyword == "READ") {
+        instruction.type = InstructionType::Read;
+    } else if (keyword == "WRITE") {
+        instruction.type = InstructionType::Write;
+    } else {
+        // Unknown text — treat as PRINT payload.
+        instruction.type = InstructionType::Print;
     }
-
-    // Step 4: Unknown text — treat as PRINT payload.
-    instruction.type = InstructionType::Print;
     instruction.arg = trimmed;
     return instruction;
+}
+
+// Splits a semicolon-separated user program (screen -c) into instructions.
+// Example: "DECLARE varA 10; WRITE 0x500 varA; PRINT(\"x\")" -> 3 instructions.
+std::vector<Instruction> InstructionEngine::parseUserProgram(const std::string& text) {
+    std::vector<Instruction> program;
+    std::string current;
+    bool inQuotes = false;
+
+    for (char ch : text) {
+        if (ch == '"') {
+            inQuotes = !inQuotes;
+            current.push_back(ch);
+            continue;
+        }
+        if (ch == ';' && !inQuotes) {
+            const std::string piece = trim(current);
+            if (!piece.empty()) {
+                program.push_back(parseSingleInstruction(piece));
+            }
+            current.clear();
+            continue;
+        }
+        current.push_back(ch);
+    }
+    const std::string last = trim(current);
+    if (!last.empty()) {
+        program.push_back(parseSingleInstruction(last));
+    }
+    return program;
+}
+
+// Extracts operand tokens from an instruction, accepting either
+// "KEYWORD(a, b, c)" (comma-separated) or "KEYWORD a b c" (space-separated).
+std::vector<std::string> InstructionEngine::extractOperands(const std::string& text) {
+    const std::string trimmed = trim(text);
+
+    // Skip the leading keyword (letters).
+    std::size_t k = 0;
+    while (k < trimmed.size() && std::isalpha(static_cast<unsigned char>(trimmed[k]))) {
+        ++k;
+    }
+    std::string rest = trim(trimmed.substr(k));
+
+    // Function-style: operands live inside parentheses, split on top-level commas.
+    if (!rest.empty() && rest.front() == '(') {
+        const auto close = rest.rfind(')');
+        if (close != std::string::npos && close >= 1) {
+            return splitTopLevelArgs(rest.substr(1, close - 1));
+        }
+    }
+
+    // Space-style: whitespace-separated operands.
+    std::vector<std::string> parts;
+    std::istringstream stream(rest);
+    std::string token;
+    while (stream >> token) {
+        parts.push_back(token);
+    }
+    return parts;
+}
+
+// Parses a hex ("0x1F"/"0X1f") or decimal ("42") address token.
+bool InstructionEngine::parseAddressToken(const std::string& token, uint32_t& out) {
+    const std::string t = trim(token);
+    if (t.empty()) {
+        return false;
+    }
+    try {
+        if (t.size() > 2 && t[0] == '0' && (t[1] == 'x' || t[1] == 'X')) {
+            out = static_cast<uint32_t>(std::stoul(t.substr(2), nullptr, 16));
+        } else {
+            out = static_cast<uint32_t>(std::stoul(t, nullptr, 10));
+        }
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
+// True when a token names a variable (leading letter or underscore).
+bool InstructionEngine::isVariableToken(const std::string& token) {
+    const std::string t = trim(token);
+    if (t.empty()) {
+        return false;
+    }
+    return std::isalpha(static_cast<unsigned char>(t.front())) != 0 || t.front() == '_';
 }
 
 // Parses several instructions separated by top-level commas (FOR body text).
@@ -524,77 +601,111 @@ InstructionEngine::ExecuteResult InstructionEngine::execute(Process& process,
 
     switch (instruction.type) {
         case InstructionType::Print: {
-            // Step 1: Build message. Step 2: Format log line. Step 3: Flag producedLog.
+            // Build message, format log line, flag producedLog. If the message
+            // interpolates a variable ("... " + x) it reads the symbol table.
             const std::string message = resolvePrintMessage(process, instruction.arg);
             std::ostringstream logLine;
             logLine << "(" << TimeUtil::formatNow() << ") Core:" << coreId << " \"" << message
                     << "\"";
             result.producedLog = true;
             result.logLine = logLine.str();
+            if (instruction.arg.find('+') != std::string::npos) {
+                result.accessedAddresses.push_back(0);  // symbol-table read
+            }
             break;
         }
         case InstructionType::Declare: {
-            // Step 1: Extract inside DECLARE(...). Step 2: Split name, value. Step 3: setVariable.
-            const auto open = instruction.arg.find('(');
-            const auto close = instruction.arg.rfind(')');
-            if (open == std::string::npos || close <= open) {
-                break;
+            // DECLARE name value  (or DECLARE(name, value)).
+            const std::vector<std::string> args = extractOperands(instruction.arg);
+            if (args.size() == 2) {
+                bool ok = false;
+                const uint16_t value = parseUint16Literal(args[1], ok);
+                if (ok) {
+                    process.trySetVariable(args[0], value);  // honours 32-var cap
+                }
             }
-            const std::vector<std::string> args =
-                splitTopLevelArgs(instruction.arg.substr(open + 1, close - open - 1));
-            if (args.size() != 2) {
-                break;
-            }
-            bool ok = false;
-            const uint16_t value = parseUint16Literal(args[1], ok);
-            if (ok) {
-                process.setVariable(args[0], value);
-            }
+            result.accessedAddresses.push_back(0);  // symbol-table write
             break;
         }
         case InstructionType::Add:
         case InstructionType::Subtract: {
-            // Step 1: Extract inside ADD/SUBTRACT(...).
-            // Step 2: Split dest, src1, src2.
-            // Step 3: Resolve src operands. Step 4: Compute. Step 5: Store in dest.
-            const auto open = instruction.arg.find('(');
-            const auto close = instruction.arg.rfind(')');
-            if (open == std::string::npos || close <= open) {
-                break;
+            // ADD dest a b  /  SUBTRACT dest a b  (or function style).
+            const std::vector<std::string> args = extractOperands(instruction.arg);
+            if (args.size() == 3) {
+                bool ok1 = false;
+                bool ok2 = false;
+                const uint16_t left = resolveOperand(process, args[1], ok1);
+                const uint16_t right = resolveOperand(process, args[2], ok2);
+                if (ok1 && ok2) {
+                    uint32_t computed = 0;
+                    if (instruction.type == InstructionType::Add) {
+                        computed = static_cast<uint32_t>(left) + right;
+                    } else {
+                        computed = left >= right ? static_cast<uint32_t>(left - right) : 0u;
+                    }
+                    if (computed > 0xFFFFU) {
+                        computed = 0xFFFFU;  // clamp to uint16 range
+                    }
+                    process.trySetVariable(args[0], static_cast<uint16_t>(computed));
+                }
             }
-            const std::vector<std::string> args =
-                splitTopLevelArgs(instruction.arg.substr(open + 1, close - open - 1));
-            if (args.size() != 3) {
-                break;
-            }
-            bool ok1 = false;
-            bool ok2 = false;
-            const uint16_t left = resolveOperand(process, args[1], ok1);
-            const uint16_t right = resolveOperand(process, args[2], ok2);
-            if (!ok1 || !ok2) {
-                break;
-            }
-            uint32_t computed = instruction.type == InstructionType::Add ? left + right
-                                                                         : left - right;
-            if (computed > 0xFFFFU) {
-                computed = 0xFFFFU;
-            }
-            process.setVariable(args[0], static_cast<uint16_t>(computed));
+            result.accessedAddresses.push_back(0);  // symbol-table access
             break;
         }
         case InstructionType::Sleep: {
-            // Step 1: Extract tick count. Step 2: Tell Scheduler to relinquish CPU.
-            const auto open = instruction.arg.find('(');
-            const auto close = instruction.arg.rfind(')');
-            if (open == std::string::npos || close <= open) {
-                break;
+            const std::vector<std::string> args = extractOperands(instruction.arg);
+            if (args.size() == 1) {
+                bool ok = false;
+                const uint16_t ticks = parseUint16Literal(args[0], ok);
+                if (ok && ticks > 0) {
+                    result.relinquishCpu = true;
+                    result.sleepTicks = ticks;
+                }
             }
-            bool ok = false;
-            const uint16_t ticks =
-                parseUint16Literal(trim(instruction.arg.substr(open + 1, close - open - 1)), ok);
-            if (ok && ticks > 0) {
-                result.relinquishCpu = true;
-                result.sleepTicks = ticks;
+            break;
+        }
+        case InstructionType::Read: {
+            // READ var address  — load a uint16 from memory into a variable.
+            const std::vector<std::string> args = extractOperands(instruction.arg);
+            if (args.size() == 2) {
+                uint32_t address = 0;
+                if (!parseAddressToken(args[1], address)) {
+                    break;
+                }
+                uint16_t value = 0;
+                if (!process.readMemory(address, value)) {
+                    result.memoryViolation = true;
+                    result.violationAddress = address;
+                    break;
+                }
+                process.trySetVariable(args[0], value);
+                result.accessedAddresses.push_back(0);        // symbol-table write
+                result.accessedAddresses.push_back(address);  // data page read
+            }
+            break;
+        }
+        case InstructionType::Write: {
+            // WRITE address value|var  — store a uint16 into memory.
+            const std::vector<std::string> args = extractOperands(instruction.arg);
+            if (args.size() == 2) {
+                uint32_t address = 0;
+                if (!parseAddressToken(args[0], address)) {
+                    break;
+                }
+                bool ok = false;
+                const uint16_t value = resolveOperand(process, args[1], ok);
+                if (!ok) {
+                    break;
+                }
+                if (!process.writeMemory(address, value)) {
+                    result.memoryViolation = true;
+                    result.violationAddress = address;
+                    break;
+                }
+                if (isVariableToken(args[1])) {
+                    result.accessedAddresses.push_back(0);  // symbol-table read
+                }
+                result.accessedAddresses.push_back(address);  // data page write
             }
             break;
         }

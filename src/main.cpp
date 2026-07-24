@@ -237,24 +237,6 @@ int main() {
             continue;
         }
 
-        // memory-clear command:
-        // Deletes all memory_stamp_*.txt files from the memory-stamps/ folder.
-        // Available before and after "initialize".
-        if (command == "memory-clear") {
-            namespace fs = std::filesystem;
-            std::size_t removed = 0;
-            std::error_code ec;
-            for (const auto& entry : fs::directory_iterator("memory-stamps", ec)) {
-                if (fs::is_regular_file(entry.status())) {
-                    fs::remove(entry.path(), ec);
-                    ++removed;
-                }
-            }
-            ConsoleManager::printLine("Cleared " + std::to_string(removed) +
-                                      " memory stamp file(s) from memory-stamps/.");
-            continue;
-        }
-
         // initialization gate:
         // Every command below this point requires the system to be initialized.
         // If "initialize" hasn't been run yet, print a reminder and skip.
@@ -334,6 +316,21 @@ int main() {
             continue;
         }
 
+
+        // process-smi command:
+        // Prints the demand-paging summary: CPU utilization, physical-memory
+        // usage/utilization, and the resident memory of each active process.
+        if (command == "process-smi") {
+            std::cout << ReportManager::generateProcessSmi(scheduler);
+            continue;
+        }
+
+        // vmstat command:
+        // Prints detailed memory + CPU-tick + paging statistics.
+        if (command == "vmstat") {
+            std::cout << ReportManager::generateVmstat(scheduler);
+            continue;
+        }
 
         // report-util command:
         // Takes a snapshot of all processes and CPU usage right now and

@@ -94,12 +94,14 @@ std::string Process::instructionTextAt(int line) const {
             }
             return "PRINT(" + instruction.arg + ")";
 
-        // Declare, Add, Subtract, Sleep, For store the full line in arg already.
+        // Declare, Add, Subtract, Sleep, For, Read, Write store the full line.
         case InstructionType::Declare:
         case InstructionType::Add:
         case InstructionType::Subtract:
         case InstructionType::Sleep:
         case InstructionType::For:
+        case InstructionType::Read:
+        case InstructionType::Write:
             return instruction.arg;
     }
 
@@ -159,10 +161,90 @@ uint16_t Process::getVariable(const std::string& name) const {
     return it->second;
 }
 
-// Write or create a variable. InstructionEngine calls this for ADD, DECLARE, etc.
+// Write or create a variable (unchecked). Used only for internal seeding such
+// as initializeStandardVariables(). Instruction execution uses trySetVariable.
 void Process::setVariable(const std::string& name, uint16_t value) {
     std::lock_guard<std::mutex> lock(stateMutex_);
     variables_[name] = value;
+}
+
+// Write or create a variable, honouring the 32-entry symbol-table cap.
+// Existing names always update. New names are ignored once 32 vars exist.
+bool Process::trySetVariable(const std::string& name, uint16_t value) {
+    std::lock_guard<std::mutex> lock(stateMutex_);
+    auto it = variables_.find(name);
+    if (it != variables_.end()) {
+        it->second = value;
+        return true;
+    }
+    if (static_cast<int>(variables_.size()) >= kMaxVariables) {
+        return false;  // symbol table full — declaration ignored
+    }
+    variables_[name] = value;
+    return true;
+}
+
+int Process::variableCount() const {
+    std::lock_guard<std::mutex> lock(stateMutex_);
+    return static_cast<int>(variables_.size());
+}
+
+// ---------------------------------------------------------------------------
+// Emulated memory (byte-addressed, uint16 little-endian) + page math
+// ---------------------------------------------------------------------------
+
+// Pages needed to cover memoryBytes_ given frameSize (rounded up). >=1.
+int Process::pageCount(uint32_t frameSize) const {
+    if (frameSize == 0) {
+        return 0;
+    }
+    return static_cast<int>((memoryBytes_ + frameSize - 1) / frameSize);
+}
+
+// Reads a uint16 at address (low byte first). Unwritten bytes read as 0.
+// Returns false if [address, address+2) falls outside [0, memoryBytes_).
+bool Process::readMemory(uint32_t address, uint16_t& valueOut) const {
+    if (memoryBytes_ < 2 || address > memoryBytes_ - 2) {
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(stateMutex_);
+    uint16_t low = 0;
+    uint16_t high = 0;
+    auto lowIt = memory_.find(address);
+    if (lowIt != memory_.end()) {
+        low = lowIt->second;
+    }
+    auto highIt = memory_.find(address + 1);
+    if (highIt != memory_.end()) {
+        high = highIt->second;
+    }
+    valueOut = static_cast<uint16_t>(low | (high << 8));
+    return true;
+}
+
+// Writes a uint16 at address (low byte first).
+// Returns false if [address, address+2) falls outside [0, memoryBytes_).
+bool Process::writeMemory(uint32_t address, uint16_t value) {
+    if (memoryBytes_ < 2 || address > memoryBytes_ - 2) {
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(stateMutex_);
+    memory_[address] = static_cast<uint8_t>(value & 0xFF);
+    memory_[address + 1] = static_cast<uint8_t>((value >> 8) & 0xFF);
+    return true;
+}
+
+// Records the address/time of a fatal memory access violation (for screen -r).
+void Process::recordMemoryViolation(uint32_t address, const std::string& timestamp) {
+    violationAddress_.store(address);
+    terminationReason_.store(TerminationReason::MemoryViolation);
+    std::lock_guard<std::mutex> lock(stateMutex_);
+    violationTime_ = timestamp;
+}
+
+std::string Process::violationTime() {
+    std::lock_guard<std::mutex> lock(stateMutex_);
+    return violationTime_;
 }
 
 // ---------------------------------------------------------------------------
@@ -210,13 +292,18 @@ std::string Process::formatSmi() {
     }
 
     if (currentStatus == ProcessStatus::Finished) {
-        output << "\nFinished!\n";
+        if (terminationReason_.load() == TerminationReason::MemoryViolation) {
+            output << "\nProcess " << name_
+                   << " shut down due to memory access violation.\n";
+        } else {
+            output << "\nFinished!\n";
+        }
         return output.str();
     }
 
     output << "\nCurrent instruction line: " << line << "\n";
     output << "Lines of code: " << totalLines() << "\n";
-    output << "Variables: x=" << getVariable("x") << "\n";
+    output << "Memory: " << memoryBytes_ << " bytes\n";
 
     if (line >= 0 && line < totalLines()) {
         output << "Instruction: " << instructionTextAt(line) << "\n";

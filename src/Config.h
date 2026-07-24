@@ -81,26 +81,35 @@ struct Config {
     // Range: 1-128 if specified.
     uint32_t initialProcessCount = 0;
 
-    // ── Memory manager parameters (MCO2) ─────────────────────────────────────
-    // All three are optional.  When all three are nonzero the MemoryManager is
-    // configured; otherwise the scheduler runs without memory management.
+    // ── Memory manager parameters (MCO2 — demand paging) ─────────────────────
+    // All four are required for the demand-paging allocator.  All memory values
+    // must be powers of two in the range [2^6, 2^16] = [64, 65536] bytes.
 
-    // Total physical memory in bytes (e.g. 16384).
+    // Total physical memory in bytes (e.g. 16384). Power of two.
     uint32_t maxOverallMem = 0;
 
-    // Size of one memory frame in bytes (e.g. 16).
-    // Used only for display / fragmentation reporting; allocation granularity
-    // is memPerProc, not memPerFrame.
+    // Size of one memory frame in bytes (also the page size, e.g. 256).
+    // Total frames = maxOverallMem / memPerFrame.
     uint32_t memPerFrame = 0;
 
-    // Fixed amount of memory (bytes) each process needs to run (e.g. 4096).
-    // A process is not scheduled onto a core until this many bytes are free.
-    uint32_t memPerProc = 0;
+    // Lower bound of the per-process memory requirement rolled for auto-generated
+    // (scheduler-start) processes. Power of two in [64, 65536].
+    uint32_t minMemPerProc = 0;
+
+    // Upper bound of the per-process memory requirement. Power of two, >= min.
+    uint32_t maxMemPerProc = 0;
 
     // Set to true only after loadFromFile succeeds. Lets other code check
     // whether a Config object is in its default-zero state or actually loaded.
     bool loaded = false;
 };
+
+// Returns true if value is a power of two (1, 2, 4, 8, ...). Zero is not.
+bool isPowerOfTwo(uint32_t value);
+
+// Returns true if a per-process memory size is valid: a power of two within
+// the inclusive range [2^6, 2^16] = [64, 65536] bytes. Used by screen -s / -c.
+bool isValidProcessMemorySize(uint32_t bytes);
 
 // Reads config.txt and fills a Config struct. Used exclusively by the
 // "initialize" command handler in main.cpp.

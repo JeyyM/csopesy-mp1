@@ -114,6 +114,11 @@ bool parseUint32(const std::string& text, uint32_t& out) {
 // Example: IN "\"fcfs\""  -> out=FCFS, true
 // Example: IN "\"rr\""    -> out=RR,   true
 // Example: IN "\"sjf\""   -> out=?,    false  (not a supported algorithm)
+// Returns true if the value is a power of two in [64, 65536].
+bool isPowerOfTwoInRange(uint32_t value) {
+    return value >= 64 && value <= 65536 && (value & (value - 1)) == 0;
+}
+
 bool parseSchedulerValue(const std::string& text, SchedulerType& out) {
     const std::string normalized = stripQuotes(trim(text));
     if (normalized == "fcfs") {
@@ -269,10 +274,11 @@ bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::strin
                 return false;
             }
 
-        } else if (key == "delay-per-exec") {
+        } else if (key == "delay-per-exec" || key == "delays-per-exec") {
             // Extra CPU ticks to idle between executing consecutive instructions.
             // 0 is valid and means no artificial delay (run as fast as possible).
             // Higher values slow execution and make timing easier to observe.
+            // Both "delay-per-exec" and "delays-per-exec" spellings are accepted.
             if (!parseUint32(value, parsed.delayPerExec)) {
                 errorMessage = "Invalid delay-per-exec value.";
                 return false;
@@ -291,23 +297,34 @@ bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::strin
             }
 
         } else if (key == "max-overall-mem") {
-            // Total physical memory in bytes. Optional (MCO2 feature).
-            if (!parseUint32(value, parsed.maxOverallMem) || parsed.maxOverallMem < 1) {
-                errorMessage = "Invalid max-overall-mem value.";
+            // Total physical memory in bytes. Power of two in [64, 65536].
+            if (!parseUint32(value, parsed.maxOverallMem) ||
+                !isPowerOfTwoInRange(parsed.maxOverallMem)) {
+                errorMessage = "max-overall-mem must be a power of two in [64, 65536].";
                 return false;
             }
 
         } else if (key == "mem-per-frame") {
-            // Frame size in bytes. Optional (MCO2 feature).
-            if (!parseUint32(value, parsed.memPerFrame) || parsed.memPerFrame < 1) {
-                errorMessage = "Invalid mem-per-frame value.";
+            // Frame size (= page size) in bytes. Power of two in [64, 65536].
+            if (!parseUint32(value, parsed.memPerFrame) ||
+                !isPowerOfTwoInRange(parsed.memPerFrame)) {
+                errorMessage = "mem-per-frame must be a power of two in [64, 65536].";
                 return false;
             }
 
-        } else if (key == "mem-per-proc") {
-            // Memory required per process in bytes. Optional (MCO2 feature).
-            if (!parseUint32(value, parsed.memPerProc) || parsed.memPerProc < 1) {
-                errorMessage = "Invalid mem-per-proc value.";
+        } else if (key == "min-mem-per-proc") {
+            // Lower bound of per-process memory. Power of two in [64, 65536].
+            if (!parseUint32(value, parsed.minMemPerProc) ||
+                !isPowerOfTwoInRange(parsed.minMemPerProc)) {
+                errorMessage = "min-mem-per-proc must be a power of two in [64, 65536].";
+                return false;
+            }
+
+        } else if (key == "max-mem-per-proc") {
+            // Upper bound of per-process memory. Power of two in [64, 65536].
+            if (!parseUint32(value, parsed.maxMemPerProc) ||
+                !isPowerOfTwoInRange(parsed.maxMemPerProc)) {
+                errorMessage = "max-mem-per-proc must be a power of two in [64, 65536].";
                 return false;
             }
 
@@ -323,6 +340,14 @@ bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::strin
     // Rules that involve two fields and can only be checked after both are read.
     if (parsed.minIns > parsed.maxIns) {
         errorMessage = "min-ins cannot be greater than max-ins.";
+        return false;
+    }
+    if (parsed.minMemPerProc > parsed.maxMemPerProc) {
+        errorMessage = "min-mem-per-proc cannot be greater than max-mem-per-proc.";
+        return false;
+    }
+    if (parsed.memPerFrame > parsed.maxOverallMem) {
+        errorMessage = "mem-per-frame cannot be greater than max-overall-mem.";
         return false;
     }
 
@@ -351,6 +376,22 @@ bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::strin
         errorMessage = "config.txt is missing max-ins.";
         return false;
     }
+    if (parsed.maxOverallMem < 1) {
+        errorMessage = "config.txt is missing max-overall-mem.";
+        return false;
+    }
+    if (parsed.memPerFrame < 1) {
+        errorMessage = "config.txt is missing mem-per-frame.";
+        return false;
+    }
+    if (parsed.minMemPerProc < 1) {
+        errorMessage = "config.txt is missing min-mem-per-proc.";
+        return false;
+    }
+    if (parsed.maxMemPerProc < 1) {
+        errorMessage = "config.txt is missing max-mem-per-proc.";
+        return false;
+    }
     // Note: initial-process-count is intentionally NOT checked here because
     // it is optional. A value of 0 simply means "no initial burst of processes".
 
@@ -359,4 +400,15 @@ bool ConfigLoader::loadFromFile(const std::string& path, Config& out, std::strin
     out = parsed;
     errorMessage.clear();
     return true;
+}
+
+// Power-of-two check used by process-memory validation. Zero returns false.
+bool isPowerOfTwo(uint32_t value) {
+    return value != 0 && (value & (value - 1)) == 0;
+}
+
+// A per-process memory size is valid when it is a power of two within
+// [2^6, 2^16] = [64, 65536] bytes (MCO2 spec). Used by screen -s / screen -c.
+bool isValidProcessMemorySize(uint32_t bytes) {
+    return bytes >= 64 && bytes <= 65536 && isPowerOfTwo(bytes);
 }

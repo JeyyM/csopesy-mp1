@@ -16,6 +16,7 @@
 #include "ProcessModel.h"
 #include "Scheduler.h"
 
+#include <cstdint>
 #include <fstream>
 #include <sstream>
 
@@ -88,6 +89,63 @@ std::string ReportManager::generateSystemReport(Scheduler& scheduler) {
     }
     report << "---------------------------------------------\n";
     return report.str();
+}
+
+// Builds the process-smi summary view (main-menu command).
+// Shows CPU utilization, physical-memory usage/utilization, and the resident
+// memory held by each active process under demand paging.
+std::string ReportManager::generateProcessSmi(Scheduler& scheduler) {
+    const MemoryStatsSnapshot mem = scheduler.memoryStatsSnapshot();
+
+    const int cpuUtil =
+        mem.numCpu > 0 ? (mem.coresUsed * 100) / mem.numCpu : 0;
+    const int memUtil =
+        mem.totalMemory > 0
+            ? static_cast<int>((static_cast<uint64_t>(mem.usedMemory) * 100) / mem.totalMemory)
+            : 0;
+
+    std::ostringstream out;
+    out << "--------------------------------------------\n";
+    out << "| PROCESS-SMI V01.00  Driver Version: 01.00 |\n";
+    out << "--------------------------------------------\n";
+    out << "CPU-Util: " << cpuUtil << "%\n";
+    out << "Memory Usage: " << mem.usedMemory << "B / " << mem.totalMemory << "B\n";
+    out << "Memory Util: " << memUtil << "%\n";
+    out << "\n";
+    out << "============================================\n";
+    out << "Running processes and memory usage:\n";
+    out << "--------------------------------------------\n";
+
+    bool any = false;
+    for (const auto& process : mem.processes) {
+        if (process.residentBytes == 0) {
+            continue;  // no pages currently resident
+        }
+        out << padRight(process.name, 12) << process.residentBytes << "B / "
+            << process.totalBytes << "B\n";
+        any = true;
+    }
+    if (!any) {
+        out << "(no processes currently hold physical memory)\n";
+    }
+    out << "--------------------------------------------\n";
+    return out.str();
+}
+
+// Builds the vmstat detailed view (main-menu command).
+std::string ReportManager::generateVmstat(Scheduler& scheduler) {
+    const MemoryStatsSnapshot mem = scheduler.memoryStatsSnapshot();
+
+    std::ostringstream out;
+    out << padRight(std::to_string(mem.totalMemory) + " B", 16) << "total memory\n";
+    out << padRight(std::to_string(mem.usedMemory) + " B", 16) << "used memory\n";
+    out << padRight(std::to_string(mem.freeMemory) + " B", 16) << "free memory\n";
+    out << padRight(std::to_string(mem.idleCpuTicks), 16) << "idle cpu ticks\n";
+    out << padRight(std::to_string(mem.activeCpuTicks), 16) << "active cpu ticks\n";
+    out << padRight(std::to_string(mem.totalCpuTicks), 16) << "total cpu ticks\n";
+    out << padRight(std::to_string(mem.pagedIn), 16) << "num paged in\n";
+    out << padRight(std::to_string(mem.pagedOut), 16) << "num paged out\n";
+    return out.str();
 }
 
 // Writes the report to a file, overwriting any existing content.

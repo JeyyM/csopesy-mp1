@@ -34,10 +34,25 @@ public:
         std::string logLine;        // e.g. (06/26/2026 ...) Core:0 "Value from: 1"
         bool relinquishCpu = false; // true if SLEEP — Scheduler parks the process
         uint32_t sleepTicks = 0;    // SLEEP argument (global CPU ticks to wait)
+
+        // MCO2 demand paging: byte addresses this instruction touched. The
+        // Scheduler converts each to a page and calls MemoryManager::accessPage
+        // so faults are counted. Symbol-table (variable) access is reported as
+        // address 0, which always lives in page 0.
+        std::vector<uint32_t> accessedAddresses;
+
+        // Set when a READ/WRITE targets an address outside the process's memory.
+        // The Scheduler terminates the process with a memory access violation.
+        bool memoryViolation = false;
+        uint32_t violationAddress = 0;
     };
 
     // Run one Instruction against process. coreId appears in PRINT log lines.
     static ExecuteResult execute(Process& process, const Instruction& instruction, int coreId);
+
+    // Parse a semicolon-separated user program (screen -c). Returns the parsed
+    // instructions; count is the caller's responsibility to validate (1..50).
+    static std::vector<Instruction> parseUserProgram(const std::string& text);
 
     // Run a sequence of instructions (FOR body or inline list). nestingDepth
     // tracks FOR nesting for the 3-level limit.
@@ -61,4 +76,16 @@ private:
     static uint16_t resolveOperand(Process& process, const std::string& token, bool& ok);
     static std::string resolvePrintMessage(Process& process, const std::string& rawMessage);
     static Instruction parseSingleInstruction(const std::string& text);
+
+    // Operand extraction that accepts BOTH function-style "ADD(a, b, c)" and
+    // space-style "ADD a b c" (the latter used by screen -c user programs).
+    static std::vector<std::string> extractOperands(const std::string& text);
+
+    // Parses a hex ("0x1F") or decimal ("42") address token. Returns false on
+    // malformed input.
+    static bool parseAddressToken(const std::string& token, uint32_t& out);
+
+    // True when a token is a variable name (starts with a letter/underscore),
+    // as opposed to a numeric literal.
+    static bool isVariableToken(const std::string& token);
 };

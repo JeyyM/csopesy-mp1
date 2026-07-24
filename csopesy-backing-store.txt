@@ -1,0 +1,6 @@
+CSOPESY Backing Store
+Frame size (bytes): 256
+----------------------------------------
+Process            Page
+----------------------------------------
+Pages in backing store: 0

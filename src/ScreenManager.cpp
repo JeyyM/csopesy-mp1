@@ -13,12 +13,17 @@
 #include "ScreenManager.h"
 
 #include "ConsoleManager.h"
+#include "InstructionEngine.h"
 #include "ProcessModel.h"
 #include "ReportManager.h"
 
+#include <cstdint>
+#include <iomanip>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <string>
+#include <vector>
 
 namespace {
 
@@ -44,6 +49,47 @@ std::string trim(const std::string& value) {
 // Example: startsWith("screen -ls",       "screen -s ") -> false
 bool startsWith(const std::string& text, const std::string& prefix) {
     return text.size() >= prefix.size() && text.compare(0, prefix.size(), prefix) == 0;
+}
+
+// Splits a string into whitespace-delimited tokens.
+// Example: "p1 256" -> ["p1", "256"]
+std::vector<std::string> splitWhitespace(const std::string& text) {
+    std::vector<std::string> tokens;
+    std::istringstream stream(text);
+    std::string token;
+    while (stream >> token) {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
+// Parses an unsigned decimal memory-size token. Returns false on bad input.
+bool parseMemorySize(const std::string& token, uint32_t& out) {
+    if (token.empty()) {
+        return false;
+    }
+    for (char ch : token) {
+        if (ch < '0' || ch > '9') {
+            return false;
+        }
+    }
+    try {
+        const unsigned long long value = std::stoull(token);
+        if (value > 0xFFFFFFFFULL) {
+            return false;
+        }
+        out = static_cast<uint32_t>(value);
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
+// Formats an address as "0x" + uppercase hex (e.g. 0x1F40).
+std::string toHex(uint32_t value) {
+    std::ostringstream oss;
+    oss << "0x" << std::uppercase << std::hex << value;
+    return oss.str();
 }
 
 
@@ -121,7 +167,8 @@ void runProcessScreen(const std::shared_ptr<Process>& process) {
 // Example: IN "report-util"      -> false
 bool ScreenManager::isScreenCommand(const std::string& command) {
     return command == "screen" || command == "screen -ls" ||
-           startsWith(command, "screen -s ") || startsWith(command, "screen -r ");
+           startsWith(command, "screen -s ") || startsWith(command, "screen -r ") ||
+           startsWith(command, "screen -c ");
 }
 
 // ScreenManager::handleCommand
@@ -149,8 +196,9 @@ bool ScreenManager::handleCommand(const std::string& command, Scheduler& schedul
     // Print a reminder of the three available forms.
     if (command == "screen") {
         ConsoleManager::printLine(
-            "screen command requires arguments: screen -ls, screen -s <process name>, "
-            "or screen -r <process name>.");
+            "screen command requires arguments: screen -ls, "
+            "screen -s <name> <mem>, screen -c <name> <mem> \"<instructions>\", "
+            "or screen -r <name>.");
         return true;
     }
 
@@ -168,82 +216,140 @@ bool ScreenManager::handleCommand(const std::string& command, Scheduler& schedul
         return true;
     }
 
-    // Prefixes used to extract the process name from sub-commands.
-    // Everything after the prefix (trimmed) is treated as the process name.
+    // Prefixes used to extract arguments from sub-commands.
     const std::string createPrefix = "screen -s ";
+    const std::string customPrefix = "screen -c ";
     const std::string attachPrefix = "screen -r ";
 
-    // "screen -s <name>" — create a new process and open its screen.
+    // "screen -s <name> <memory-size>" — create a process with a standard
+    // program and the given memory size, then open its screen.
     //
-    // Step-by-step:
-    //   1. Slice off "screen -s " prefix to get the bare process name.
-    //   2. Reject an empty name (user typed "screen -s " with nothing after).
-    //   3. Reject a duplicate name (process already exists).
-    //   4. Auto-start the engine if "scheduler-start" hasn't been run yet.
-    //      (screen -s is allowed to implicitly start the scheduler.)
-    //   5. Create the process and add it to the scheduler's ready queue.
-    //   6. Open the process screen so the user can watch it run.
+    //   1. Tokenize the arguments after "screen -s ": expect <name> <size>.
+    //   2. Validate the memory size (power of two in [64, 65536]).
+    //   3. Reject a duplicate name.
+    //   4. Auto-start the engine if needed, create the process, open its screen.
     if (startsWith(command, createPrefix)) {
-        // Step 1: Extract process name (everything after "screen -s ").
-        const std::string name = trim(command.substr(createPrefix.size()));
+        const std::vector<std::string> args =
+            splitWhitespace(command.substr(createPrefix.size()));
 
-        // Step 2: Name must not be blank.
-        if (name.empty()) {
-            ConsoleManager::printLine("Unknown command. Please try again.");
+        if (args.size() != 2) {
+            ConsoleManager::printLine(
+                "Usage: screen -s <process name> <process memory size>.");
             return true;
         }
 
-        // Step 3: Each process name must be unique across the whole session.
+        const std::string name = args[0];
+        uint32_t memoryBytes = 0;
+        if (!parseMemorySize(args[1], memoryBytes) ||
+            !isValidProcessMemorySize(memoryBytes)) {
+            ConsoleManager::printLine(
+                "Invalid memory allocation. Size must be a power of two in "
+                "[64, 65536] bytes.");
+            return true;
+        }
+
         if (scheduler.processExists(name)) {
             ConsoleManager::printLine("Process " + name + " already exists.");
             return true;
         }
-        // Step 4: If the scheduler worker threads haven't been started yet
-        // (because the user hasn't typed "scheduler-start"), start them now.
-        // This lets "screen -s" work even without an explicit "scheduler-start".
+
         scheduler.ensureEngineRunning(config);
+        auto process = scheduler.createUserProcess(name, memoryBytes);
+        runProcessScreen(process);
+        return true;
+    }
 
-        // Step 5: Create the process (assigns it an ID, adds a standard program,
-        // sets initial variables x=0, y=0, z=0, and puts it in the ready queue).
-        auto process = scheduler.createUserProcess(name);
+    // "screen -c <name> <memory-size> "<instructions>"" — create a process with
+    // a caller-supplied, semicolon-separated instruction list.
+    //
+    //   1. Locate the quoted instruction block.
+    //   2. Tokenize <name> <size> from the text before the quote.
+    //   3. Validate memory size and the instruction count (1..50).
+    //   4. Reject duplicates, then create and open the process.
+    if (startsWith(command, customPrefix)) {
+        const std::string rest = command.substr(customPrefix.size());
 
-        // Step 6: Enter the interactive process screen for this new process.
-        // This blocks (loops) until the user types "exit" from the process screen.
+        const auto firstQuote = rest.find('"');
+        const auto lastQuote = rest.rfind('"');
+        if (firstQuote == std::string::npos || lastQuote == firstQuote) {
+            ConsoleManager::printLine(
+                "Usage: screen -c <process name> <process memory size> "
+                "\"<instructions>\".");
+            return true;
+        }
+
+        const std::string header = trim(rest.substr(0, firstQuote));
+        const std::string body = rest.substr(firstQuote + 1, lastQuote - firstQuote - 1);
+        const std::vector<std::string> args = splitWhitespace(header);
+
+        if (args.size() != 2) {
+            ConsoleManager::printLine(
+                "Usage: screen -c <process name> <process memory size> "
+                "\"<instructions>\".");
+            return true;
+        }
+
+        const std::string name = args[0];
+        uint32_t memoryBytes = 0;
+        if (!parseMemorySize(args[1], memoryBytes) ||
+            !isValidProcessMemorySize(memoryBytes)) {
+            ConsoleManager::printLine(
+                "Invalid memory allocation. Size must be a power of two in "
+                "[64, 65536] bytes.");
+            return true;
+        }
+
+        const std::vector<Instruction> program = InstructionEngine::parseUserProgram(body);
+        if (program.empty() || program.size() > 50) {
+            ConsoleManager::printLine(
+                "Invalid command. A custom process must have 1 to 50 instructions.");
+            return true;
+        }
+
+        if (scheduler.processExists(name)) {
+            ConsoleManager::printLine("Process " + name + " already exists.");
+            return true;
+        }
+
+        scheduler.ensureEngineRunning(config);
+        auto process = scheduler.createCustomProcess(name, memoryBytes, program);
         runProcessScreen(process);
         return true;
     }
 
     // "screen -r <name>" — re-attach to an existing process.
     //
-    // Step-by-step:
     //   1. Slice off "screen -r " prefix to get the bare process name.
     //   2. Reject an empty name.
-    //   3. Look up the process by name in the scheduler's full process list.
-    //   4. Reject if not found OR if the process has already finished
-    //      (a finished process has no new updates to show; use -ls instead).
-    //   5. Open the process screen for the found process.
+    //   3. If the process was shut down by a memory access violation, print the
+    //      violation message instead of attaching.
+    //   4. Reject if not found or finished normally; otherwise open its screen.
     if (startsWith(command, attachPrefix)) {
-
-        // Step 1: Extract process name (everything after "screen -r ").
         const std::string name = trim(command.substr(attachPrefix.size()));
 
-        // Step 2: Name must not be blank.
         if (name.empty()) {
             ConsoleManager::printLine("Unknown command. Please try again.");
             return true;
         }
 
-        // Step 3: Find the process by name (searches allProcesses_ in Scheduler).
         auto process = scheduler.findProcess(name);
 
-        // Step 4: If it doesn't exist yet, or it's already done, reject.
-        // Finished processes don't accept new log entries; screen -ls shows them.
+        // Memory-violation report takes priority over the "not found" message.
+        if (process &&
+            process->terminationReason() == TerminationReason::MemoryViolation) {
+            ConsoleManager::printLine(
+                "Process " + name +
+                " shut down due to memory access violation error that occurred at " +
+                process->violationTime() + ". " + toHex(process->violationAddress()) +
+                " invalid.");
+            return true;
+        }
+
         if (!process || process->status() == ProcessStatus::Finished) {
             ConsoleManager::printLine("Process " + name + " not found.");
             return true;
         }
 
-        // Step 5: Open the process screen (same view as after screen -s).
         runProcessScreen(process);
         return true;
     }
